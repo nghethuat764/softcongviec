@@ -1,0 +1,6 @@
+{
+  "name": "Hệ Thống Phân Công Nhiệm Vụ & Báo Cáo Tiến Độ TTDVTH Hố Nai",
+  "description": "Ứng dụng phân công nhiệm vụ, theo dõi tiến độ và báo cáo công tác giao ban dành cho Lãnh đạo và Viên chức Trung tâm Dịch vụ Tổng hợp phường Hố Nai.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

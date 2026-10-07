@@ -1,0 +1,129 @@
+{
+  "entities": {
+    "user": {
+      "title": "User",
+      "description": "User profile with role-based access control (LEADER / STAFF)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "username": { "type": "string" },
+        "fullName": { "type": "string" },
+        "shortName": { "type": "string" },
+        "role": { "type": "string", "enum": ["LEADER", "STAFF"] },
+        "position": { "type": "string" },
+        "unit": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "avatarBg": { "type": "string" },
+        "isLeader": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "username", "fullName", "role", "position", "unit"]
+    },
+    "task": {
+      "title": "Task",
+      "description": "Task assignment and execution details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string" },
+        "section": { "type": "string" },
+        "category": { "type": "string" },
+        "title": { "type": "string" },
+        "requirement": { "type": "string" },
+        "assigneeId": { "type": "string" },
+        "assigneeName": { "type": "string" },
+        "coAssigneeIds": { "type": "array" },
+        "coAssignees": { "type": "array" },
+        "leadershipDirector": { "type": "string" },
+        "createdByLeaderId": { "type": "string" },
+        "status": { "type": "string", "enum": ["in_progress", "completed", "delayed", "pending_input", "paused"] },
+        "progress": { "type": "number" },
+        "priority": { "type": "string", "enum": ["normal", "high", "urgent"] },
+        "deadline": { "type": "string" },
+        "startDate": { "type": "string" },
+        "budgetInfo": { "type": "string" },
+        "currentReport": { "type": "string" },
+        "difficulties": { "type": "string" },
+        "proposals": { "type": "string" },
+        "relatedDocs": { "type": "array" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "code", "section", "title", "requirement", "status", "progress"]
+    },
+    "progressReport": {
+      "title": "ProgressReport",
+      "description": "Staff progress report log",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "taskId": { "type": "string" },
+        "reporterId": { "type": "string" },
+        "reporterName": { "type": "string" },
+        "progressPercent": { "type": "number" },
+        "status": { "type": "string" },
+        "workDone": { "type": "string" },
+        "difficulties": { "type": "string" },
+        "proposals": { "type": "string" },
+        "attachments": { "type": "array" },
+        "submittedAt": { "type": "string" }
+      },
+      "required": ["id", "taskId", "reporterName", "progressPercent", "status", "workDone"]
+    },
+    "leaderDirective": {
+      "title": "LeaderDirective",
+      "description": "Directives and urgencies issued by leadership",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "taskId": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "content": { "type": "string" },
+        "targetDeadline": { "type": "string" },
+        "isUrgent": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "taskId", "authorName", "content"]
+    },
+    "auditLog": {
+      "title": "AuditLog",
+      "description": "Audit record for tracking system actions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "action": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userRole": { "type": "string" },
+        "targetTaskId": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "action", "userName", "details", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "user",
+      "description": "Collection of system user accounts and roles"
+    },
+    "/tasks/{taskId}": {
+      "schema": "task",
+      "description": "Collection of tasks assigned to staff"
+    },
+    "/tasks/{taskId}/reports/{reportId}": {
+      "schema": "progressReport",
+      "description": "Subcollection of progress reports for each task"
+    },
+    "/tasks/{taskId}/directives/{directiveId}": {
+      "schema": "leaderDirective",
+      "description": "Subcollection of directives for each task"
+    },
+    "/audit_logs/{logId}": {
+      "schema": "auditLog",
+      "description": "Audit trail log collection"
+    }
+  }
+}

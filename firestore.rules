@@ -1,0 +1,36 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Connection health check
+    match /test/{testId} {
+      allow read, write: if true;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // Tasks collection
+    match /tasks/{taskId} {
+      allow read, write: if true;
+
+      // Subcollection: progress reports
+      match /reports/{reportId} {
+        allow read, write: if true;
+      }
+
+      // Subcollection: leader directives
+      match /directives/{directiveId} {
+        allow read, write: if true;
+      }
+    }
+
+    // Audit logs
+    match /audit_logs/{logId} {
+      allow read, write: if true;
+    }
+  }
+}

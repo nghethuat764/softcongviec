@@ -1,0 +1,40 @@
+import { Task } from '../types';
+import { INITIAL_TASKS } from '../data/initialTasks';
+
+const STORAGE_KEY = 'ttdvth_tasks_data_v1';
+
+export function getStoredTasks(): Task[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_TASKS));
+      return INITIAL_TASKS;
+    }
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed;
+    }
+    return INITIAL_TASKS;
+  } catch (error) {
+    console.error('Error reading tasks from localStorage:', error);
+    return INITIAL_TASKS;
+  }
+}
+
+export function saveTasks(tasks: Task[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  } catch (error) {
+    console.error('Error saving tasks to localStorage:', error);
+  }
+}
+
+export function resetToInitialTasks(): Task[] {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_TASKS));
+    return INITIAL_TASKS;
+  } catch (error) {
+    console.error('Error resetting tasks:', error);
+    return INITIAL_TASKS;
+  }
+}

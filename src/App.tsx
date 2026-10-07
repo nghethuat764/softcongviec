@@ -1,0 +1,323 @@
+import React, { useState, useEffect } from 'react';
+import { Task, StaffMember, Directive } from './types';
+import { getStoredTasks, saveTasks, resetToInitialTasks } from './utils/storage';
+import { STAFF_MEMBERS } from './data/staffMembers';
+import { Header } from './components/Header';
+import { LeaderDashboard } from './components/LeaderDashboard';
+import { StaffReportingPortal } from './components/StaffReportingPortal';
+import { LeaderDirectiveModal } from './components/LeaderDirectiveModal';
+import { TaskDetailModal } from './components/TaskDetailModal';
+import { NewTaskModal } from './components/NewTaskModal';
+import { OfficialNoticeModal } from './components/OfficialNoticeModal';
+import { LoginModal } from './components/LoginModal';
+import { DatabaseSchemaModal } from './components/DatabaseSchemaModal';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { 
+  initializeDatabase, 
+  subscribeToTasks, 
+  saveTaskToDb, 
+  deleteTaskFromDb, 
+  resetDatabaseToOriginal 
+} from './services/firebaseDbService';
+import { ShieldCheck, UserCheck, Cloud } from 'lucide-react';
+
+function AppContent() {
+  const { currentUser, isLeader, switchUser } = useAuth();
+  const [tasks, setTasks] = useState<Task[]>(() => getStoredTasks());
+  const [dbConnected, setDbConnected] = useState<boolean>(true);
+  
+  // Role view state: 'leader' or 'staff'
+  const [currentRole, setCurrentRole] = useState<'leader' | 'staff'>(
+    currentUser?.isLeader ? 'leader' : 'staff'
+  );
+
+  const [selectedStaff, setSelectedStaff] = useState<StaffMember>(() => {
+    if (currentUser && !currentUser.isLeader) {
+      const match = STAFF_MEMBERS.find((m) => m.id === currentUser.id.replace('usr-', ''));
+      if (match) return match;
+    }
+    return STAFF_MEMBERS.find((m) => m.id === 'cuong') || STAFF_MEMBERS[2];
+  });
+
+  // Real-time synchronization with Cloud Firestore
+  useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+    
+    initializeDatabase()
+      .then((initial) => {
+        if (initial && initial.length > 0) {
+          setTasks(initial);
+        }
+        unsubscribe = subscribeToTasks(
+          (liveTasks) => {
+            if (liveTasks && liveTasks.length > 0) {
+              setTasks(liveTasks);
+              setDbConnected(true);
+            }
+          },
+          (err) => {
+            console.warn('Realtime sync fallback to local store:', err);
+            setDbConnected(false);
+          }
+        );
+      })
+      .catch((err) => {
+        console.warn('Init database fallback:', err);
+      });
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+
+  // Sync role view when currentUser changes
+  useEffect(() => {
+    if (currentUser) {
+      if (currentUser.isLeader) {
+        setCurrentRole('leader');
+      } else {
+        setCurrentRole('staff');
+        const match = STAFF_MEMBERS.find((m) => m.id === currentUser.id.replace('usr-', ''));
+        if (match) setSelectedStaff(match);
+      }
+    }
+  }, [currentUser]);
+
+  // Modals
+  const [directiveTask, setDirectiveTask] = useState<Task | null>(null);
+  const [detailTask, setDetailTask] = useState<Task | null>(null);
+  const [isNewTaskOpen, setIsNewTaskOpen] = useState(false);
+  const [isNoticeOpen, setIsNoticeOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isDatabaseSchemaOpen, setIsDatabaseSchemaOpen] = useState(false);
+
+  // Sync tasks to localStorage as local cache
+  useEffect(() => {
+    saveTasks(tasks);
+  }, [tasks]);
+
+  // Update a single task (Write to Cloud Firestore and local state)
+  const handleUpdateTask = (updatedTask: Task) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
+    );
+    if (detailTask && detailTask.id === updatedTask.id) {
+      setDetailTask(updatedTask);
+    }
+    saveTaskToDb(updatedTask);
+  };
+
+  // Delete a task (Leader only)
+  const handleDeleteTask = (taskId: string) => {
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    if (detailTask && detailTask.id === taskId) {
+      setDetailTask(null);
+    }
+    deleteTaskFromDb(taskId);
+  };
+
+  // Add directive from Leader
+  const handleSubmitDirective = (
+    taskId: string,
+    directive: Directive,
+    updatedDeadline?: string
+  ) => {
+    const timestamp = new Date().toLocaleString('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    let updatedTargetTask: Task | null = null;
+
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id !== taskId) return t;
+
+        const updatedDirectives = [directive, ...(t.leaderDirectives || [])];
+        const updatedPriority = directive.isUrgent ? 'urgent' : t.priority;
+
+        const updated: Task = {
+          ...t,
+          leaderDirectives: updatedDirectives,
+          deadline: updatedDeadline || t.deadline,
+          priority: updatedPriority,
+          updatedAt: timestamp,
+        };
+        updatedTargetTask = updated;
+        return updated;
+      })
+    );
+
+    if (updatedTargetTask) {
+      saveTaskToDb(updatedTargetTask);
+    }
+  };
+
+  // Add a newly created task
+  const handleAddTask = (newTask: Task) => {
+    setTasks((prev) => [newTask, ...prev]);
+    saveTaskToDb(newTask);
+  };
+
+  // Reset to original PDF data
+  const handleResetData = () => {
+    if (
+      window.confirm(
+        'Bạn có chắc chắn muốn khôi phục lại dữ liệu nguyên bản từ Thông báo kết luận giao ban tuần ngày 28/9/2026 không?'
+      )
+    ) {
+      resetDatabaseToOriginal().then((initial) => {
+        setTasks(initial);
+      });
+    }
+  };
+
+  // Switch to Staff Reporting Portal for a specific task
+  const handleOpenReportFormFromElsewhere = (task: Task) => {
+    const matchedStaff = STAFF_MEMBERS.find((m) => {
+      const norm = (s: string) => s.toLowerCase().replace(/đ\/c\s*/g, '').trim();
+      return norm(task.assignee).includes(norm(m.name)) || norm(task.assignee).includes(norm(m.shortName));
+    });
+
+    if (matchedStaff) {
+      setSelectedStaff(matchedStaff);
+    }
+    setCurrentRole('staff');
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+      
+      {/* Top Main Navigation Header */}
+      <Header
+        currentRole={currentRole}
+        onRoleChange={setCurrentRole}
+        selectedStaff={selectedStaff}
+        onStaffChange={setSelectedStaff}
+        onOpenNotice={() => setIsNoticeOpen(true)}
+        onOpenNewTask={() => setIsNewTaskOpen(true)}
+        onOpenDatabaseSchema={() => setIsDatabaseSchemaOpen(true)}
+        onOpenLoginModal={() => setIsLoginModalOpen(true)}
+        onResetData={handleResetData}
+        taskCount={tasks.length}
+      />
+
+      {/* Main Workspace Viewport */}
+      <main className="flex-1 pb-16">
+        {currentRole === 'leader' ? (
+          <LeaderDashboard
+            tasks={tasks}
+            onOpenDirectiveModal={(t) => setDirectiveTask(t)}
+            onOpenTaskDetail={(t) => setDetailTask(t)}
+            onOpenReportForm={handleOpenReportFormFromElsewhere}
+            onUpdateTask={handleUpdateTask}
+            onOpenNotice={() => setIsNoticeOpen(true)}
+          />
+        ) : (
+          <StaffReportingPortal
+            tasks={tasks}
+            selectedStaff={selectedStaff}
+            onStaffChange={setSelectedStaff}
+            onUpdateTask={handleUpdateTask}
+            onOpenNewTask={() => setIsNewTaskOpen(true)}
+          />
+        )}
+      </main>
+
+      {/* Modal: Leader Directive & Follow-up */}
+      <LeaderDirectiveModal
+        task={directiveTask}
+        onClose={() => setDirectiveTask(null)}
+        onSubmitDirective={handleSubmitDirective}
+      />
+
+      {/* Modal: Task Comprehensive Detail */}
+      <TaskDetailModal
+        task={detailTask}
+        onClose={() => setDetailTask(null)}
+        onOpenReportForm={handleOpenReportFormFromElsewhere}
+        onOpenDirectiveModal={(t) => setDirectiveTask(t)}
+        onDeleteTask={handleDeleteTask}
+        currentRole={currentRole}
+      />
+
+      {/* Modal: Add New Arising Task */}
+      <NewTaskModal
+        isOpen={isNewTaskOpen}
+        onClose={() => setIsNewTaskOpen(false)}
+        onAddTask={handleAddTask}
+      />
+
+      {/* Modal: Official Meeting Notice Document (Printable) */}
+      <OfficialNoticeModal
+        isOpen={isNoticeOpen}
+        onClose={() => setIsNoticeOpen(false)}
+        tasks={tasks}
+      />
+
+      {/* Modal: Login & Account Switcher */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* Modal: Database Schema & Architecture */}
+      <DatabaseSchemaModal
+        isOpen={isDatabaseSchemaOpen}
+        onClose={() => setIsDatabaseSchemaOpen(false)}
+      />
+
+      {/* Sticky Bottom Role Indicator */}
+      <footer className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xs border-t border-slate-200 py-2 px-4 z-30 shadow-md">
+        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-slate-600">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={`w-2 h-2 rounded-full ${currentUser?.isLeader ? 'bg-red-600' : 'bg-blue-600'} animate-pulse`} />
+            <span className="hidden sm:inline">Tài khoản hiện tại:</span>
+            <span className="font-semibold text-slate-900">
+              {currentUser?.fullName} ({currentUser?.position})
+            </span>
+            <span className={`px-2 py-0.5 rounded text-2xs font-bold ${
+              currentUser?.isLeader ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
+            }`}>
+              {currentUser?.role === 'LEADER' ? 'CẤP LÃNH ĐẠO' : 'CẤP NHÂN VIÊN'}
+            </span>
+            <span className="text-slate-300 hidden sm:inline">|</span>
+            <span className="text-2xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 hidden sm:inline-flex items-center gap-1 font-medium">
+              <Cloud className="w-3 h-3 text-emerald-600" />
+              <span>Database Cloud Firestore: Đồng bộ trực tiếp</span>
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsDatabaseSchemaOpen(true)}
+              className="text-2xs font-semibold text-slate-700 hover:text-slate-900 underline hidden md:inline cursor-pointer"
+            >
+              Xem Cấu Trúc Database
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentRole(currentRole === 'leader' ? 'staff' : 'leader')}
+              className="text-xs font-semibold text-blue-700 hover:text-blue-900 hover:underline cursor-pointer"
+            >
+              Chuyển sang {currentRole === 'leader' ? 'Form Báo Cáo Nhân Viên' : 'Màn Hình Lãnh Đạo'} →
+            </button>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
+}
