@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="redRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E53935"/>
+      <stop offset="100%" stop-color="#C62828"/>
+    </linearGradient>
+    <linearGradient id="blueRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E88E5"/>
+      <stop offset="100%" stop-color="#1565C0"/>
+    </linearGradient>
+    <linearGradient id="figureGrad" x1="0%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#D32F2F"/>
+      <stop offset="50%" stop-color="#F4511E"/>
+      <stop offset="100%" stop-color="#FF7043"/>
+    </linearGradient>
+    <linearGradient id="handGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1B5E20"/>
+      <stop offset="50%" stop-color="#2E7D32"/>
+      <stop offset="100%" stop-color="#4CAF50"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082"/>
+      <stop offset="50%" stop-color="#FBC02D"/>
+      <stop offset="100%" stop-color="#F57F17"/>
+    </linearGradient>
+    
+    <!-- Text Paths -->
+    <!-- Top Arc for "TRUNG TÂM DỊCH VỤ TỔNG HỢP" (Clockwise along top) -->
+    <path id="topTextArc" d="M 52,250 A 198,198 0 0,1 448,250" fill="none" />
+    
+    <!-- Bottom Arc for "PHƯỜNG HỐ NAI" (Clockwise along bottom so text is upright towards center) -->
+    <path id="bottomTextArc" d="M 85,280 A 198,198 0 0,0 415,280" fill="none" />
+
+    <!-- Sub text Arc for "THÀNH PHỐ ĐỒNG NAI" -->
+    <path id="subTextArc" d="M 140,402 A 135,135 0 0,0 360,402" fill="none" />
+  </defs>
+
+  <!-- Outer background circle -->
+  <circle cx="250" cy="250" r="246" fill="#FFFFFF" stroke="#C62828" stroke-width="4"/>
+
+  <!-- Upper Red Semi-Ring -->
+  <path d="M 10,250 A 240,240 0 0,1 490,250 L 414,250 A 164,164 0 0,0 86,250 Z" fill="url(#redRingGrad)"/>
+
+  <!-- Lower Blue Semi-Ring -->
+  <path d="M 10,250 A 240,240 0 0,0 490,250 L 414,250 A 164,164 0 0,1 86,250 Z" fill="url(#blueRingGrad)"/>
+
+  <!-- Thin inner gold divider circle -->
+  <circle cx="250" cy="250" r="164" fill="#FFFFFF" stroke="#FBC02D" stroke-width="2.5"/>
+
+  <!-- Top Text: TRUNG TÂM DỊCH VỤ TỔNG HỢP -->
+  <text fill="#FFFFFF" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="28" letter-spacing="2">
+    <textPath href="#topTextArc" startOffset="50%" text-anchor="middle">
+      TRUNG TÂM DỊCH VỤ TỔNG HỢP
+    </textPath>
+  </text>
+
+  <!-- Bottom Text: PHƯỜNG HỐ NAI -->
+  <text fill="#FFFFFF" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="34" letter-spacing="3">
+    <textPath href="#bottomTextArc" startOffset="50%" text-anchor="middle">
+      PHƯỜNG HỐ NAI
+    </textPath>
+  </text>
+
+  <!-- CENTER EMBLEM GRAPHICS -->
+
+  <!-- 1. Pagoda / Temple Silhouette in Background Right -->
+  <g fill="none" stroke="#D7B56D" stroke-width="2.2" opacity="0.95">
+    <!-- Roofs & Pavilion -->
+    <path d="M 312,285 L 385,285 L 372,260 L 325,260 Z" fill="#FFF8E7" />
+    <path d="M 300,285 Q 312,282 325,260 L 372,260 Q 385,282 397,285" />
+    <!-- Pillars -->
+    <line x1="335" y1="260" x2="335" y2="285" stroke-width="2"/>
+    <line x1="362" y1="260" x2="362" y2="285" stroke-width="2"/>
+    <!-- Upper tier roof -->
+    <path d="M 330,260 Q 340,255 348,242 L 349,242 Q 357,255 367,260 Z" fill="#FFF8E7" />
+    <!-- Spire top -->
+    <line x1="348.5" y1="242" x2="348.5" y2="220" stroke-width="2"/>
+    <circle cx="348.5" cy="218" r="2.5" fill="#D7B56D" />
+    <!-- Background mountain outline -->
+    <path d="M 115,280 L 150,250 L 190,265 L 210,245 L 235,275" stroke="#E2C98A" stroke-width="1.8" />
+  </g>
+
+  <!-- 2. Stylized Human Figure (Red-Orange) Leaping / Arms Wide Open -->
+  <!-- Head -->
+  <circle cx="178" cy="150" r="16" fill="#F4511E" />
+  
+  <!-- Torso & Left/Right Arms (V-shape) -->
+  <path d="M 178,168 C 170,185 155,210 135,225 C 122,235 110,242 122,240 C 145,236 170,205 188,185 C 196,177 206,170 216,160 C 235,140 250,118 250,115 C 248,115 228,140 210,165 C 195,188 185,215 185,260 C 185,275 192,295 195,310 C 205,320 212,328 222,335 C 205,332 188,315 178,290 C 168,265 160,225 150,195 C 142,170 120,135 120,135 C 120,135 145,155 165,170 Z" fill="url(#figureGrad)" />
+
+  <!-- 3. Green Hand Supporting / Nâng Đỡ -->
+  <path d="M 235,325 C 240,290 255,250 270,220 C 285,190 310,172 312,172 C 310,178 290,205 285,225 C 280,245 285,255 305,250 C 330,245 355,220 375,178 C 375,185 355,225 335,245 C 315,265 295,275 285,285 C 265,305 250,335 240,350 Z" fill="url(#handGrad)" />
+  <!-- Lower palm curve connecting to book -->
+  <path d="M 225,328 C 240,315 260,295 270,280 C 265,295 250,320 235,340 Z" fill="#2E7D32" />
+
+  <!-- 4. Blue Wifi Signal Waves (Chuyển Đổi Số / Công Nghệ Thông Tin) -->
+  <g fill="none" stroke="#0288D1" stroke-linecap="round">
+    <!-- Inner wave -->
+    <path d="M 272,165 A 32,32 0 0,1 328,165" stroke-width="6" />
+    <!-- Middle wave -->
+    <path d="M 258,150 A 50,50 0 0,1 342,150" stroke-width="7" />
+    <!-- Outer wave -->
+    <path d="M 242,135 A 68,68 0 0,1 358,135" stroke-width="8" stroke="#039BE5" />
+  </g>
+
+  <!-- 5. Open Book Base (Tri Thức / Quyển Sách Mở Đa Sắc) -->
+  <!-- Left Pages (Cyan, Blue, Green layers) -->
+  <path d="M 250,345 C 210,342 160,335 110,305 C 100,298 90,285 85,285 C 95,295 125,315 160,328 C 190,340 220,345 250,345 Z" fill="#F57C00" />
+  <path d="M 250,350 C 205,348 150,335 115,315 C 145,330 185,345 235,350 Z" fill="#00B0FF" />
+  <path d="M 250,355 C 205,355 160,345 125,328 C 155,342 195,354 240,356 Z" fill="#00E676" />
+  <path d="M 250,360 C 200,360 150,350 115,332 C 145,350 190,362 250,362 Z" fill="#0288D1" />
+
+  <!-- Right Pages (Orange, Red, Cyan layers) -->
+  <path d="M 250,345 C 290,342 340,335 390,305 C 400,298 410,285 415,285 C 405,295 375,315 340,328 C 310,340 280,345 250,345 Z" fill="#FF9800" />
+  <path d="M 250,350 C 295,348 350,335 385,315 C 355,330 315,345 265,350 Z" fill="#E53935" />
+  <path d="M 250,355 C 295,355 340,345 375,328 C 345,342 305,354 260,356 Z" fill="#00ACC1" />
+  <path d="M 250,360 C 300,360 350,350 385,332 C 355,350 310,362 250,362 Z" fill="#1565C0" />
+
+  <!-- Book spine center swoosh -->
+  <path d="M 245,335 C 248,348 250,360 250,365 C 250,360 252,348 255,335 Z" fill="#D32F2F" />
+
+  <!-- 6. Three Interlocking Golden Cogwheels with Stars (Bánh Răng Công Nghiệp) -->
+  <!-- Left Gear -->
+  <g transform="translate(198, 370)">
+    <!-- Cogwheel teeth & body -->
+    <circle cx="0" cy="0" r="22" fill="url(#goldGrad)" stroke="#B78103" stroke-width="2"/>
+    <!-- 8 teeth around -->
+    <path d="M -3,-24 L 3,-24 L 2,-21 L -2,-21 Z 
+             M 24,-3 L 24,3 L 21,2 L 21,-2 Z 
+             M -3,24 L 3,24 L 2,21 L -2,21 Z 
+             M -24,-3 L -24,3 L -21,2 L -21,-2 Z
+             M 15,-15 L 18,-12 L 15,-10 L 12,-13 Z
+             M -15,15 L -18,12 L -15,10 L -12,13 Z
+             M -15,-15 L -18,-12 L -15,-10 L -12,-13 Z
+             M 15,15 L 18,12 L 15,10 L 12,13 Z" fill="url(#goldGrad)" stroke="#B78103" stroke-width="1.5"/>
+    <circle cx="0" cy="0" r="14" fill="#FFFFFF" stroke="#B78103" stroke-width="1.5"/>
+    <!-- Red star inside -->
+    <polygon points="0,-10 2.9,-3.5 10,-3.5 4.3,1.2 6.5,8 0,3.8 -6.5,8 -4.3,1.2 -10,-3.5 -2.9,-3.5" fill="#E53935"/>
+  </g>
+
+  <!-- Right Gear -->
+  <g transform="translate(302, 370)">
+    <!-- Cogwheel teeth & body -->
+    <circle cx="0" cy="0" r="22" fill="url(#goldGrad)" stroke="#B78103" stroke-width="2"/>
+    <!-- 8 teeth around -->
+    <path d="M -3,-24 L 3,-24 L 2,-21 L -2,-21 Z 
+             M 24,-3 L 24,3 L 21,2 L 21,-2 Z 
+             M -3,24 L 3,24 L 2,21 L -2,21 Z 
+             M -24,-3 L -24,3 L -21,2 L -21,-2 Z
+             M 15,-15 L 18,-12 L 15,-10 L 12,-13 Z
+             M -15,15 L -18,12 L -15,10 L -12,13 Z
+             M -15,-15 L -18,-12 L -15,-10 L -12,-13 Z
+             M 15,15 L 18,12 L 15,10 L 12,13 Z" fill="url(#goldGrad)" stroke="#B78103" stroke-width="1.5"/>
+    <circle cx="0" cy="0" r="14" fill="#FFFFFF" stroke="#B78103" stroke-width="1.5"/>
+    <!-- Green star inside -->
+    <polygon points="0,-10 2.9,-3.5 10,-3.5 4.3,1.2 6.5,8 0,3.8 -6.5,8 -4.3,1.2 -10,-3.5 -2.9,-3.5" fill="#2E7D32"/>
+  </g>
+
+  <!-- Center Lower Gear (interlocked below/middle) -->
+  <g transform="translate(250, 355)">
+    <!-- Cogwheel teeth & body -->
+    <circle cx="0" cy="0" r="23" fill="url(#goldGrad)" stroke="#B78103" stroke-width="2"/>
+    <!-- 8 teeth around -->
+    <path d="M -3,-25 L 3,-25 L 2,-22 L -2,-22 Z 
+             M 25,-3 L 25,3 L 22,2 L 22,-2 Z 
+             M -3,25 L 3,25 L 2,22 L -2,22 Z 
+             M -25,-3 L -25,3 L -22,2 L -22,-2 Z
+             M 15,-15 L 19,-12 L 16,-10 L 13,-13 Z
+             M -15,15 L -19,12 L -16,10 L -13,13 Z
+             M -15,-15 L -19,-12 L -16,-10 L -13,-13 Z
+             M 15,15 L 19,12 L 16,10 L 13,13 Z" fill="url(#goldGrad)" stroke="#B78103" stroke-width="1.5"/>
+    <circle cx="0" cy="0" r="14.5" fill="#FFFFFF" stroke="#B78103" stroke-width="1.5"/>
+    <!-- Blue star inside -->
+    <polygon points="0,-10 2.9,-3.5 10,-3.5 4.3,1.2 6.5,8 0,3.8 -6.5,8 -4.3,1.2 -10,-3.5 -2.9,-3.5" fill="#1565C0"/>
+  </g>
+
+  <!-- Sub-Arc Text: THÀNH PHỐ ĐỒNG NAI -->
+  <text fill="#0D47A1" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="12" letter-spacing="1">
+    <textPath href="#subTextArc" startOffset="50%" text-anchor="middle">
+      THÀNH PHỐ ĐỒNG NAI
+    </textPath>
+  </text>
+</svg>

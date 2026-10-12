@@ -4,6 +4,7 @@ export const USER_ACCOUNTS: UserAccount[] = [
   {
     id: 'usr-phong',
     username: 'phong.giamdoc',
+    password: '123456',
     fullName: 'Phạm Thanh Phong',
     shortName: 'Đ/c Phong (Giám đốc)',
     role: 'LEADER',
@@ -17,6 +18,7 @@ export const USER_ACCOUNTS: UserAccount[] = [
   {
     id: 'usr-tuyen',
     username: 'tuyen.pgd',
+    password: '123456',
     fullName: 'Đ/c Tuyến',
     shortName: 'Đ/c Tuyến (Phó GĐ)',
     role: 'LEADER',
@@ -30,6 +32,7 @@ export const USER_ACCOUNTS: UserAccount[] = [
   {
     id: 'usr-cuong',
     username: 'cuong.dvci',
+    password: '123456',
     fullName: 'Đ/c Cường',
     shortName: 'Đ/c Cường',
     role: 'STAFF',
@@ -43,6 +46,7 @@ export const USER_ACCOUNTS: UserAccount[] = [
   {
     id: 'usr-duong',
     username: 'duong.dtc',
+    password: '123456',
     fullName: 'Đ/c Dương',
     shortName: 'Đ/c Dương',
     role: 'STAFF',
@@ -56,6 +60,7 @@ export const USER_ACCOUNTS: UserAccount[] = [
   {
     id: 'usr-dat',
     username: 'dat.mt',
+    password: '123456',
     fullName: 'Đ/c Đạt',
     shortName: 'Đ/c Đạt',
     role: 'STAFF',
@@ -69,6 +74,7 @@ export const USER_ACCOUNTS: UserAccount[] = [
   {
     id: 'usr-troi',
     username: 'troi.ccn',
+    password: '123456',
     fullName: 'Đ/c Trổi',
     shortName: 'Đ/c Trổi',
     role: 'STAFF',
@@ -82,6 +88,7 @@ export const USER_ACCOUNTS: UserAccount[] = [
   {
     id: 'usr-thien',
     username: 'thien.cntt',
+    password: '123456',
     fullName: 'Đ/c Thiện',
     shortName: 'Đ/c Thiện',
     role: 'STAFF',
@@ -95,6 +102,7 @@ export const USER_ACCOUNTS: UserAccount[] = [
   {
     id: 'usr-nhan',
     username: 'nhan.tt',
+    password: '123456',
     fullName: 'Đ/c Nhân',
     shortName: 'Đ/c Nhân',
     role: 'STAFF',
@@ -108,6 +116,7 @@ export const USER_ACCOUNTS: UserAccount[] = [
   {
     id: 'usr-hckt',
     username: 'ketoan.hckt',
+    password: '123456',
     fullName: 'Tổ Hành chính - Kế toán',
     shortName: 'Tổ HC - KT',
     role: 'STAFF',

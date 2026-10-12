@@ -3,6 +3,7 @@ import { Task, StaffMember, Directive } from './types';
 import { getStoredTasks, saveTasks, resetToInitialTasks } from './utils/storage';
 import { STAFF_MEMBERS } from './data/staffMembers';
 import { Header } from './components/Header';
+import { Sidebar } from './components/Sidebar';
 import { LeaderDashboard } from './components/LeaderDashboard';
 import { StaffReportingPortal } from './components/StaffReportingPortal';
 import { LeaderDirectiveModal } from './components/LeaderDirectiveModal';
@@ -10,6 +11,7 @@ import { TaskDetailModal } from './components/TaskDetailModal';
 import { NewTaskModal } from './components/NewTaskModal';
 import { OfficialNoticeModal } from './components/OfficialNoticeModal';
 import { LoginModal } from './components/LoginModal';
+import { EditTaskModal } from './components/EditTaskModal';
 import { DatabaseSchemaModal } from './components/DatabaseSchemaModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { 
@@ -86,15 +88,23 @@ function AppContent() {
   // Modals
   const [directiveTask, setDirectiveTask] = useState<Task | null>(null);
   const [detailTask, setDetailTask] = useState<Task | null>(null);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [isEditTaskOpen, setIsEditTaskOpen] = useState(false);
   const [isNewTaskOpen, setIsNewTaskOpen] = useState(false);
   const [isNoticeOpen, setIsNoticeOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isDatabaseSchemaOpen, setIsDatabaseSchemaOpen] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Sync tasks to localStorage as local cache
   useEffect(() => {
     saveTasks(tasks);
   }, [tasks]);
+
+  const handleOpenEditTask = (task: Task) => {
+    setEditingTask(task);
+    setIsEditTaskOpen(true);
+  };
 
   // Update a single task (Write to Cloud Firestore and local state)
   const handleUpdateTask = (updatedTask: Task) => {
@@ -203,29 +213,56 @@ function AppContent() {
         onOpenLoginModal={() => setIsLoginModalOpen(true)}
         onResetData={handleResetData}
         taskCount={tasks.length}
+        onToggleMobileMenu={() => setIsMobileSidebarOpen((prev) => !prev)}
       />
 
-      {/* Main Workspace Viewport */}
-      <main className="flex-1 pb-16">
-        {currentRole === 'leader' ? (
-          <LeaderDashboard
-            tasks={tasks}
-            onOpenDirectiveModal={(t) => setDirectiveTask(t)}
-            onOpenTaskDetail={(t) => setDetailTask(t)}
-            onOpenReportForm={handleOpenReportFormFromElsewhere}
-            onUpdateTask={handleUpdateTask}
-            onOpenNotice={() => setIsNoticeOpen(true)}
-          />
-        ) : (
-          <StaffReportingPortal
-            tasks={tasks}
-            selectedStaff={selectedStaff}
-            onStaffChange={setSelectedStaff}
-            onUpdateTask={handleUpdateTask}
-            onOpenNewTask={() => setIsNewTaskOpen(true)}
-          />
-        )}
-      </main>
+      {/* Main Workspace Layout with Vertical Left Sidebar */}
+      <div className="flex-1 flex w-full relative">
+        {/* Vertical Left Menu */}
+        <Sidebar
+          currentRole={currentRole}
+          onRoleChange={setCurrentRole}
+          onOpenNotice={() => setIsNoticeOpen(true)}
+          onOpenNewTask={() => {
+            if (!isLeader) {
+              alert('Chức năng giao việc mới chỉ dành riêng cho cấp Lãnh đạo (Ban Giám Đốc).');
+              return;
+            }
+            setIsNewTaskOpen(true);
+          }}
+          onOpenDatabaseSchema={() => setIsDatabaseSchemaOpen(true)}
+          onOpenLoginModal={() => setIsLoginModalOpen(true)}
+          onResetData={handleResetData}
+          taskCount={tasks.length}
+          isOpenMobile={isMobileSidebarOpen}
+          onCloseMobile={() => setIsMobileSidebarOpen(false)}
+        />
+
+        {/* Main Content Area */}
+        <main className="flex-1 min-w-0 pb-16 overflow-x-hidden">
+          {currentRole === 'leader' ? (
+            <LeaderDashboard
+              tasks={tasks}
+              onOpenDirectiveModal={(t) => setDirectiveTask(t)}
+              onOpenTaskDetail={(t) => setDetailTask(t)}
+              onOpenReportForm={handleOpenReportFormFromElsewhere}
+              onUpdateTask={handleUpdateTask}
+              onOpenNotice={() => setIsNoticeOpen(true)}
+              onOpenNewTask={isLeader ? () => setIsNewTaskOpen(true) : undefined}
+              onEditTask={handleOpenEditTask}
+              onDeleteTask={handleDeleteTask}
+            />
+          ) : (
+            <StaffReportingPortal
+              tasks={tasks}
+              selectedStaff={selectedStaff}
+              onStaffChange={setSelectedStaff}
+              onUpdateTask={handleUpdateTask}
+              onOpenNewTask={isLeader ? () => setIsNewTaskOpen(true) : undefined}
+            />
+          )}
+        </main>
+      </div>
 
       {/* Modal: Leader Directive & Follow-up */}
       <LeaderDirectiveModal
@@ -240,8 +277,20 @@ function AppContent() {
         onClose={() => setDetailTask(null)}
         onOpenReportForm={handleOpenReportFormFromElsewhere}
         onOpenDirectiveModal={(t) => setDirectiveTask(t)}
+        onOpenEditModal={handleOpenEditTask}
         onDeleteTask={handleDeleteTask}
         currentRole={currentRole}
+      />
+
+      {/* Modal: Edit Task Details */}
+      <EditTaskModal
+        isOpen={isEditTaskOpen}
+        task={editingTask}
+        onClose={() => {
+          setIsEditTaskOpen(false);
+          setEditingTask(null);
+        }}
+        onSaveTask={handleUpdateTask}
       />
 
       {/* Modal: Add New Arising Task */}
@@ -299,13 +348,19 @@ function AppContent() {
             >
               Xem Cấu Trúc Database
             </button>
-            <button
-              type="button"
-              onClick={() => setCurrentRole(currentRole === 'leader' ? 'staff' : 'leader')}
-              className="text-xs font-semibold text-blue-700 hover:text-blue-900 hover:underline cursor-pointer"
-            >
-              Chuyển sang {currentRole === 'leader' ? 'Form Báo Cáo Nhân Viên' : 'Màn Hình Lãnh Đạo'} →
-            </button>
+            {currentUser?.isLeader ? (
+              <button
+                type="button"
+                onClick={() => setCurrentRole(currentRole === 'leader' ? 'staff' : 'leader')}
+                className="text-xs font-semibold text-blue-700 hover:text-blue-900 hover:underline cursor-pointer"
+              >
+                Chuyển sang {currentRole === 'leader' ? 'Phân Hệ Báo Cáo Nhân Viên' : 'Màn Hình Lãnh Đạo'} →
+              </button>
+            ) : (
+              <span className="text-xs text-slate-500 font-medium">
+                Phân hệ Viên chức Báo cáo Tiến độ
+              </span>
+            )}
           </div>
         </div>
       </footer>

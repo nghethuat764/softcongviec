@@ -34,7 +34,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     if (success) {
       onClose();
     } else {
-      setError('Tên đăng nhập không chính xác. Vui lòng kiểm tra lại hoặc chọn tài khoản bên dưới.');
+      setError('Tên đăng nhập hoặc mật khẩu không chính xác (mật khẩu mặc định: 123456). Vui lòng kiểm tra lại hoặc chọn tài khoản bên dưới.');
     }
   };
 
@@ -53,15 +53,15 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
         {/* Official Banner Header */}
         <div className="bg-slate-900 px-6 py-4 text-white flex items-center justify-between border-b border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-red-700 flex items-center justify-center shadow-inner">
-              <Building2 className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-red-950 border border-red-800 flex items-center justify-center text-red-300">
+              <Building2 className="w-5 h-5 text-amber-400" />
             </div>
             <div>
               <span className="text-2xs font-mono uppercase tracking-wider text-red-300 block">
                 UBND PHƯỜNG HỐ NAI · TTDVTH
               </span>
               <h2 className="text-base font-bold text-white">
-                Đăng Nhập Phân Quyền Hệ Thống
+                Đổi Tài Khoản / Đăng Nhập Phân Quyền
               </h2>
             </div>
           </div>

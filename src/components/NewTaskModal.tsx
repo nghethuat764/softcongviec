@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Task, SectionType, PriorityLevel, TaskStatus } from '../types';
-import { X, PlusCircle, User, Calendar, DollarSign, FileText, ShieldCheck } from 'lucide-react';
+import { X, PlusCircle, User, Calendar, DollarSign, FileText, ShieldCheck, Lock } from 'lucide-react';
 import { STAFF_MEMBERS } from '../data/staffMembers';
 import { useAuth } from '../context/AuthContext';
 
@@ -32,6 +32,29 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   const [initialProgress, setInitialProgress] = useState(0);
 
   if (!isOpen) return null;
+
+  if (!isLeader) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 p-6 text-center animate-in fade-in zoom-in-95 duration-150">
+          <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-3">
+            <Lock className="w-6 h-6" />
+          </div>
+          <h3 className="text-base font-bold text-slate-900 mb-1">Giới Hạn Phân Quyền</h3>
+          <p className="text-xs text-slate-600 mb-4 leading-relaxed">
+            Chức năng giao việc mới chỉ được phân quyền dành riêng cho <strong>Cấp Lãnh Đạo (Ban Giám Đốc)</strong>. Vui lòng đăng nhập tài khoản Lãnh đạo để giao nhiệm vụ.
+          </p>
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+          >
+            Đóng Cửa Sổ
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

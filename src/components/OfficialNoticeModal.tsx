@@ -59,15 +59,15 @@ export const OfficialNoticeModal: React.FC<OfficialNoticeModalProps> = ({
         <div className="p-8 sm:p-12 overflow-y-auto space-y-6 text-slate-900 text-sm leading-relaxed print:overflow-visible print:p-4">
           
           {/* Header Quốc hiệu - Tiêu ngữ */}
-          <div className="grid grid-cols-2 text-center border-b border-slate-300 pb-5">
-            <div>
-              <p className="font-bold text-xs uppercase">UBND PHƯỜNG HỐ NAI</p>
-              <p className="font-bold text-xs uppercase underline">TRUNG TÂM DỊCH VỤ TỔNG HỢP</p>
+          <div className="grid grid-cols-2 text-center border-b border-slate-300 pb-5 items-center">
+            <div className="text-left">
+              <p className="font-bold text-xs uppercase text-slate-800">UBND PHƯỜNG HỐ NAI</p>
+              <p className="font-bold text-xs uppercase underline text-red-900">TRUNG TÂM DỊCH VỤ TỔNG HỢP</p>
               <p className="text-2xs text-slate-600 mt-1">Số: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/TB-TTDVTH</p>
             </div>
             <div>
-              <p className="font-bold text-xs uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
-              <p className="font-bold text-xs">Độc lập - Tự do - Hạnh phúc</p>
+              <p className="font-bold text-xs uppercase text-slate-900">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+              <p className="font-bold text-xs text-red-900">Độc lập - Tự do - Hạnh phúc</p>
               <div className="w-24 h-[1px] bg-slate-400 mx-auto my-1"></div>
               <p className="text-2xs italic text-slate-600">Hố Nai, ngày 28 tháng 9 năm 2026</p>
             </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Task, StaffMember, TaskStatus, ProgressReportLog } from '../types';
+import { Task, StaffMember, TaskStatus, ProgressReportLog, Directive } from '../types';
 import { 
   CheckCircle2, 
   Clock, 
@@ -11,11 +11,22 @@ import {
   Users, 
   Calendar, 
   ShieldCheck, 
-  Building,
-  Check,
-  PlusCircle,
-  HelpCircle,
-  Lock
+  Building, 
+  Check, 
+  PlusCircle, 
+  HelpCircle, 
+  Lock,
+  Inbox,
+  ListOrdered,
+  History,
+  Lightbulb,
+  ArrowRight,
+  ClipboardList,
+  Sparkles,
+  Search,
+  Paperclip,
+  Upload,
+  X
 } from 'lucide-react';
 import { getStatusBadgeClasses, getStatusLabel, isTaskRelatedToStaff } from '../utils/helpers';
 import { STAFF_MEMBERS } from '../data/staffMembers';
@@ -26,7 +37,7 @@ interface StaffReportingPortalProps {
   selectedStaff: StaffMember;
   onStaffChange: (staff: StaffMember) => void;
   onUpdateTask: (updatedTask: Task) => void;
-  onOpenNewTask: () => void;
+  onOpenNewTask?: () => void;
 }
 
 export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
@@ -48,6 +59,36 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Menu Phân Cấp Dành Riêng Cho Viên Chức (Nhân Viên)
+  type StaffMenuKey = 
+    | 'report_form'       // 1.1 Form Cập Nhật Tiến Độ & Vướng Mắc
+    | 'my_tasks_matrix'   // 1.2 Danh Mục Phân Công Nhiệm Vụ Của Tôi
+    | 'directives_inbox'  // 2.1 Hòm Thư Lệnh Đôn Đốc & Chỉ Đạo Của Giám Đốc
+    | 'report_history'    // 3.1 Sổ Nhật Ký Báo Cáo Đã Gửi
+    | 'proposal_new';     // 3.2 Đề Xuất Việc Phát Sinh Mới
+
+  const [activeStaffMenu, setActiveStaffMenu] = useState<StaffMenuKey>('report_form');
+
+  // Lọc danh sách các chỉ đạo của Giám đốc gửi tới nhiệm vụ của cán bộ này
+  const myDirectives: { task: Task; directive: Directive }[] = [];
+  myTasks.forEach((t) => {
+    if (t.leaderDirectives && t.leaderDirectives.length > 0) {
+      t.leaderDirectives.forEach((dir) => {
+        myDirectives.push({ task: t, directive: dir });
+      });
+    }
+  });
+
+  // Lọc lịch sử các lần báo cáo đã gửi
+  const allMyReportLogs: { task: Task; log: ProgressReportLog }[] = [];
+  myTasks.forEach((t) => {
+    if (t.progressLogs && t.progressLogs.length > 0) {
+      t.progressLogs.forEach((l) => {
+        allMyReportLogs.push({ task: t, log: l });
+      });
+    }
+  });
+
   // Current active task for reporting
   const currentTask = tasks.find((t) => t.id === activeTaskId) || myTasks[0] || null;
 
@@ -59,6 +100,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
   const [proposals, setProposals] = useState<string>('');
   const [deadlineVal, setDeadlineVal] = useState<string>('');
   const [newDocument, setNewDocument] = useState<string>('');
+  const [attachedDocs, setAttachedDocs] = useState<string[]>(currentTask?.relatedDocs ? [...currentTask.relatedDocs] : []);
 
   // When active task changes, sync form state
   const handleSelectTask = (task: Task) => {
@@ -70,6 +112,33 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
     setProposals(task.proposals || '');
     setDeadlineVal(task.deadline || '');
     setNewDocument('');
+    setAttachedDocs(task.relatedDocs ? [...task.relatedDocs] : []);
+  };
+
+  const handleAddDocument = (docName: string) => {
+    const trimmed = docName.trim();
+    if (!trimmed) return;
+    if (!attachedDocs.includes(trimmed)) {
+      setAttachedDocs((prev) => [...prev, trimmed]);
+    }
+    setNewDocument('');
+  };
+
+  const handleRemoveDocument = (docToRemove: string) => {
+    setAttachedDocs((prev) => prev.filter((d) => d !== docToRemove));
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const sizeStr = file.size > 1024 * 1024 
+      ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` 
+      : `${Math.round(file.size / 1024)} KB`;
+    const docEntry = `${file.name} (${sizeStr})`;
+    if (!attachedDocs.includes(docEntry)) {
+      setAttachedDocs((prev) => [...prev, docEntry]);
+    }
+    e.target.value = '';
   };
 
   // Quick preset progress buttons
@@ -106,7 +175,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
       proposals: proposals.trim() || undefined,
     };
 
-    const updatedDocs = [...(currentTask.relatedDocs || [])];
+    const updatedDocs = [...attachedDocs];
     if (newDocument.trim() && !updatedDocs.includes(newDocument.trim())) {
       updatedDocs.push(newDocument.trim());
     }
@@ -125,6 +194,8 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
     };
 
     onUpdateTask(updated);
+    setNewDocument('');
+    setAttachedDocs(updatedDocs);
 
     // Show toast
     setToastMessage(`Đã gửi báo cáo tiến độ thành công cho nhiệm vụ: ${currentTask.code}!`);
@@ -178,9 +249,16 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                   {selectedStaff.role}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Đơn vị: <strong>{selectedStaff.unit}</strong> · Phân công theo Kết luận giao ban tuần 28/9/2026
-              </p>
+              <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                <span>Đơn vị: <strong>{selectedStaff.unit}</strong></span>
+                <span className="text-slate-300">·</span>
+                <span className="inline-flex items-center gap-1 text-2xs text-blue-800 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 font-medium">
+                  <Building className="w-3 h-3 text-blue-700" />
+                  <span>TTDVTH Hố Nai</span>
+                </span>
+                <span className="text-slate-300">·</span>
+                <span>Phân công theo Kết luận giao ban tuần 28/9/2026</span>
+              </div>
             </div>
           </div>
 
@@ -210,14 +288,17 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
               ))}
             </select>
 
-            <button
-              type="button"
-              onClick={onOpenNewTask}
-              className="px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-xs transition-colors whitespace-nowrap cursor-pointer"
-            >
-              <PlusCircle className="w-3.5 h-3.5" />
-              <span>Báo Việc Mới</span>
-            </button>
+            {isLeader && onOpenNewTask && (
+              <button
+                type="button"
+                onClick={onOpenNewTask}
+                className="px-3 py-2 bg-red-700 hover:bg-red-800 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-xs transition-colors whitespace-nowrap cursor-pointer"
+                title="Lãnh đạo phân công nhiệm vụ mới"
+              >
+                <PlusCircle className="w-3.5 h-3.5" />
+                <span>Giao Việc Mới</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -242,7 +323,255 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
         </div>
       </div>
 
-      {/* Main Split: Left is Task Selector, Right is Form */}
+      {/* =========================================================================
+          CẤP 2: HỆ THỐNG MENU PHÂN CẤP CHUYÊN BIỆT DÀNH CHO VIÊN CHỨC (NHÂN VIÊN)
+         ========================================================================= */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 sm:p-5 space-y-3.5">
+        
+        {/* 1. Dải Breadcrumb & Thông Tin Cán Bộ Tác Nghiệp (Gọn gàng, không tràn dòng) */}
+        <div className="flex items-center justify-between flex-wrap gap-2.5 pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-1.5 flex-wrap text-xs">
+            <span className="font-semibold text-slate-500 flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200/70">
+              <Building className="w-3.5 h-3.5 text-slate-500" />
+              TTDVTH Hố Nai
+            </span>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <span className="font-medium text-slate-600 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200/70">
+              Phân Hệ Viên Chức
+            </span>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            {/* Active Sub-view Indicator */}
+            <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border flex items-center gap-1.5 ${
+              activeStaffMenu === 'report_form' || activeStaffMenu === 'my_tasks_matrix'
+                ? 'bg-blue-50 text-blue-800 border-blue-200'
+                : activeStaffMenu === 'directives_inbox'
+                ? 'bg-rose-50 text-rose-800 border-rose-200'
+                : 'bg-slate-100 text-slate-800 border-slate-200'
+            }`}>
+              <span className={`w-2 h-2 rounded-full ${
+                activeStaffMenu === 'report_form' || activeStaffMenu === 'my_tasks_matrix'
+                  ? 'bg-blue-600'
+                  : activeStaffMenu === 'directives_inbox'
+                  ? 'bg-rose-600'
+                  : 'bg-slate-700'
+              }`} />
+              {activeStaffMenu === 'report_form' && '1.1 Form Báo Cáo Từng Nhiệm Vụ'}
+              {activeStaffMenu === 'my_tasks_matrix' && `1.2 Danh Mục Việc Giao (${myTasks.length})`}
+              {activeStaffMenu === 'directives_inbox' && `2.1 Hòm Thư Lệnh Chỉ Đạo (${myDirectives.length})`}
+              {activeStaffMenu === 'report_history' && `3.1 Sổ Nhật Ký Báo Cáo (${allMyReportLogs.length})`}
+              {activeStaffMenu === 'proposal_new' && '3.2 Đề Xuất Phát Sinh Mới'}
+            </span>
+          </div>
+
+          {/* Cán bộ tác nghiệp Pill */}
+          <div className="flex items-center gap-2 bg-slate-50/90 hover:bg-slate-100/80 px-2.5 py-1 rounded-xl border border-slate-200/80 text-xs transition-colors">
+            <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-2xs shadow-2xs">
+              {selectedStaff.name.split(' ').slice(-1)[0][0]}
+            </div>
+            <div className="text-left leading-tight">
+              <span className="font-semibold text-slate-800 text-xs block">{selectedStaff.name}</span>
+              <span className="text-3xs text-slate-500 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                {selectedStaff.role}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. Menu Phân Cấp Theo 3 Nhóm Tác Nghiệp Viên Chức (Grid 3 Cột Đều Nhau, Gọn Đẹp) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          
+          {/* Nhóm 1: BÁO CÁO TIẾN ĐỘ CHUYÊN MÔN */}
+          <div className="bg-gradient-to-b from-blue-50/60 to-white p-3 rounded-xl border border-blue-200/80 flex flex-col justify-between space-y-2.5 shadow-2xs">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-2xs font-extrabold text-blue-900 uppercase tracking-wider flex items-center gap-1.5">
+                <ClipboardList className="w-4 h-4 text-blue-700" />
+                NHÓM 1: BÁO CÁO TIẾN ĐỘ
+              </span>
+              <span className="text-3xs text-blue-800 font-semibold bg-blue-100/80 px-2 py-0.5 rounded-md border border-blue-200/70">
+                Tác nghiệp
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 flex-1">
+              {/* Menu 1.1 */}
+              <button
+                type="button"
+                onClick={() => setActiveStaffMenu('report_form')}
+                className={`p-2.5 rounded-xl text-left transition-all cursor-pointer flex flex-col justify-between border ${
+                  activeStaffMenu === 'report_form'
+                    ? 'bg-blue-600 text-white border-blue-700 shadow-sm ring-2 ring-blue-500/30 font-semibold'
+                    : 'bg-white hover:bg-blue-50/70 text-slate-700 border-slate-200/80 hover:border-blue-300'
+                }`}
+              >
+                <div className="flex items-center justify-between w-full mb-1.5">
+                  <FileText className={`w-4 h-4 ${activeStaffMenu === 'report_form' ? 'text-blue-100' : 'text-blue-600'}`} />
+                  <span className={`text-3xs font-mono px-1.5 py-0.5 rounded font-bold ${
+                    activeStaffMenu === 'report_form' ? 'bg-blue-800/80 text-white' : 'bg-blue-100 text-blue-800'
+                  }`}>
+                    1.1
+                  </span>
+                </div>
+                <div>
+                  <span className="text-xs font-bold block leading-tight">Form Báo Cáo Việc</span>
+                  <span className={`text-3xs block mt-0.5 ${activeStaffMenu === 'report_form' ? 'text-blue-100' : 'text-slate-500'}`}>
+                    Nhập %, tiến độ, minh chứng
+                  </span>
+                </div>
+              </button>
+
+              {/* Menu 1.2 */}
+              <button
+                type="button"
+                onClick={() => setActiveStaffMenu('my_tasks_matrix')}
+                className={`p-2.5 rounded-xl text-left transition-all cursor-pointer flex flex-col justify-between border ${
+                  activeStaffMenu === 'my_tasks_matrix'
+                    ? 'bg-blue-600 text-white border-blue-700 shadow-sm ring-2 ring-blue-500/30 font-semibold'
+                    : 'bg-white hover:bg-blue-50/70 text-slate-700 border-slate-200/80 hover:border-blue-300'
+                }`}
+              >
+                <div className="flex items-center justify-between w-full mb-1.5">
+                  <ListOrdered className={`w-4 h-4 ${activeStaffMenu === 'my_tasks_matrix' ? 'text-blue-100' : 'text-slate-600'}`} />
+                  <span className={`text-3xs font-mono px-1.5 py-0.5 rounded font-bold ${
+                    activeStaffMenu === 'my_tasks_matrix' ? 'bg-blue-800/80 text-white' : 'bg-slate-100 text-slate-700'
+                  }`}>
+                    {myTasks.length} việc
+                  </span>
+                </div>
+                <div>
+                  <span className="text-xs font-bold block leading-tight">Bảng Việc Của Tôi</span>
+                  <span className={`text-3xs block mt-0.5 ${activeStaffMenu === 'my_tasks_matrix' ? 'text-blue-100' : 'text-slate-500'}`}>
+                    Toàn bộ danh mục nhiệm vụ
+                  </span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Nhóm 2: TIẾP THU CHỈ ĐẠO CỦA LÃNH ĐẠO */}
+          <div className="bg-gradient-to-b from-rose-50/60 to-white p-3 rounded-xl border border-rose-200/80 flex flex-col justify-between space-y-2.5 shadow-2xs">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-2xs font-extrabold text-rose-900 uppercase tracking-wider flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-rose-700" />
+                NHÓM 2: CHỈ ĐẠO LÃNH ĐẠO
+              </span>
+              <span className="text-3xs text-rose-800 font-semibold bg-rose-100/80 px-2 py-0.5 rounded-md border border-rose-200/70">
+                Ý kiến Giám đốc
+              </span>
+            </div>
+
+            <div className="flex-1 flex flex-col">
+              {/* Menu 2.1 */}
+              <button
+                type="button"
+                onClick={() => setActiveStaffMenu('directives_inbox')}
+                className={`p-2.5 rounded-xl text-left transition-all cursor-pointer flex flex-col justify-between h-full border ${
+                  activeStaffMenu === 'directives_inbox'
+                    ? 'bg-rose-700 text-white border-rose-800 shadow-sm ring-2 ring-rose-500/30 font-semibold'
+                    : 'bg-white hover:bg-rose-50/70 text-slate-700 border-slate-200/80 hover:border-rose-300'
+                }`}
+              >
+                <div className="flex items-center justify-between w-full mb-1.5">
+                  <Inbox className={`w-4 h-4 ${activeStaffMenu === 'directives_inbox' ? 'text-rose-100' : 'text-rose-600'}`} />
+                  <span className={`text-3xs font-mono px-2 py-0.5 rounded-full font-bold ${
+                    activeStaffMenu === 'directives_inbox'
+                      ? 'bg-rose-900 text-white'
+                      : myDirectives.length > 0
+                      ? 'bg-rose-100 text-rose-700 border border-rose-200'
+                      : 'bg-slate-100 text-slate-600'
+                  }`}>
+                    {myDirectives.length} chỉ đạo
+                  </span>
+                </div>
+                <div>
+                  <span className="text-xs font-bold block leading-tight">Hòm Thư Lệnh Đôn Đốc</span>
+                  <span className={`text-3xs block mt-0.5 ${activeStaffMenu === 'directives_inbox' ? 'text-rose-100' : 'text-slate-500'}`}>
+                    Ý kiến đôn đốc & chỉ đạo trực tiếp
+                  </span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Nhóm 3: SỔ NHẬT KÝ & ĐỀ XUẤT VIỆC MỚI */}
+          <div className="bg-gradient-to-b from-slate-50/80 to-white p-3 rounded-xl border border-slate-200/80 flex flex-col justify-between space-y-2.5 shadow-2xs">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-2xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                <History className="w-4 h-4 text-slate-700" />
+                NHÓM 3: NHẬT KÝ & ĐỀ XUẤT
+              </span>
+              <span className="text-3xs text-slate-700 font-semibold bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+                Lưu trữ
+              </span>
+            </div>
+
+            <div className={`grid gap-2 flex-1 ${isLeader ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
+              {/* Menu 3.1 */}
+              <button
+                type="button"
+                onClick={() => setActiveStaffMenu('report_history')}
+                className={`p-2.5 rounded-xl text-left transition-all cursor-pointer flex flex-col justify-between border ${
+                  activeStaffMenu === 'report_history'
+                    ? 'bg-slate-800 text-white border-slate-900 shadow-sm ring-2 ring-slate-500/30 font-semibold'
+                    : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200/80 hover:border-slate-300'
+                }`}
+              >
+                <div className="flex items-center justify-between w-full mb-1.5">
+                  <Clock className={`w-4 h-4 ${activeStaffMenu === 'report_history' ? 'text-slate-200' : 'text-slate-500'}`} />
+                  <span className={`text-3xs font-mono px-1.5 py-0.5 rounded font-bold ${
+                    activeStaffMenu === 'report_history' ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-700'
+                  }`}>
+                    {allMyReportLogs.length} bản ghi
+                  </span>
+                </div>
+                <div>
+                  <span className="text-xs font-bold block leading-tight">Sổ Nhật Ký Đã Gửi</span>
+                  <span className={`text-3xs block mt-0.5 ${activeStaffMenu === 'report_history' ? 'text-slate-300' : 'text-slate-500'}`}>
+                    Lịch sử các lần báo cáo tiến độ
+                  </span>
+                </div>
+              </button>
+
+              {/* Menu 3.2: Chỉ hiển thị cho cấp Lãnh đạo */}
+              {isLeader && (
+                <button
+                  type="button"
+                  onClick={() => setActiveStaffMenu('proposal_new')}
+                  className={`p-2.5 rounded-xl text-left transition-all cursor-pointer flex flex-col justify-between border ${
+                    activeStaffMenu === 'proposal_new'
+                      ? 'bg-emerald-700 text-white border-emerald-800 shadow-sm ring-2 ring-emerald-500/30 font-semibold'
+                      : 'bg-white hover:bg-emerald-50/70 text-slate-700 border-slate-200/80 hover:border-emerald-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full mb-1.5">
+                    <Sparkles className={`w-4 h-4 ${activeStaffMenu === 'proposal_new' ? 'text-emerald-100' : 'text-emerald-600'}`} />
+                    <span className={`text-3xs font-mono px-1.5 py-0.5 rounded font-bold ${
+                      activeStaffMenu === 'proposal_new' ? 'bg-emerald-900 text-white' : 'bg-emerald-100 text-emerald-800'
+                    }`}>
+                      3.2
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold block leading-tight">Đề Xuất Việc Mới</span>
+                    <span className={`text-3xs block mt-0.5 ${activeStaffMenu === 'proposal_new' ? 'text-emerald-100' : 'text-slate-500'}`}>
+                      Quyền Lãnh đạo
+                    </span>
+                  </div>
+                </button>
+              )}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* =========================================================================
+          NỘI DUNG TƯƠNG ỨNG TỪNG MENU BÁO CÁO CỦA NHÂN VIÊN
+         ========================================================================= */}
+
+      {/* 1.1 FORM BÁO CÁO TIẾN ĐỘ TỪNG NHIỆM VỤ */}
+      {activeStaffMenu === 'report_form' && (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* Left Column: Tasks List of this Staff (5 cols) */}
@@ -550,31 +879,122 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                   />
                 </div>
 
-                {/* 6. Deadline & Attachment Docs */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                {/* 6. Hạn hoàn thành & Hồ sơ tài liệu đính kèm minh chứng */}
+                <div className="space-y-3 pt-1">
                   <div>
                     <label className="font-bold text-slate-800 text-xs block mb-1">
-                      Hạn hoàn thành dự kiến / thực tế:
+                      6. Hạn hoàn thành dự kiến / điều chỉnh:
                     </label>
                     <input
                       type="date"
                       value={deadlineVal}
                       onChange={(e) => setDeadlineVal(e.target.value)}
-                      className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full sm:w-72 text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     />
                   </div>
 
-                  <div>
-                    <label className="font-bold text-slate-800 text-xs block mb-1">
-                      Số hiệu văn bản / Biên bản đính kèm:
-                    </label>
-                    <input
-                      type="text"
-                      value={newDocument}
-                      onChange={(e) => setNewDocument(e.target.value)}
-                      placeholder="VD: BB Nghiệm thu ngày 02/10, QĐ 111..."
-                      className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                  {/* 7. Phần Văn Bản, Biên Bản & Hồ Sơ Đính Kèm Tối Ưu */}
+                  <div className="bg-slate-50/90 rounded-xl border border-slate-200/90 p-3.5 space-y-3 shadow-2xs">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <label className="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                        <Paperclip className="w-3.5 h-3.5 text-blue-600" />
+                        7. Hồ sơ, Biên bản & Văn bản đính kèm minh chứng:
+                      </label>
+                      <span className="text-3xs font-mono font-bold text-blue-800 bg-blue-100/80 px-2 py-0.5 rounded-full border border-blue-200">
+                        {attachedDocs.length} tài liệu đính kèm
+                      </span>
+                    </div>
+
+                    {/* Danh sách tài liệu đã đính kèm */}
+                    {attachedDocs.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {attachedDocs.map((doc, idx) => (
+                          <div
+                            key={idx}
+                            className="inline-flex items-center gap-1.5 bg-white text-slate-800 text-xs px-2.5 py-1.5 rounded-lg border border-slate-300/80 shadow-2xs hover:border-blue-300 transition-colors"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                            <span className="font-medium max-w-[280px] sm:max-w-[360px] truncate" title={doc}>
+                              {doc}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveDocument(doc)}
+                              className="text-slate-400 hover:text-rose-600 p-0.5 rounded-md hover:bg-rose-50 transition-colors ml-1 cursor-pointer"
+                              title="Gỡ bỏ tài liệu này"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-2xs text-slate-500 italic bg-white/70 p-2.5 rounded-lg border border-dashed border-slate-300">
+                        Chưa có tài liệu đính kèm. Bạn có thể nhập số hiệu văn bản hoặc tải tệp minh chứng bên dưới.
+                      </div>
+                    )}
+
+                    {/* Thanh nhập số hiệu và tải tệp */}
+                    <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                      <div className="relative flex-1 min-w-[200px]">
+                        <input
+                          type="text"
+                          value={newDocument}
+                          onChange={(e) => setNewDocument(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleAddDocument(newDocument);
+                            }
+                          }}
+                          placeholder="Nhập số hiệu/tên văn bản (VD: BB Nghiệm thu ngày 12/10, QĐ 111...)"
+                          className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        />
+                      </div>
+                      
+                      <button
+                        type="button"
+                        onClick={() => handleAddDocument(newDocument)}
+                        disabled={!newDocument.trim()}
+                        className="px-3.5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:hover:bg-blue-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer disabled:cursor-not-allowed shrink-0"
+                      >
+                        <PlusCircle className="w-3.5 h-3.5" />
+                        <span>Thêm</span>
+                      </button>
+
+                      {/* Nút đính kèm tệp */}
+                      <label className="px-3 py-2.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer shrink-0">
+                        <Upload className="w-3.5 h-3.5 text-slate-600" />
+                        <span>Tải tệp</span>
+                        <input
+                          type="file"
+                          onChange={handleFileUpload}
+                          className="hidden"
+                          accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                        />
+                      </label>
+                    </div>
+
+                    {/* Gợi ý mẫu văn bản nhanh */}
+                    <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                      <span className="text-3xs text-slate-400 font-medium">Gợi ý nhanh:</span>
+                      {[
+                        'Biên bản nghiệm thu kỹ thuật',
+                        'Tờ trình thẩm định phê duyệt',
+                        'Quyết định / Kết luận giao ban',
+                        'Ảnh hiện trường khảo sát',
+                        'Báo cáo giải trình tiến độ',
+                      ].map((template) => (
+                        <button
+                          key={template}
+                          type="button"
+                          onClick={() => handleAddDocument(template)}
+                          className="text-3xs bg-white hover:bg-blue-50 text-slate-600 hover:text-blue-700 px-2 py-0.5 rounded-md border border-slate-200 transition-colors cursor-pointer"
+                        >
+                          + {template}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -637,7 +1057,410 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
         </div>
 
       </div>
+      )}
+
+      {/* =========================================================================
+          1.2 DANH MỤC PHÂN CÔNG NHIỆM VỤ CỦA TÔI (MY TASKS MATRIX)
+         ========================================================================= */}
+      {activeStaffMenu === 'my_tasks_matrix' && (
+        <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden space-y-4 p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="p-2 rounded-lg bg-blue-50 text-blue-700">
+                  <ListOrdered className="w-5 h-5" />
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">
+                    Bảng Phân Công Nhiệm Vụ Của Viên Chức: {selectedStaff.name}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Tổng số: <strong>{myTasks.length} nhiệm vụ</strong> theo Thông báo kết luận giao ban tuần ngày 28/9/2026
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {isLeader && onOpenNewTask && (
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={onOpenNewTask}
+                  className="px-3.5 py-2 bg-red-700 hover:bg-red-800 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  <span>Giao Việc Mới</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Task Matrix Table */}
+          <div className="overflow-x-auto border border-slate-200 rounded-xl">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase tracking-wider text-2xs">
+                <tr>
+                  <th className="p-3 w-16 text-center">Mã Số</th>
+                  <th className="p-3 min-w-[200px]">Nhiệm Vụ & Phân Loại</th>
+                  <th className="p-3 min-w-[260px]">Chỉ Đạo Kết Luận Của Giám Đốc (28/9)</th>
+                  <th className="p-3 w-28 text-center">Tiến Độ</th>
+                  <th className="p-3 w-28">Trạng Thái</th>
+                  <th className="p-3 w-28">Thời Hạn</th>
+                  <th className="p-3 w-32 text-center">Thao Tác</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 bg-white">
+                {myTasks.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="p-8 text-center text-slate-500 text-xs">
+                      Hiện tại chưa có nhiệm vụ nào được phân công cho cán bộ này.
+                    </td>
+                  </tr>
+                ) : (
+                  myTasks.map((t) => (
+                    <tr key={t.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="p-3 text-center">
+                        <span className="font-mono font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded text-xs border border-slate-200">
+                          {t.code}
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        <div className="font-bold text-slate-900 leading-snug">{t.title}</div>
+                        <div className="text-2xs text-slate-500 mt-0.5 flex items-center gap-1.5">
+                          <span className="text-blue-700 font-medium">{t.category}</span>
+                          {t.coAssignees && t.coAssignees.length > 0 && (
+                            <span className="text-slate-400">· Phối hợp: {t.coAssignees.join(', ')}</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <p className="text-slate-700 line-clamp-3 leading-relaxed bg-slate-50/60 p-2 rounded border border-slate-100 text-2xs">
+                          {t.requirement}
+                        </p>
+                        {t.leaderDirectives && t.leaderDirectives.length > 0 && (
+                          <div className="mt-1 text-2xs text-red-700 flex items-center gap-1 font-semibold">
+                            <ShieldCheck className="w-3.5 h-3.5 text-red-600" />
+                            <span>Có chỉ đạo mới từ Giám đốc</span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="p-3 text-center">
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="font-mono font-bold text-xs text-slate-800 tabular-nums">
+                            {t.progress}%
+                          </span>
+                          <div className="w-16 bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${
+                                t.progress === 100 ? 'bg-emerald-600' : 'bg-blue-600'
+                              }`}
+                              style={{ width: `${t.progress}%` }}
+                            />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <span className={`px-2 py-1 rounded font-medium text-2xs inline-block ${getStatusBadgeClasses(t.status)}`}>
+                          {getStatusLabel(t.status)}
+                        </span>
+                      </td>
+                      <td className="p-3 text-2xs text-slate-600">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3 text-slate-400" />
+                          <span>{t.deadline || 'Theo tiến độ'}</span>
+                        </div>
+                      </td>
+                      <td className="p-3 text-center">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleSelectTask(t);
+                            setActiveStaffMenu('report_form');
+                          }}
+                          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-2xs font-bold transition-colors inline-flex items-center gap-1 shadow-xs cursor-pointer"
+                        >
+                          <Send className="w-3 h-3" />
+                          <span>Báo Cáo</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          2.1 HÒM THƯ LỆNH ĐÔN ĐỐC & CHỈ ĐẠO CỦA GIÁM ĐỐC
+         ========================================================================= */}
+      {activeStaffMenu === 'directives_inbox' && (
+        <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden space-y-4 p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div className="flex items-center gap-2">
+              <span className="p-2 rounded-lg bg-red-100 text-red-800">
+                <Inbox className="w-5 h-5 text-red-700" />
+              </span>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">
+                  Hòm Thư Lệnh Chỉ Đạo & Đôn Đốc Của Ban Giám Đốc
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Các chỉ đạo trực tiếp từ <strong>Đ/c Phạm Thanh Phong – Giám đốc</strong> đối với các nhiệm vụ của <strong>{selectedStaff.name}</strong>
+                </p>
+              </div>
+            </div>
+
+            <span className="px-3 py-1 rounded-full bg-red-50 text-red-800 font-bold text-xs border border-red-200">
+              {myDirectives.length} chỉ đạo tiếp nhận
+            </span>
+          </div>
+
+          {myDirectives.length === 0 ? (
+            <div className="p-12 text-center text-slate-500 text-xs bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+              <ShieldCheck className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+              <p className="font-semibold text-slate-700">Chưa có chỉ đạo mới nào</p>
+              <p className="text-slate-500 mt-1">Các ý kiến chỉ đạo đôn đốc từ Ban Giám đốc đối với các nhiệm vụ của bạn sẽ xuất hiện tại đây.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {myDirectives.map(({ task, directive }, idx) => (
+                <div
+                  key={directive.id || idx}
+                  className="bg-red-50/40 border border-red-200/90 rounded-xl p-4 transition-all hover:shadow-xs space-y-2.5"
+                >
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-red-800 text-white font-mono text-xs px-2 py-0.5 rounded font-bold">
+                        {task.code}
+                      </span>
+                      <span className="font-bold text-slate-900 text-xs">
+                        {task.title}
+                      </span>
+                      {directive.isUrgent && (
+                        <span className="bg-red-600 text-white text-3xs font-bold px-2 py-0.5 rounded uppercase">
+                          Khẩn cấp / Ưu tiên
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-2xs text-slate-500 font-mono">
+                      Thời điểm phát lệnh: {directive.timestamp}
+                    </span>
+                  </div>
+
+                  <div className="bg-white p-3.5 rounded-lg border border-red-200/80 shadow-2xs">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-red-900 mb-1">
+                      <ShieldCheck className="w-4 h-4 text-red-700" />
+                      <span>Ý kiến chỉ đạo từ: {directive.author}</span>
+                    </div>
+                    <p className="text-slate-800 text-xs leading-relaxed font-medium pl-5 border-l-2 border-red-600">
+                      "{directive.content}"
+                    </p>
+                    {directive.targetDeadline && (
+                      <div className="mt-2 text-2xs text-red-800 font-semibold flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>Hạn yêu cầu hoàn thành: <strong>{directive.targetDeadline}</strong></span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between flex-wrap gap-2 pt-1 text-xs">
+                    <span className="text-2xs text-slate-500">
+                      Tiến độ hiện tại của việc này: <strong className="text-blue-700 font-mono">{task.progress}%</strong> ({getStatusLabel(task.status)})
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setToastMessage(`Đã ghi nhận tiếp thu chỉ đạo của Giám đốc cho nhiệm vụ ${task.code}!`);
+                          setTimeout(() => setToastMessage(null), 3500);
+                        }}
+                        className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-2xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                      >
+                        <Check className="w-3 h-3 text-emerald-600" />
+                        <span>Đã Tiếp Thu & Đang Làm</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleSelectTask(task);
+                          setActiveStaffMenu('report_form');
+                        }}
+                        className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-2xs font-bold flex items-center gap-1 shadow-xs transition-colors cursor-pointer"
+                      >
+                        <Send className="w-3 h-3" />
+                        <span>Báo Cáo Tiến Độ Nhiệm Vụ Này</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* =========================================================================
+          3.1 SỔ NHẬT KÝ BÁO CÁO ĐÃ GỬI (REPORT HISTORY)
+         ========================================================================= */}
+      {activeStaffMenu === 'report_history' && (
+        <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden space-y-4 p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div className="flex items-center gap-2">
+              <span className="p-2 rounded-lg bg-slate-100 text-slate-800">
+                <History className="w-5 h-5 text-slate-700" />
+              </span>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">
+                  Sổ Nhật Ký Báo Cáo Tiến Độ Tuần Của Viên Chức
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Lịch sử lưu trữ toàn bộ các lần báo cáo tiến độ chuyên môn đã gửi lên Ban Giám đốc ({allMyReportLogs.length} bản ghi)
+                </p>
+              </div>
+            </div>
+
+            <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-800 font-bold text-xs border border-blue-200 font-mono">
+              {allMyReportLogs.length} lần báo cáo
+            </span>
+          </div>
+
+          {allMyReportLogs.length === 0 ? (
+            <div className="p-12 text-center text-slate-500 text-xs bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+              <Clock className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+              <p className="font-semibold text-slate-700">Chưa có lịch sử báo cáo</p>
+              <p className="text-slate-500 mt-1">Khi bạn gửi báo cáo tiến độ cho các nhiệm vụ, nhật ký sẽ tự động lưu trữ tại đây để theo dõi qua các tuần.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {allMyReportLogs.map(({ task, log }) => (
+                <div key={log.id} className="p-4 bg-slate-50/60 rounded-xl border border-slate-200 text-xs space-y-2">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-slate-800 bg-white px-2 py-0.5 rounded border border-slate-200">
+                        {task.code}
+                      </span>
+                      <strong className="text-slate-900 text-xs">{task.title}</strong>
+                    </div>
+                    <div className="flex items-center gap-2 text-2xs">
+                      <span className="font-mono text-slate-500">{log.timestamp}</span>
+                      <span className="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded font-mono">
+                        {log.progressPercent}%
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-slate-800 leading-relaxed bg-white p-3 rounded-lg border border-slate-200">
+                    {log.workDone}
+                  </p>
+
+                  {log.difficulties && (
+                    <div className="text-2xs text-rose-800 bg-rose-50 p-2 rounded border border-rose-200">
+                      <strong>Khó khăn, vướng mắc:</strong> {log.difficulties}
+                    </div>
+                  )}
+
+                  {log.proposals && (
+                    <div className="text-2xs text-amber-800 bg-amber-50 p-2 rounded border border-amber-200">
+                      <strong>Đề xuất với Giám đốc:</strong> {log.proposals}
+                    </div>
+                  )}
+
+                  <div className="flex justify-end pt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleSelectTask(task);
+                        setActiveStaffMenu('report_form');
+                      }}
+                      className="text-2xs font-semibold text-blue-700 hover:text-blue-900 underline cursor-pointer"
+                    >
+                      Mở cập nhật thêm cho nhiệm vụ này →
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* =========================================================================
+          3.2 ĐỀ XUẤT VIỆC MỚI (PROPOSAL NEW)
+         ========================================================================= */}
+      {activeStaffMenu === 'proposal_new' && (
+        <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden space-y-4 p-6">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <span className="p-3 rounded-xl bg-emerald-50 text-emerald-700">
+              <Lightbulb className="w-6 h-6" />
+            </span>
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">
+                Đề Xuất Nhiệm Vụ Phát Sinh Ngoài Giao Ban Tuần
+              </h3>
+              <p className="text-xs text-slate-500">
+                Chủ động báo cáo các nội dung phát sinh cần Ban Giám đốc Trung tâm phê duyệt và giao chỉ tiêu thực hiện
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+              <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">
+                1
+              </div>
+              <h4 className="font-bold text-slate-800 text-xs">Căn Cứ Pháp Lý & Thực Tiễn</h4>
+              <p className="text-2xs text-slate-600 leading-relaxed">
+                Nêu rõ văn bản chỉ đạo của UBND Phường, Phòng ban chuyên môn thị xã/tỉnh, hoặc nhu cầu phát sinh thực tế tại địa bàn Hố Nai.
+              </p>
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+              <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">
+                2
+              </div>
+              <h4 className="font-bold text-slate-800 text-xs">Phân Công & Dự Toán</h4>
+              <p className="text-2xs text-slate-600 leading-relaxed">
+                Đề xuất cán bộ chủ trì, các bộ phận phối hợp, tiến độ hoàn thành và khái toán kinh phí dự kiến nếu có.
+              </p>
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">
+                3
+              </div>
+              <h4 className="font-bold text-slate-800 text-xs">Giám Đốc Phê Duyệt</h4>
+              <p className="text-2xs text-slate-600 leading-relaxed">
+                Sau khi gửi đề xuất, Giám đốc Phạm Thanh Phong sẽ xem xét phê duyệt và chính thức giao mã số theo dõi vào hệ thống.
+              </p>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-between flex-wrap gap-3">
+            <span className="text-xs text-slate-500">
+              Cán bộ tác nghiệp: <strong>{selectedStaff.name}</strong> ({selectedStaff.unit})
+            </span>
+            {isLeader && onOpenNewTask ? (
+              <button
+                type="button"
+                onClick={onOpenNewTask}
+                className="px-6 py-2.5 bg-red-700 hover:bg-red-800 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-md transition-all cursor-pointer"
+              >
+                <PlusCircle className="w-4 h-4" />
+                <span>Lãnh Đạo Giao Nhiệm Vụ Mới</span>
+              </button>
+            ) : (
+              <div className="text-2xs text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5 text-slate-400" />
+                <span>Chức năng giao việc mới chỉ hiển thị và thực hiện bởi cấp Lãnh đạo.</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
     </div>
   );
 };
+

@@ -5,6 +5,7 @@ export type UserRole = 'LEADER' | 'STAFF';
 export interface UserAccount {
   id: string;
   username: string;
+  password?: string;
   fullName: string;
   shortName: string;
   role: UserRole;

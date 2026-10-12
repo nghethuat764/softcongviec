@@ -14,7 +14,9 @@ import {
   ShieldCheck,
   Send,
   Building,
-  Trash2
+  Trash2,
+  Edit3,
+  Paperclip
 } from 'lucide-react';
 import { getStatusBadgeClasses, getStatusLabel, getPriorityLabel } from '../utils/helpers';
 
@@ -23,6 +25,7 @@ interface TaskDetailModalProps {
   onClose: () => void;
   onOpenReportForm: (task: Task) => void;
   onOpenDirectiveModal: (task: Task) => void;
+  onOpenEditModal?: (task: Task) => void;
   onDeleteTask?: (taskId: string) => void;
   currentRole: 'leader' | 'staff';
 }
@@ -32,6 +35,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   onClose,
   onOpenReportForm,
   onOpenDirectiveModal,
+  onOpenEditModal,
   onDeleteTask,
   currentRole,
 }) => {
@@ -210,14 +214,20 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 
               {task.relatedDocs && task.relatedDocs.length > 0 && (
                 <div>
-                  <span className="text-slate-500 font-medium flex items-center gap-1">
-                    <FileText className="w-3.5 h-3.5 text-blue-600" />
-                    Văn bản căn cứ / Tài liệu:
+                  <span className="text-slate-500 font-medium flex items-center justify-between">
+                    <span className="flex items-center gap-1">
+                      <Paperclip className="w-3.5 h-3.5 text-blue-600" />
+                      Văn bản căn cứ / Hồ sơ đính kèm:
+                    </span>
+                    <span className="text-3xs font-mono font-bold text-blue-700 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200">
+                      {task.relatedDocs.length} tệp
+                    </span>
                   </span>
-                  <div className="mt-1 space-y-0.5">
+                  <div className="mt-1.5 space-y-1">
                     {task.relatedDocs.map((doc, idx) => (
-                      <span key={idx} className="block text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200">
-                        {doc}
+                      <span key={idx} className="flex items-center gap-1.5 text-slate-800 bg-white px-2.5 py-1 rounded-md border border-slate-200 text-xs shadow-2xs font-medium">
+                        <FileText className="w-3 h-3 text-blue-600 shrink-0" />
+                        <span className="truncate">{doc}</span>
                       </span>
                     ))}
                   </div>
@@ -317,6 +327,19 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Xóa Nhiệm Vụ</span>
                 </button>
+                {onOpenEditModal && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onOpenEditModal(task);
+                    }}
+                    className="px-3 py-2 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-semibold flex items-center gap-1.5 border border-amber-200 transition-colors cursor-pointer"
+                  >
+                    <Edit3 className="w-3.5 h-3.5 text-amber-700" />
+                    <span>Sửa Thông Tin</span>
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => {

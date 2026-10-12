@@ -14,6 +14,7 @@ interface AuthContextType {
   canSendDirectives: boolean;
   canDeleteTasks: boolean;
   canEditTaskMetadata: boolean;
+  canEditTasks: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,7 +33,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (e) {
       console.error('Failed to load session:', e);
     }
-    // Default logged in user: Leader (Phạm Thanh Phong)
+    // Default to leader account (Phạm Thanh Phong) to enter main dashboard directly
     return USER_ACCOUNTS[0];
   });
 
@@ -44,15 +45,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [currentUser]);
 
-  const login = (username: string, _password?: string): boolean => {
+  const login = (username: string, password?: string): boolean => {
+    if (!username.trim()) return false;
+    
     const user = USER_ACCOUNTS.find(
-      (u) => u.username.toLowerCase() === username.toLowerCase() || u.id === username
+      (u) => u.username.toLowerCase() === username.trim().toLowerCase() || u.id === username.trim()
     );
-    if (user) {
-      setCurrentUser(user);
-      return true;
+    if (!user) return false;
+
+    // Validate password: must match account password or standard '123456'
+    const expectedPassword = user.password || '123456';
+    if (!password || password.trim() !== expectedPassword) {
+      return false;
     }
-    return false;
+
+    setCurrentUser(user);
+    return true;
   };
 
   const switchUser = (userId: string) => {
@@ -63,7 +71,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
-    setCurrentUser(null);
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    setCurrentUser(USER_ACCOUNTS[0]);
   };
 
   const role = currentUser ? currentUser.role : null;
@@ -75,6 +84,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const canSendDirectives = isLeader;
   const canDeleteTasks = isLeader;
   const canEditTaskMetadata = isLeader;
+  const canEditTasks = isLeader;
 
   return (
     <AuthContext.Provider
@@ -90,6 +100,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         canSendDirectives,
         canDeleteTasks,
         canEditTaskMetadata,
+        canEditTasks,
       }}
     >
       {children}

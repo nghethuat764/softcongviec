@@ -116,16 +116,36 @@ export function subscribeToTasks(onUpdate: (tasks: Task[]) => void, onError?: (e
   );
 }
 
+// Helper to remove undefined fields recursively for Firestore compatibility
+function sanitizeForFirestore<T>(data: T): any {
+  if (data === null || data === undefined) return null;
+  if (Array.isArray(data)) {
+    return data.map((item) => sanitizeForFirestore(item));
+  }
+  if (typeof data === 'object') {
+    const cleaned: Record<string, any> = {};
+    for (const [key, val] of Object.entries(data as Record<string, any>)) {
+      if (val !== undefined) {
+        cleaned[key] = sanitizeForFirestore(val);
+      }
+    }
+    return cleaned;
+  }
+  return data;
+}
+
 // Save or update a task
 export async function saveTaskToDb(task: Task): Promise<void> {
   const docRef = doc(db, TASKS_COLLECTION, task.id);
+  const sanitized = sanitizeForFirestore(task);
   try {
-    await setDoc(docRef, task, { merge: true });
+    await setDoc(docRef, sanitized, { merge: true });
+    console.log(`Task ${task.code} (${task.id}) saved to Firestore successfully.`);
   } catch (error) {
     try {
       handleFirestoreError(error, OperationType.WRITE, `${TASKS_COLLECTION}/${task.id}`);
-    } catch {
-      // Allow fallback
+    } catch (e) {
+      console.warn('Firestore write warning:', e);
     }
   }
 }
@@ -135,11 +155,12 @@ export async function deleteTaskFromDb(taskId: string): Promise<void> {
   const docRef = doc(db, TASKS_COLLECTION, taskId);
   try {
     await deleteDoc(docRef);
+    console.log(`Task ${taskId} deleted from Firestore successfully.`);
   } catch (error) {
     try {
       handleFirestoreError(error, OperationType.DELETE, `${TASKS_COLLECTION}/${taskId}`);
-    } catch {
-      // Allow fallback
+    } catch (e) {
+      console.warn('Firestore delete warning:', e);
     }
   }
 }
