@@ -53,16 +53,16 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         
         {/* Official Banner Header */}
-        <div className="bg-slate-900 px-6 py-4 text-white flex items-center justify-between border-b border-slate-800">
+        <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] px-6 py-4 text-white flex items-center justify-between border-b border-blue-900 shadow-md">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-red-950 border border-red-800 flex items-center justify-center text-red-300">
-              <Building2 className="w-5 h-5 text-amber-400" />
+            <div className="w-10 h-10 rounded-xl bg-[#7a1212] border border-amber-400/40 flex items-center justify-center text-amber-300 shadow-sm">
+              <Building2 className="w-5 h-5 text-amber-300" />
             </div>
             <div>
-              <span className="text-2xs font-mono uppercase tracking-wider text-red-300 block">
+              <span className="text-2xs font-mono uppercase tracking-wider text-amber-300 font-bold block">
                 UBND PHƯỜNG HỐ NAI · TTDVTH
               </span>
-              <h2 className="text-base font-bold text-white">
+              <h2 className="text-base font-extrabold text-white">
                 Chuyển Đổi Tài Khoản Công Vụ
               </h2>
             </div>
@@ -70,7 +70,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

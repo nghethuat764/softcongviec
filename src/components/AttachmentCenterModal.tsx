@@ -125,21 +125,21 @@ export const AttachmentCenterModal: React.FC<AttachmentCenterModalProps> = ({
       <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150">
         
         {/* Header */}
-        <div className="bg-slate-900 px-6 py-4 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+        <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] px-6 py-4 text-white flex items-center justify-between border-b border-blue-900 shrink-0 shadow-md">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-red-950 border border-red-800 flex items-center justify-center text-red-300 shrink-0">
-              <FolderOpen className="w-5 h-5 text-amber-400" />
+            <div className="w-10 h-10 rounded-xl bg-[#7a1212] border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0 shadow-sm">
+              <FolderOpen className="w-5 h-5 text-amber-300" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-2xs font-mono uppercase tracking-wider text-red-300 font-bold">
+                <span className="text-2xs font-mono uppercase tracking-wider text-amber-300 font-bold">
                   UBND PHƯỜNG HỐ NAI · TTDVTH
                 </span>
-                <span className="text-3xs bg-red-800/80 text-amber-300 px-2 py-0.5 rounded-full font-mono font-bold">
+                <span className="text-3xs bg-[#7a1212] text-amber-200 border border-amber-400/30 px-2 py-0.5 rounded-full font-mono font-bold">
                   {allAttachments.length} tệp đính kèm
                 </span>
               </div>
-              <h2 className="text-base sm:text-lg font-bold text-white">
+              <h2 className="text-base sm:text-lg font-extrabold text-white">
                 Kho Hồ Sơ & Văn Bản Đính Kèm Của Lãnh Đạo
               </h2>
             </div>
@@ -148,7 +148,7 @@ export const AttachmentCenterModal: React.FC<AttachmentCenterModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             title="Đóng cửa sổ"
           >
             <X className="w-5 h-5" />

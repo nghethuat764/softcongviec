@@ -160,26 +160,27 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
       {/* =========================================================================
           CẤP 1: BANNER ĐIỀU HÀNH & CHỈ ĐẠO CỦA BAN GIÁM ĐỐC
          ========================================================================= */}
-      <div className="bg-linear-to-r from-red-950 via-slate-900 to-red-900 text-white rounded-2xl p-5 sm:p-6 shadow-md border border-red-800/60 relative overflow-hidden">
+      <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] text-white rounded-2xl p-5 sm:p-6 shadow-xl border-t-4 border-amber-400 border-x border-b border-blue-900/60 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-start sm:items-center gap-3.5">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 bg-red-900/80 p-2.5 rounded-2xl border border-red-700/80 shadow-md flex items-center justify-center">
-              <ShieldCheck className="w-8 h-8 sm:w-9 sm:h-9 text-amber-400" />
+            <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 bg-linear-to-br from-[#8a1414] to-[#600a0a] p-2.5 rounded-2xl border-2 border-amber-400/50 shadow-md flex items-center justify-center">
+              <ShieldCheck className="w-8 h-8 sm:w-9 sm:h-9 text-amber-300 drop-shadow-xs" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="bg-red-700 text-amber-300 font-mono text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border border-red-600 flex items-center gap-1.5">
+                <span className="bg-[#801010] text-amber-200 font-mono text-xs px-2.5 py-0.5 rounded-full font-extrabold uppercase tracking-wider border border-amber-400/40 flex items-center gap-1.5 shadow-xs">
                   <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
                   Phân Hệ Chỉ Đạo & Điều Hành
                 </span>
-                <span className="text-slate-300 text-xs">
-                  Chủ trì: <strong>Đ/c Phạm Thanh Phong – Giám đốc</strong> · Phó Giám đốc: <strong>Đ/c Tuyến</strong>
+                <span className="text-blue-100/90 text-xs">
+                  Chủ trì: <strong className="text-white">Đ/c Phạm Thanh Phong – Giám đốc</strong> · Phó Giám đốc: <strong className="text-white">Đ/c Tuyến</strong>
                 </span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+              <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2 drop-shadow-xs">
                 Trung Tâm Chỉ Huy Giao Ban & Đôn Đốc Nhiệm Vụ
               </h2>
-              <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
+              <p className="text-xs sm:text-sm text-blue-100/90 mt-1 max-w-2xl leading-relaxed">
                 Theo dõi và kiểm soát toàn diện 40 nhiệm vụ giao ban tuần ngày 28/9/2026. Phân công giao việc cho từng nhân viên, phát lệnh chỉ đạo đôn đốc và tháo gỡ vướng mắc.
               </p>
             </div>
@@ -189,9 +190,9 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
             <button
               type="button"
               onClick={onOpenNotice}
-              className="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition-colors cursor-pointer"
+              className="px-4 py-2 bg-linear-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-red-950 font-black rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
             >
-              <FileText className="w-4 h-4" />
+              <FileText className="w-4 h-4 text-red-950" />
               <span>Xem Văn Bản Kết Luận 28/9</span>
             </button>
           </div>
@@ -469,65 +470,65 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
         <div className="space-y-6">
           {/* Executive KPI Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5">
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+            <div className="bg-white p-4 rounded-xl border border-slate-200 border-t-4 border-t-[#0a2f5c] shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between text-slate-500 text-xs mb-1">
-                <span>Tổng nhiệm vụ giao</span>
-                <Building2 className="w-4 h-4 text-slate-400" />
+                <span className="font-bold text-slate-700">Tổng nhiệm vụ giao</span>
+                <Building2 className="w-4 h-4 text-[#0a2f5c]" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-slate-900 font-mono tabular-nums">{summary.total}</span>
-                <span className="text-2xs text-slate-500 font-medium">100% việc</span>
+                <span className="text-2xl sm:text-3xl font-extrabold text-[#0a2f5c] font-mono tabular-nums">{summary.total}</span>
+                <span className="text-2xs text-slate-500 font-semibold">100% việc</span>
               </div>
-              <div className="mt-2 text-2xs text-slate-500">Phân bổ trên 5 tổ chuyên môn</div>
+              <div className="mt-2 text-2xs text-slate-500 font-medium">Phân bổ trên 5 tổ chuyên môn</div>
             </div>
 
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
-              <div className="flex items-center justify-between text-emerald-700 text-xs mb-1">
-                <span>Đã hoàn thành</span>
+            <div className="bg-white p-4 rounded-xl border border-slate-200 border-t-4 border-t-emerald-600 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between text-emerald-800 text-xs mb-1">
+                <span className="font-bold text-emerald-900">Đã hoàn thành</span>
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-emerald-700 font-mono tabular-nums">{summary.completed}</span>
-                <span className="text-2xs font-semibold text-emerald-700">({Math.round((summary.completed / summary.total) * 100)}%)</span>
+                <span className="text-2xl sm:text-3xl font-extrabold text-emerald-700 font-mono tabular-nums">{summary.completed}</span>
+                <span className="text-2xs font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">({Math.round((summary.completed / summary.total) * 100)}%)</span>
               </div>
-              <div className="mt-2 text-2xs text-slate-500">Đã nghiệm thu / kết thúc hồ sơ</div>
+              <div className="mt-2 text-2xs text-emerald-700/80 font-medium">Đã nghiệm thu / kết thúc hồ sơ</div>
             </div>
 
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
-              <div className="flex items-center justify-between text-blue-700 text-xs mb-1">
-                <span>Đang triển khai</span>
+            <div className="bg-white p-4 rounded-xl border border-slate-200 border-t-4 border-t-blue-600 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between text-blue-800 text-xs mb-1">
+                <span className="font-bold text-blue-900">Đang triển khai</span>
                 <Clock className="w-4 h-4 text-blue-600" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-blue-700 font-mono tabular-nums">{summary.inProgress}</span>
-                <span className="text-2xs font-semibold text-blue-700">({Math.round((summary.inProgress / summary.total) * 100)}%)</span>
+                <span className="text-2xl sm:text-3xl font-extrabold text-blue-700 font-mono tabular-nums">{summary.inProgress}</span>
+                <span className="text-2xs font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">({Math.round((summary.inProgress / summary.total) * 100)}%)</span>
               </div>
-              <div className="mt-2 text-2xs text-slate-500">Đúng tiến độ kế hoạch</div>
+              <div className="mt-2 text-2xs text-blue-700/80 font-medium">Đúng tiến độ kế hoạch</div>
             </div>
 
-            <div className="bg-white p-4 rounded-xl border border-rose-200 shadow-2xs bg-rose-50/20">
-              <div className="flex items-center justify-between text-rose-700 text-xs mb-1">
-                <span>Vướng mắc / Chậm</span>
+            <div className="bg-white p-4 rounded-xl border border-rose-200 border-t-4 border-t-rose-600 shadow-sm hover:shadow-md transition-shadow bg-rose-50/20">
+              <div className="flex items-center justify-between text-rose-800 text-xs mb-1">
+                <span className="font-bold text-rose-900">Vướng mắc / Chậm</span>
                 <AlertTriangle className="w-4 h-4 text-rose-600" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-rose-700 font-mono tabular-nums">{summary.delayed + summary.paused}</span>
-                <span className="text-2xs font-semibold text-rose-700">cần chỉ đạo</span>
+                <span className="text-2xl sm:text-3xl font-extrabold text-rose-700 font-mono tabular-nums">{summary.delayed + summary.paused}</span>
+                <span className="text-2xs font-bold text-rose-700 bg-rose-100 px-1.5 py-0.5 rounded border border-rose-300">cần chỉ đạo</span>
               </div>
-              <div className="mt-2 text-2xs text-rose-600">Do mưa, vốn, hoặc thủ tục</div>
+              <div className="mt-2 text-2xs text-rose-700 font-medium">Do mưa, vốn, hoặc thủ tục</div>
             </div>
 
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs col-span-2 lg:col-span-1">
-              <div className="flex items-center justify-between text-slate-600 text-xs mb-1">
-                <span>Tiến độ trung bình</span>
-                <TrendingUp className="w-4 h-4 text-emerald-600" />
+            <div className="bg-white p-4 rounded-xl border border-slate-200 border-t-4 border-t-amber-500 shadow-sm hover:shadow-md transition-shadow col-span-2 lg:col-span-1">
+              <div className="flex items-center justify-between text-slate-700 text-xs mb-1">
+                <span className="font-bold text-amber-900">Tiến độ trung bình</span>
+                <TrendingUp className="w-4 h-4 text-amber-600" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-slate-900 font-mono tabular-nums">{summary.avgProgress}%</span>
-                <span className="text-2xs text-slate-500 font-medium">toàn đơn vị</span>
+                <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-mono tabular-nums">{summary.avgProgress}%</span>
+                <span className="text-2xs text-amber-800 font-bold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">toàn đơn vị</span>
               </div>
-              <div className="mt-2 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                <div className="bg-emerald-600 h-full rounded-full transition-all" style={{ width: `${summary.avgProgress}%` }} />
+              <div className="mt-2 bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200/60">
+                <div className="bg-linear-to-r from-amber-500 to-emerald-600 h-full rounded-full transition-all" style={{ width: `${summary.avgProgress}%` }} />
               </div>
             </div>
           </div>

@@ -236,24 +236,24 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
       )}
 
       {/* Staff Identity & Overview Banner */}
-      <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 border-t-4 border-t-[#0a2f5c] p-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className={`w-14 h-14 rounded-xl flex items-center justify-center font-bold text-lg shadow-sm ${selectedStaff.avatarBg}`}>
+            <div className={`w-14 h-14 rounded-xl flex items-center justify-center font-extrabold text-lg shadow-sm border border-black/5 ${selectedStaff.avatarBg}`}>
               {selectedStaff.name.charAt(0)}
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-lg font-bold text-slate-900">{selectedStaff.name}</h2>
-                <span className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded font-medium border border-blue-200">
+                <h2 className="text-lg font-extrabold text-slate-900">{selectedStaff.name}</h2>
+                <span className="bg-blue-50 text-blue-800 text-xs px-2.5 py-0.5 rounded-full font-bold border border-blue-200">
                   {selectedStaff.role}
                 </span>
               </div>
               <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
-                <span>Đơn vị: <strong>{selectedStaff.unit}</strong></span>
+                <span>Đơn vị: <strong className="text-slate-800">{selectedStaff.unit}</strong></span>
                 <span className="text-slate-300">·</span>
-                <span className="inline-flex items-center gap-1 text-2xs text-blue-800 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 font-medium">
-                  <Building className="w-3 h-3 text-blue-700" />
+                <span className="inline-flex items-center gap-1 text-2xs text-[#0a2f5c] bg-blue-50 px-2 py-0.5 rounded border border-blue-200 font-bold">
+                  <Building className="w-3 h-3 text-[#0a2f5c]" />
                   <span>TTDVTH Hố Nai</span>
                 </span>
                 <span className="text-slate-300">·</span>
@@ -264,7 +264,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
 
           {/* Quick Staff Switcher for testing/demo */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500 whitespace-nowrap">Chuyển cán bộ:</span>
+            <span className="text-xs text-slate-600 font-medium whitespace-nowrap">Chuyển cán bộ:</span>
             <select
               value={selectedStaff.id}
               onChange={(e) => {
@@ -279,7 +279,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                   }
                 }
               }}
-              className="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+              className="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer shadow-2xs"
             >
               {STAFF_MEMBERS.filter((m) => m.id !== 'phong').map((m) => (
                 <option key={m.id} value={m.id}>
@@ -292,10 +292,10 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
               <button
                 type="button"
                 onClick={onOpenNewTask}
-                className="px-3 py-2 bg-red-700 hover:bg-red-800 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-xs transition-colors whitespace-nowrap cursor-pointer"
+                className="px-3 py-2 bg-linear-to-r from-red-700 to-red-800 hover:from-red-600 hover:to-red-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-xs transition-colors whitespace-nowrap cursor-pointer"
                 title="Lãnh đạo phân công nhiệm vụ mới"
               >
-                <PlusCircle className="w-3.5 h-3.5" />
+                <PlusCircle className="w-3.5 h-3.5 text-amber-300" />
                 <span>Giao Việc Mới</span>
               </button>
             )}
@@ -304,21 +304,21 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
 
         {/* Metric Badges */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-100 text-xs">
-          <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
-            <span className="text-slate-500 block">Nhiệm vụ được giao</span>
-            <strong className="text-base text-slate-900 font-mono tabular-nums">{myTasks.length} việc</strong>
+          <div className="bg-white p-3.5 rounded-xl border border-slate-200 border-t-4 border-t-[#0a2f5c] shadow-2xs">
+            <span className="text-slate-500 font-medium block">Nhiệm vụ được giao</span>
+            <strong className="text-xl text-[#0a2f5c] font-mono font-extrabold tabular-nums mt-0.5 block">{myTasks.length} việc</strong>
           </div>
-          <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-200">
-            <span className="text-emerald-700 block">Đã hoàn thành</span>
-            <strong className="text-base text-emerald-800 font-mono tabular-nums">{completedCount} việc</strong>
+          <div className="bg-white p-3.5 rounded-xl border border-slate-200 border-t-4 border-t-emerald-600 shadow-2xs">
+            <span className="text-emerald-700 font-medium block">Đã hoàn thành</span>
+            <strong className="text-xl text-emerald-800 font-mono font-extrabold tabular-nums mt-0.5 block">{completedCount} việc</strong>
           </div>
-          <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-            <span className="text-blue-700 block">Đang triển khai</span>
-            <strong className="text-base text-blue-800 font-mono tabular-nums">{inProgressCount} việc</strong>
+          <div className="bg-white p-3.5 rounded-xl border border-slate-200 border-t-4 border-t-blue-600 shadow-2xs">
+            <span className="text-blue-700 font-medium block">Đang triển khai</span>
+            <strong className="text-xl text-blue-800 font-mono font-extrabold tabular-nums mt-0.5 block">{inProgressCount} việc</strong>
           </div>
-          <div className="bg-rose-50 p-3 rounded-lg border border-rose-200">
-            <span className="text-rose-700 block">Vướng mắc / Chậm</span>
-            <strong className="text-base text-rose-800 font-mono tabular-nums">{issueCount} việc</strong>
+          <div className="bg-white p-3.5 rounded-xl border border-slate-200 border-t-4 border-t-rose-600 shadow-2xs bg-rose-50/15">
+            <span className="text-rose-700 font-medium block">Vướng mắc / Chậm</span>
+            <strong className="text-xl text-rose-800 font-mono font-extrabold tabular-nums mt-0.5 block">{issueCount} việc</strong>
           </div>
         </div>
       </div>

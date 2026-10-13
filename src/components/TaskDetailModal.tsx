@@ -69,20 +69,20 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
       <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] flex flex-col">
         
         {/* Header */}
-        <div className="bg-slate-900 px-6 py-4 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+        <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] px-6 py-4 text-white flex items-center justify-between border-b border-blue-900 shrink-0 shadow-md">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-xs font-bold bg-red-700 px-2.5 py-1 rounded text-white shadow-xs">
+            <span className="font-mono text-xs font-black bg-[#8a1313] border border-amber-400/40 px-2.5 py-1 rounded text-amber-200 shadow-xs">
               {task.code}
             </span>
             <div>
-              <span className="text-xs text-slate-400 block">{task.section}</span>
-              <h2 className="text-base font-bold text-white leading-tight">{task.title}</h2>
+              <span className="text-xs text-blue-200/90 block font-medium">{task.section}</span>
+              <h2 className="text-base font-extrabold text-white leading-tight">{task.title}</h2>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

@@ -36,16 +36,16 @@ export const DatabaseSchemaModal: React.FC<DatabaseSchemaModalProps> = ({ isOpen
       <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150">
         
         {/* Modal Header */}
-        <div className="bg-slate-900 px-6 py-4 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+        <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] px-6 py-4 text-white flex items-center justify-between border-b border-blue-900 shrink-0 shadow-md">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-emerald-600 flex items-center justify-center shadow-inner">
+            <div className="w-9 h-9 rounded-lg bg-emerald-600 border border-emerald-400/40 flex items-center justify-center shadow-inner">
               <Database className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">
+              <h2 className="text-base font-extrabold text-white">
                 Phân Tích & Cấu Trúc Cơ Sở Dữ Liệu (Database Architecture)
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-blue-200/90 font-medium">
                 Lược đồ dữ liệu phân công nhiệm vụ, báo cáo tiến độ và phân quyền Lãnh đạo / Nhân viên
               </p>
             </div>
@@ -53,7 +53,7 @@ export const DatabaseSchemaModal: React.FC<DatabaseSchemaModalProps> = ({ isOpen
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

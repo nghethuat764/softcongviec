@@ -108,16 +108,16 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] flex flex-col">
         
         {/* Header */}
-        <div className="bg-slate-900 px-6 py-4 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+        <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] px-6 py-4 text-white flex items-center justify-between border-b border-blue-900 shrink-0 shadow-md">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-amber-600 flex items-center justify-center">
-              <Edit3 className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 rounded-lg bg-[#8a1313] border border-amber-400/40 flex items-center justify-center shadow-xs">
+              <Edit3 className="w-4 h-4 text-amber-300" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">
+              <h2 className="text-base font-extrabold text-white">
                 Chỉnh Sửa Thông Tin Nhiệm Vụ & Phân Công
               </h2>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-blue-200/90 font-medium">
                 Mã: <span className="font-mono font-bold text-amber-300">{task.code}</span> · Lưu trực tiếp vào Database Cloud Firestore
               </p>
             </div>
@@ -125,7 +125,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

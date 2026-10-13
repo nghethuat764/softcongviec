@@ -103,16 +103,16 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         
         {/* Header */}
-        <div className="bg-slate-900 px-6 py-4 text-white flex items-center justify-between border-b border-slate-800">
+        <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] px-6 py-4 text-white flex items-center justify-between border-b border-blue-900 shadow-md">
           <div className="flex items-center gap-2.5">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isLeader ? 'bg-red-700' : 'bg-blue-600'}`}>
-              {isLeader ? <ShieldCheck className="w-5 h-5 text-white" /> : <PlusCircle className="w-5 h-5 text-white" />}
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-xs ${isLeader ? 'bg-[#8a1313] border border-amber-400/40 text-amber-300' : 'bg-blue-600 text-white'}`}>
+              {isLeader ? <ShieldCheck className="w-5 h-5 text-amber-300" /> : <PlusCircle className="w-5 h-5 text-white" />}
             </div>
             <div>
-              <h2 className="text-base font-bold">
+              <h2 className="text-base font-extrabold text-white">
                 {isLeader ? 'Lãnh Đạo Phân Công & Giao Nhiệm Vụ Mới' : 'Đề Xuất Nhiệm Vụ Phát Sinh Ngoài Giao Ban'}
               </h2>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-blue-200/90 font-medium">
                 {isLeader 
                   ? `Người giao: ${currentUser?.fullName || 'Giám đốc'} (Quyền Lãnh đạo)` 
                   : `Người đề xuất: ${currentUser?.fullName || 'Nhân viên'} (Chờ Lãnh đạo phê duyệt)`}
@@ -122,7 +122,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

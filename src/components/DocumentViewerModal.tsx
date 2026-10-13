@@ -104,11 +104,11 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
             : 'max-w-4xl w-full max-h-[95vh] h-[90vh]'
         }`}
       >
-        {/* Top Control Bar - Dark Government Styled */}
-        <div className="bg-slate-950 px-4 sm:px-6 py-3 border-b border-slate-800 text-white flex items-center justify-between shrink-0 print:hidden gap-3">
+        {/* Top Control Bar - Official Government Styled */}
+        <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] px-4 sm:px-6 py-3 border-b border-blue-900 text-white flex items-center justify-between shrink-0 print:hidden gap-3 shadow-md">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-red-950 border border-red-800 flex items-center justify-center text-red-300 shrink-0">
-              <FileText className="w-5 h-5 text-amber-400" />
+            <div className="w-9 h-9 rounded-xl bg-[#7a1212] border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0 shadow-sm">
+              <FileText className="w-5 h-5 text-amber-300" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">

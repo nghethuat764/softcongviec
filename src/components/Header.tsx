@@ -52,16 +52,16 @@ export const Header: React.FC<HeaderProps> = ({
   const { currentUser, isLeader, logout } = useAuth();
 
   return (
-    <header className="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-md">
+    <header className="bg-linear-to-r from-[#0a274c] via-[#0d3464] to-[#0a274c] text-white border-b border-[#082142] sticky top-0 z-40 shadow-lg">
       {/* 1. Dải Băng Thể Thức Cơ Quan Nhà Nước */}
-      <div className="bg-red-950 text-red-100 px-4 py-1.5 text-xs flex flex-wrap items-center justify-between border-b border-red-900/60">
+      <div className="bg-linear-to-r from-[#881313] via-[#9e1c1c] to-[#881313] text-red-50 px-4 py-1.5 text-xs flex flex-wrap items-center justify-between border-b border-[#731010] shadow-2xs">
         <div className="flex items-center gap-2 font-medium">
-          <Building2 className="w-4 h-4 text-amber-400 inline-block" />
-          <span className="font-bold tracking-wide uppercase">UBND PHƯỜNG HỐ NAI</span>
-          <span className="text-red-400">/</span>
-          <span className="uppercase text-red-200">TRUNG TÂM DỊCH VỤ TỔNG HỢP</span>
-          <span className="text-red-500 hidden lg:inline">|</span>
-          <span className="text-2xs text-red-300 hidden lg:inline">
+          <Building2 className="w-4 h-4 text-amber-300 inline-block drop-shadow-xs" />
+          <span className="font-extrabold tracking-wide uppercase text-amber-200 drop-shadow-xs">UBND PHƯỜNG HỐ NAI</span>
+          <span className="text-red-300">/</span>
+          <span className="uppercase text-white font-bold tracking-wide">TRUNG TÂM DỊCH VỤ TỔNG HỢP</span>
+          <span className="text-red-300/80 hidden lg:inline">|</span>
+          <span className="text-2xs text-red-100/90 hidden lg:inline">
             Theo dõi Thông báo Kết luận giao ban tuần ngày 28/9/2026 (Chủ trì: Đ/c Phạm Thanh Phong – Giám đốc)
           </span>
         </div>
@@ -69,12 +69,12 @@ export const Header: React.FC<HeaderProps> = ({
         {/* User Account Capsule & Logout */}
         <div className="flex items-center gap-2">
           {currentUser ? (
-            <div className="flex items-center gap-2 bg-red-900/80 px-2.5 py-0.5 rounded-full text-2xs border border-red-800">
-              <span className={`w-2 h-2 rounded-full ${currentUser.isLeader ? 'bg-amber-400 animate-pulse' : 'bg-blue-300'}`} />
-              <span className="font-semibold">{currentUser.fullName}</span>
-              <span className="text-red-300 hidden sm:inline">({currentUser.position})</span>
-              <span className={`px-1.5 py-0.2 rounded font-bold text-3xs uppercase ${
-                currentUser.role === 'LEADER' ? 'bg-amber-400/20 text-amber-200' : 'bg-blue-400/20 text-blue-200'
+            <div className="flex items-center gap-2 bg-[#700e0e]/90 px-3 py-0.5 rounded-full text-2xs border border-amber-400/40 shadow-xs">
+              <span className={`w-2 h-2 rounded-full ${currentUser.isLeader ? 'bg-amber-300 animate-pulse' : 'bg-blue-300'}`} />
+              <span className="font-bold text-white">{currentUser.fullName}</span>
+              <span className="text-amber-200/90 hidden sm:inline">({currentUser.position})</span>
+              <span className={`px-2 py-0.5 rounded font-extrabold text-3xs uppercase tracking-wider ${
+                currentUser.role === 'LEADER' ? 'bg-amber-400 text-red-950 font-black' : 'bg-blue-400/20 text-blue-100'
               }`}>
                 {currentUser.role === 'LEADER' ? 'CẤP LÃNH ĐẠO' : 'CẤP NHÂN VIÊN'}
               </span>
@@ -82,7 +82,7 @@ export const Header: React.FC<HeaderProps> = ({
                 type="button"
                 onClick={onOpenLoginModal}
                 title="Chuyển đổi tài khoản khác"
-                className="text-amber-300 hover:text-white underline ml-1 cursor-pointer"
+                className="text-amber-300 hover:text-white underline ml-1 cursor-pointer font-medium"
               >
                 Đổi TK
               </button>
@@ -90,9 +90,9 @@ export const Header: React.FC<HeaderProps> = ({
                 type="button"
                 onClick={logout}
                 title="Đăng xuất khỏi hệ thống"
-                className="text-red-200 hover:text-white bg-red-950/80 px-1.5 py-0.5 rounded border border-red-800 flex items-center gap-1 ml-1 cursor-pointer font-bold"
+                className="text-white hover:bg-red-800 bg-red-950/80 px-2 py-0.5 rounded-md border border-red-700/80 flex items-center gap-1 ml-1 cursor-pointer font-bold transition-colors"
               >
-                <LogOut className="w-3 h-3 text-red-300" />
+                <LogOut className="w-3 h-3 text-red-200" />
                 <span>Đăng xuất</span>
               </button>
             </div>
@@ -100,14 +100,14 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={onOpenLoginModal}
-              className="px-2.5 py-0.5 rounded bg-red-700 hover:bg-red-600 text-white font-bold text-2xs cursor-pointer"
+              className="px-3 py-0.5 rounded-md bg-amber-400 hover:bg-amber-300 text-red-950 font-extrabold text-2xs cursor-pointer shadow-xs transition-colors"
             >
               Đăng Nhập
             </button>
           )}
 
           {/* Quick utility links */}
-          <div className="flex items-center gap-1.5 text-2xs pl-2 border-l border-red-900/80">
+          <div className="flex items-center gap-2 text-2xs pl-2 border-l border-red-700/60">
             {onOpenAttachments && (
               <>
                 <button
@@ -116,26 +116,26 @@ export const Header: React.FC<HeaderProps> = ({
                   className="text-amber-300 hover:text-white flex items-center gap-1 cursor-pointer font-bold"
                   title="Xem và tải các file/hồ sơ đính kèm"
                 >
-                  <Paperclip className="w-3 h-3 text-amber-400" />
+                  <Paperclip className="w-3 h-3 text-amber-300" />
                   <span className="hidden sm:inline">File Đính Kèm</span>
                 </button>
-                <span className="text-red-400">·</span>
+                <span className="text-red-300">·</span>
               </>
             )}
             <button
               type="button"
               onClick={onOpenDatabaseSchema}
-              className="text-red-200 hover:text-white flex items-center gap-1 cursor-pointer"
+              className="text-red-100 hover:text-white flex items-center gap-1 cursor-pointer"
               title="Xem cấu trúc Database & Lược đồ DDL SQL"
             >
-              <Database className="w-3 h-3 text-emerald-400" />
+              <Database className="w-3 h-3 text-emerald-300" />
               <span className="hidden sm:inline">Cơ Sở Dữ Liệu</span>
             </button>
-            <span className="text-red-400">·</span>
+            <span className="text-red-300">·</span>
             <button
               type="button"
               onClick={onResetData}
-              className="text-red-300 hover:text-rose-200 cursor-pointer"
+              className="text-red-200 hover:text-white cursor-pointer"
               title="Khôi phục lại dữ liệu nguyên bản từ văn bản kết luận 28/9"
             >
               <RotateCcw className="w-3 h-3" />
@@ -149,18 +149,20 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
           
           {/* Brand Identity */}
-          <div className="flex items-center gap-3">
-            <LogoTTDVTH className="w-12 h-12 hover:scale-105 transition-transform" />
+          <div className="flex items-center gap-3.5">
+            <div className="p-0.5 bg-white/10 rounded-full shadow-inner ring-1 ring-white/20">
+              <LogoTTDVTH className="w-12 h-12 hover:scale-105 transition-transform" />
+            </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base sm:text-lg font-bold tracking-tight text-white leading-tight">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h1 className="text-base sm:text-lg font-extrabold tracking-tight text-white leading-tight drop-shadow-xs">
                   Hệ Thống Phân Công Nhiệm Vụ & Báo Cáo Tiến Độ
                 </h1>
-                <span className="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded border border-slate-700 font-mono tabular-nums">
+                <span className="bg-[#061d38] text-amber-300 text-xs px-2.5 py-0.5 rounded-full border border-blue-400/30 font-mono font-bold tabular-nums shadow-xs">
                   {taskCount} nhiệm vụ
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-blue-100/80 mt-0.5">
                 Cơ chế 2 chiều: Ban Giám đốc chỉ đạo điều hành ↔ Viên chức báo cáo tiến độ chuyên môn
               </p>
             </div>
@@ -171,17 +173,17 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Thẻ chỉ báo phân hệ đang mở */}
             <div className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold shadow-xs ${
               currentRole === 'leader'
-                ? 'bg-red-950/80 border-red-800 text-red-200'
-                : 'bg-blue-950/80 border-blue-800 text-blue-200'
+                ? 'bg-linear-to-r from-red-900/90 to-red-800/90 border-amber-400/40 text-amber-200'
+                : 'bg-linear-to-r from-blue-900/90 to-indigo-900/90 border-blue-400/40 text-blue-100'
             }`}>
               {currentRole === 'leader' ? (
                 <>
-                  <ShieldCheck className="w-4 h-4 text-amber-400" />
+                  <ShieldCheck className="w-4 h-4 text-amber-300" />
                   <span>Đang Mở: Phân Hệ Lãnh Đạo</span>
                 </>
               ) : (
                 <>
-                  <UserCheck className="w-4 h-4 text-blue-400" />
+                  <UserCheck className="w-4 h-4 text-cyan-300" />
                   <span>Đang Mở: Phân Hệ Nhân Viên ({selectedStaff.name})</span>
                 </>
               )}
@@ -192,7 +194,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 type="button"
                 onClick={onToggleMobileMenu}
-                className="lg:hidden px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700 flex items-center gap-2 text-xs font-bold transition-colors cursor-pointer shadow-sm"
+                className="lg:hidden px-3 py-2 rounded-xl bg-[#072448] hover:bg-[#0c315e] text-slate-100 border border-blue-400/30 flex items-center gap-2 text-xs font-bold transition-colors cursor-pointer shadow-sm"
                 title="Mở menu điều hành bên trái"
               >
                 <Menu className="w-4 h-4 text-amber-400" />
@@ -207,21 +209,21 @@ export const Header: React.FC<HeaderProps> = ({
       {/* 3. Dải Phân Cấp & Chỉ Báo Thẩm Quyền (Cấp Hệ Thống -> Cấp Phân Hệ) */}
       <div className={`px-4 sm:px-6 lg:px-8 py-1.5 text-xs border-t transition-colors flex items-center justify-between flex-wrap gap-2 ${
         currentRole === 'leader' 
-          ? 'bg-red-950/70 border-red-900 text-red-200' 
-          : 'bg-slate-950 border-slate-800 text-blue-200'
+          ? 'bg-[#061e3d] border-[#0c3364] text-red-100' 
+          : 'bg-[#061e3d] border-[#0c3364] text-blue-100'
       }`}>
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-bold text-slate-300">CẤU TRÚC PHÂN CẤP:</span>
-          <span className="text-slate-400">Hệ Thống Chỉ Đạo & Báo Cáo</span>
+          <span className="font-bold text-amber-300/90 tracking-wide text-2xs">CẤU TRÚC PHÂN CẤP:</span>
+          <span className="text-slate-300 text-2xs">Hệ Thống Chỉ Đạo & Báo Cáo</span>
           <span className="text-slate-500">→</span>
-          <span className={`px-2 py-0.5 rounded font-bold uppercase text-2xs ${
+          <span className={`px-2 py-0.5 rounded font-extrabold uppercase text-3xs tracking-wider ${
             currentRole === 'leader'
-              ? 'bg-red-900 text-amber-200 border border-red-800'
-              : 'bg-blue-900 text-blue-100 border border-blue-800'
+              ? 'bg-red-800 text-amber-200 border border-amber-400/40'
+              : 'bg-blue-800 text-cyan-100 border border-blue-400/40'
           }`}>
             {currentRole === 'leader' ? 'PHÂN HỆ 1: LÃNH ĐẠO (BAN GIÁM ĐỐC)' : 'PHÂN HỆ 2: VIÊN CHỨC (NHÂN VIÊN BÁO CÁO)'}
           </span>
-          <span className="text-slate-400 hidden md:inline">
+          <span className="text-slate-300/90 text-2xs hidden md:inline">
             {currentRole === 'leader' 
               ? '· Quyền hạn: Phân công nhiệm vụ, phát lệnh chỉ đạo, giám sát KPI 40 việc'
               : `· Tác nghiệp: Cán bộ ${selectedStaff.name} báo cáo tiến độ, khó khăn & tiếp thu chỉ đạo`}
@@ -229,8 +231,8 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-2 text-2xs">
-          <span className="text-slate-400">Trạng thái phân quyền:</span>
-          <span className="font-semibold text-white">
+          <span className="text-slate-300">Trạng thái:</span>
+          <span className="font-bold text-white bg-white/10 px-2 py-0.5 rounded-full border border-white/15">
             {currentUser?.fullName} ({currentUser?.role === 'LEADER' ? 'Cấp Lãnh Đạo' : 'Cấp Nhân Viên'})
           </span>
         </div>
