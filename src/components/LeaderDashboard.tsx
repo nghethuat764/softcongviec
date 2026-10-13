@@ -29,7 +29,8 @@ import {
   ChevronRight,
   PlusCircle,
   Edit3,
-  Trash2
+  Trash2,
+  Paperclip
 } from 'lucide-react';
 import { 
   getStatusBadgeClasses, 
@@ -48,6 +49,7 @@ interface LeaderDashboardProps {
   onUpdateTask: (task: Task) => void;
   onOpenNotice: () => void;
   onOpenNewTask?: () => void;
+  onOpenAttachments?: () => void;
   onEditTask?: (task: Task) => void;
   onDeleteTask?: (taskId: string) => void;
 }
@@ -60,6 +62,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
   onUpdateTask,
   onOpenNotice,
   onOpenNewTask,
+  onOpenAttachments,
   onEditTask,
   onDeleteTask,
 }) => {
@@ -442,6 +445,16 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
               <FileText className="w-3.5 h-3.5 text-amber-300" />
               <span>Xem / In Thông Báo Kết Luận 28/9</span>
             </button>
+            {onOpenAttachments && (
+              <button
+                type="button"
+                onClick={onOpenAttachments}
+                className="px-3 py-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white font-semibold text-2xs flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              >
+                <Paperclip className="w-3.5 h-3.5 text-blue-200" />
+                <span>Kho File Đính Kèm ({tasks.reduce((sum, t) => sum + (t.relatedDocs ? t.relatedDocs.length : 0), 0)} tệp)</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -722,11 +735,24 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                           <td className="py-3 px-3 align-top">
                             <span className="text-2xs text-slate-400 block">{getSectionShortName(task.section)}</span>
                             <span className="font-semibold text-slate-900 text-xs block leading-snug">{task.title}</span>
-                            {task.budgetInfo && (
-                              <span className="inline-block mt-1 font-mono text-2xs text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
-                                {task.budgetInfo}
-                              </span>
-                            )}
+                            <div className="flex items-center gap-1.5 flex-wrap mt-1">
+                              {task.budgetInfo && (
+                                <span className="font-mono text-2xs text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                                  {task.budgetInfo}
+                                </span>
+                              )}
+                              {task.relatedDocs && task.relatedDocs.length > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => onOpenTaskDetail(task)}
+                                  className="inline-flex items-center gap-1 font-mono text-3xs text-blue-700 bg-blue-50 hover:bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200 transition-colors cursor-pointer"
+                                  title="Xem và tải các file đính kèm của nhiệm vụ này"
+                                >
+                                  <Paperclip className="w-2.5 h-2.5 text-blue-600" />
+                                  <span>{task.relatedDocs.length} file đính kèm (Xem/Tải)</span>
+                                </button>
+                              )}
+                            </div>
                           </td>
                           <td className="py-3 px-3 align-top">
                             <strong className="text-slate-900 block">{task.assignee}</strong>

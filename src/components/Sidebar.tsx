@@ -12,7 +12,8 @@ import {
   KeyRound,
   X,
   Layers,
-  Sparkles
+  Sparkles,
+  Paperclip
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -23,6 +24,7 @@ interface SidebarProps {
   onOpenNewTask: () => void;
   onOpenDatabaseSchema: () => void;
   onOpenLoginModal: () => void;
+  onOpenAttachments?: () => void;
   onResetData: () => void;
   taskCount: number;
   isOpenMobile?: boolean;
@@ -36,6 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenNewTask,
   onOpenDatabaseSchema,
   onOpenLoginModal,
+  onOpenAttachments,
   onResetData,
   taskCount,
   isOpenMobile = false,
@@ -241,6 +244,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-amber-300 group-hover:translate-x-0.5 transition-transform shrink-0" />
+            </button>
+
+            {/* 5. Nút Kho File Đính Kèm Của Lãnh Đạo */}
+            <button
+              type="button"
+              onClick={() => {
+                if (onOpenAttachments) onOpenAttachments();
+                if (onCloseMobile) onCloseMobile();
+              }}
+              title="Xem trực tiếp và tải toàn bộ hồ sơ, tài liệu, quyết định đính kèm"
+              className="w-full p-2.5 rounded-xl text-left bg-slate-850 hover:bg-slate-800 text-slate-200 border border-slate-800 hover:border-slate-700 flex items-center justify-between transition-all group cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 text-blue-400">
+                  <Paperclip className="w-4 h-4" />
+                </div>
+                <div className="truncate">
+                  <div className="text-xs font-bold tracking-wide leading-tight text-white truncate">
+                    Kho File Đính Kèm
+                  </div>
+                  <div className="text-3xs text-blue-300 mt-0.5 truncate">
+                    Xem & Tải trực tiếp
+                  </div>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-blue-300 group-hover:translate-x-0.5 transition-transform shrink-0" />
             </button>
 
           </div>

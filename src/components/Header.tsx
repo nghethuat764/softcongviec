@@ -14,7 +14,8 @@ import {
   ArrowRight, 
   Shield, 
   Briefcase,
-  Menu
+  Menu,
+  Paperclip
 } from 'lucide-react';
 import { StaffMember } from '../types';
 import { useAuth } from '../context/AuthContext';
@@ -29,6 +30,7 @@ interface HeaderProps {
   onOpenNewTask: () => void;
   onOpenDatabaseSchema: () => void;
   onOpenLoginModal: () => void;
+  onOpenAttachments?: () => void;
   onResetData: () => void;
   taskCount: number;
   onToggleMobileMenu?: () => void;
@@ -42,6 +44,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenNewTask,
   onOpenDatabaseSchema,
   onOpenLoginModal,
+  onOpenAttachments,
   onResetData,
   taskCount,
   onToggleMobileMenu,
@@ -105,6 +108,20 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Quick utility links */}
           <div className="flex items-center gap-1.5 text-2xs pl-2 border-l border-red-900/80">
+            {onOpenAttachments && (
+              <>
+                <button
+                  type="button"
+                  onClick={onOpenAttachments}
+                  className="text-amber-300 hover:text-white flex items-center gap-1 cursor-pointer font-bold"
+                  title="Xem và tải các file/hồ sơ đính kèm"
+                >
+                  <Paperclip className="w-3 h-3 text-amber-400" />
+                  <span className="hidden sm:inline">File Đính Kèm</span>
+                </button>
+                <span className="text-red-400">·</span>
+              </>
+            )}
             <button
               type="button"
               onClick={onOpenDatabaseSchema}

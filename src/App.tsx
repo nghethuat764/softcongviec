@@ -14,6 +14,8 @@ import { LoginModal } from './components/LoginModal';
 import { EditTaskModal } from './components/EditTaskModal';
 import { DatabaseSchemaModal } from './components/DatabaseSchemaModal';
 import { LoginScreen } from './components/LoginScreen';
+import { AttachmentCenterModal } from './components/AttachmentCenterModal';
+import { DocumentViewerModal } from './components/DocumentViewerModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { 
   initializeDatabase, 
@@ -96,6 +98,8 @@ function AppContent() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isDatabaseSchemaOpen, setIsDatabaseSchemaOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isAttachmentCenterOpen, setIsAttachmentCenterOpen] = useState(false);
+  const [viewingDocData, setViewingDocData] = useState<{ docName: string; task?: Task } | null>(null);
 
   // Sync tasks to localStorage as local cache
   useEffect(() => {
@@ -222,6 +226,7 @@ function AppContent() {
         onOpenNewTask={() => setIsNewTaskOpen(true)}
         onOpenDatabaseSchema={() => setIsDatabaseSchemaOpen(true)}
         onOpenLoginModal={() => setIsLoginModalOpen(true)}
+        onOpenAttachments={() => setIsAttachmentCenterOpen(true)}
         onResetData={handleResetData}
         taskCount={tasks.length}
         onToggleMobileMenu={() => setIsMobileSidebarOpen((prev) => !prev)}
@@ -243,6 +248,7 @@ function AppContent() {
           }}
           onOpenDatabaseSchema={() => setIsDatabaseSchemaOpen(true)}
           onOpenLoginModal={() => setIsLoginModalOpen(true)}
+          onOpenAttachments={() => setIsAttachmentCenterOpen(true)}
           onResetData={handleResetData}
           taskCount={tasks.length}
           isOpenMobile={isMobileSidebarOpen}
@@ -260,6 +266,7 @@ function AppContent() {
               onUpdateTask={handleUpdateTask}
               onOpenNotice={() => setIsNoticeOpen(true)}
               onOpenNewTask={isLeader ? () => setIsNewTaskOpen(true) : undefined}
+              onOpenAttachments={() => setIsAttachmentCenterOpen(true)}
               onEditTask={handleOpenEditTask}
               onDeleteTask={handleDeleteTask}
             />
@@ -290,6 +297,8 @@ function AppContent() {
         onOpenDirectiveModal={(t) => setDirectiveTask(t)}
         onOpenEditModal={handleOpenEditTask}
         onDeleteTask={handleDeleteTask}
+        onUpdateTask={handleUpdateTask}
+        onViewDocument={(docName, task) => setViewingDocData({ docName, task })}
         currentRole={currentRole}
       />
 
@@ -328,6 +337,25 @@ function AppContent() {
       <DatabaseSchemaModal
         isOpen={isDatabaseSchemaOpen}
         onClose={() => setIsDatabaseSchemaOpen(false)}
+      />
+
+      {/* Modal: Centralized Attachment Center */}
+      <AttachmentCenterModal
+        isOpen={isAttachmentCenterOpen}
+        onClose={() => setIsAttachmentCenterOpen(false)}
+        tasks={tasks}
+        onViewDoc={(docName, task) => setViewingDocData({ docName, task })}
+        onSelectTask={(task) => setDetailTask(task)}
+      />
+
+      {/* Modal: Direct Document Viewer */}
+      <DocumentViewerModal
+        isOpen={!!viewingDocData}
+        onClose={() => setViewingDocData(null)}
+        docName={viewingDocData?.docName || null}
+        task={viewingDocData?.task}
+        allDocs={viewingDocData?.task?.relatedDocs || (viewingDocData ? [viewingDocData.docName] : [])}
+        onSelectDoc={(doc) => setViewingDocData((prev) => prev ? { ...prev, docName: doc } : null)}
       />
 
       {/* Sticky Bottom Role Indicator */}

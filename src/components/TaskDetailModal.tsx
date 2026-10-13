@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Task } from '../types';
 import { 
   X, 
@@ -16,9 +16,15 @@ import {
   Building,
   Trash2,
   Edit3,
-  Paperclip
+  Paperclip,
+  Eye,
+  Download,
+  Upload,
+  PlusCircle
 } from 'lucide-react';
 import { getStatusBadgeClasses, getStatusLabel, getPriorityLabel } from '../utils/helpers';
+import { DocumentViewerModal } from './DocumentViewerModal';
+import { downloadAttachmentFile } from '../utils/documentDownload';
 
 interface TaskDetailModalProps {
   task: Task | null;
@@ -27,6 +33,8 @@ interface TaskDetailModalProps {
   onOpenDirectiveModal: (task: Task) => void;
   onOpenEditModal?: (task: Task) => void;
   onDeleteTask?: (taskId: string) => void;
+  onUpdateTask?: (task: Task) => void;
+  onViewDocument?: (docName: string, task: Task) => void;
   currentRole: 'leader' | 'staff';
 }
 
@@ -37,8 +45,14 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   onOpenDirectiveModal,
   onOpenEditModal,
   onDeleteTask,
+  onUpdateTask,
+  onViewDocument,
   currentRole,
 }) => {
+  const [viewingDocName, setViewingDocName] = useState<string | null>(null);
+  const [isAddingDoc, setIsAddingDoc] = useState(false);
+  const [newDocText, setNewDocText] = useState('');
+
   if (!task) return null;
 
   const handleDelete = () => {
@@ -200,41 +214,155 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
           )}
 
           {/* Budget & Related Docs */}
-          {(task.budgetInfo || (task.relatedDocs && task.relatedDocs.length > 0)) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-lg border border-slate-200 text-xs">
-              {task.budgetInfo && (
-                <div>
-                  <span className="text-slate-500 font-medium flex items-center gap-1">
-                    <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
-                    Kinh phí / Dự toán:
+          <div className="grid grid-cols-1 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
+            {task.budgetInfo && (
+              <div className="pb-3 border-b border-slate-200">
+                <span className="text-slate-500 font-semibold flex items-center gap-1.5">
+                  <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
+                  Kinh phí / Dự toán:
+                </span>
+                <span className="font-bold text-slate-800 text-sm mt-0.5 block">{task.budgetInfo}</span>
+              </div>
+            )}
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-slate-700 font-bold flex items-center gap-1.5">
+                  <Paperclip className="w-4 h-4 text-blue-600" />
+                  <span>Hồ Sơ & File Đính Kèm Căn Cứ:</span>
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-3xs font-mono font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full border border-blue-200">
+                    {task.relatedDocs ? task.relatedDocs.length : 0} tệp đính kèm
                   </span>
-                  <span className="font-semibold text-slate-800 mt-0.5 block">{task.budgetInfo}</span>
+                  {currentRole === 'leader' && onUpdateTask && !isAddingDoc && (
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingDoc(true)}
+                      className="text-3xs font-semibold text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-0.5 cursor-pointer ml-1"
+                    >
+                      <PlusCircle className="w-3 h-3" />
+                      <span>Thêm tệp</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Document List */}
+              {task.relatedDocs && task.relatedDocs.length > 0 ? (
+                <div className="space-y-2">
+                  {task.relatedDocs.map((doc, idx) => (
+                    <div
+                      key={idx}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 bg-white rounded-lg border border-slate-200 hover:border-blue-300 shadow-2xs transition-all"
+                    >
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-700 shrink-0">
+                          <FileText className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <span className="font-semibold text-slate-800 text-xs block truncate" title={doc}>
+                            {doc}
+                          </span>
+                          <span className="text-3xs text-slate-400">Văn bản căn cứ công vụ hợp lệ</span>
+                        </div>
+                      </div>
+
+                      {/* Action buttons: Xem Trực Tiếp & Tải File */}
+                      <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (onViewDocument) {
+                              onViewDocument(doc, task);
+                            } else {
+                              setViewingDocName(doc);
+                            }
+                          }}
+                          className="px-2.5 py-1 bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white rounded-lg text-2xs font-semibold flex items-center gap-1 border border-blue-200 transition-colors cursor-pointer"
+                          title="Xem trực tiếp văn bản này trên hệ thống"
+                        >
+                          <Eye className="w-3 h-3" />
+                          <span>Xem trực tiếp</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => downloadAttachmentFile(doc, task)}
+                          className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-2xs font-bold flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
+                          title="Tải văn bản này về máy tính"
+                        >
+                          <Download className="w-3 h-3" />
+                          <span>Tải file</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-2xs text-slate-500 italic bg-white p-3 rounded-lg border border-dashed border-slate-200">
+                  Chưa có tài liệu đính kèm. Lãnh đạo hoặc cán bộ có thể bổ sung hồ sơ nghiệm thu, quyết định.
                 </div>
               )}
 
-              {task.relatedDocs && task.relatedDocs.length > 0 && (
-                <div>
-                  <span className="text-slate-500 font-medium flex items-center justify-between">
-                    <span className="flex items-center gap-1">
-                      <Paperclip className="w-3.5 h-3.5 text-blue-600" />
-                      Văn bản căn cứ / Hồ sơ đính kèm:
-                    </span>
-                    <span className="text-3xs font-mono font-bold text-blue-700 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200">
-                      {task.relatedDocs.length} tệp
-                    </span>
-                  </span>
-                  <div className="mt-1.5 space-y-1">
-                    {task.relatedDocs.map((doc, idx) => (
-                      <span key={idx} className="flex items-center gap-1.5 text-slate-800 bg-white px-2.5 py-1 rounded-md border border-slate-200 text-xs shadow-2xs font-medium">
-                        <FileText className="w-3 h-3 text-blue-600 shrink-0" />
-                        <span className="truncate">{doc}</span>
-                      </span>
-                    ))}
+              {/* Add new attachment form if leader requested */}
+              {isAddingDoc && (
+                <div className="mt-2 p-2.5 bg-blue-50/70 rounded-lg border border-blue-200 space-y-2">
+                  <span className="text-2xs font-bold text-blue-900 block">Lãnh đạo thêm hồ sơ / file đính kèm mới:</span>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={newDocText}
+                      onChange={(e) => setNewDocText(e.target.value)}
+                      placeholder="Nhập tên tài liệu (VD: Biên bản nghiệm thu đợt 2, Quyết định bổ sung...)"
+                      className="flex-1 text-xs px-2.5 py-1.5 bg-white border border-blue-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                    <label className="px-2.5 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-lg text-2xs font-semibold flex items-center gap-1 cursor-pointer">
+                      <Upload className="w-3 h-3 text-slate-500" />
+                      <span>Chọn tệp</span>
+                      <input
+                        type="file"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setNewDocText(`${file.name} (${Math.round(file.size / 1024)} KB)`);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                  <div className="flex items-center justify-end gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsAddingDoc(false);
+                        setNewDocText('');
+                      }}
+                      className="px-2.5 py-1 text-2xs text-slate-600 hover:text-slate-800"
+                    >
+                      Hủy
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!newDocText.trim()}
+                      onClick={() => {
+                        if (newDocText.trim() && onUpdateTask) {
+                          const prevDocs = task.relatedDocs || [];
+                          const updatedDocs = [...prevDocs, newDocText.trim()];
+                          onUpdateTask({ ...task, relatedDocs: updatedDocs });
+                          setNewDocText('');
+                          setIsAddingDoc(false);
+                        }
+                      }}
+                      className="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white rounded-lg text-2xs font-bold cursor-pointer"
+                    >
+                      Lưu đính kèm
+                    </button>
                   </div>
                 </div>
               )}
             </div>
-          )}
+          </div>
 
           {/* History of Leader Directives */}
           <div>
@@ -377,6 +505,16 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         </div>
 
       </div>
+
+      {/* Direct In-App Document Viewer Modal */}
+      <DocumentViewerModal
+        isOpen={!!viewingDocName}
+        onClose={() => setViewingDocName(null)}
+        docName={viewingDocName}
+        task={task}
+        allDocs={task.relatedDocs || []}
+        onSelectDoc={(d) => setViewingDocName(d)}
+      />
     </div>
   );
 };
