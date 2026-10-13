@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { USER_ACCOUNTS } from '../data/userAccounts';
 import { 
   Building2, 
-  ShieldCheck, 
-  UserCheck, 
   Lock, 
   User, 
-  ArrowRight, 
-  Check, 
   X,
   KeyRound,
-  Shield
+  LogOut,
+  Eye,
+  EyeOff,
+  ShieldCheck
 } from 'lucide-react';
 
 interface LoginModalProps {
@@ -20,9 +18,10 @@ interface LoginModalProps {
 }
 
 export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
-  const { login, currentUser, switchUser } = useAuth();
+  const { login, currentUser, logout } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
@@ -30,25 +29,28 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!username.trim()) {
+      setError('Vui lòng nhập tên tài khoản.');
+      return;
+    }
     const success = login(username, password);
     if (success) {
+      setUsername('');
+      setPassword('');
       onClose();
     } else {
-      setError('Tên đăng nhập hoặc mật khẩu không chính xác (mật khẩu mặc định: 123456). Vui lòng kiểm tra lại hoặc chọn tài khoản bên dưới.');
+      setError('Tên đăng nhập hoặc mật khẩu không chính xác. Mật khẩu mặc định: 123456.');
     }
   };
 
-  const handleSelectAccount = (userId: string) => {
-    switchUser(userId);
+  const handleLogout = () => {
+    logout();
     onClose();
   };
 
-  const leaders = USER_ACCOUNTS.filter((u) => u.role === 'LEADER');
-  const staff = USER_ACCOUNTS.filter((u) => u.role === 'STAFF');
-
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-xl w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         
         {/* Official Banner Header */}
         <div className="bg-slate-900 px-6 py-4 text-white flex items-center justify-between border-b border-slate-800">
@@ -61,7 +63,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 UBND PHƯỜNG HỐ NAI · TTDVTH
               </span>
               <h2 className="text-base font-bold text-white">
-                Đổi Tài Khoản / Đăng Nhập Phân Quyền
+                Chuyển Đổi Tài Khoản Công Vụ
               </h2>
             </div>
           </div>
@@ -76,11 +78,13 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
         {/* Current status if already logged in */}
         {currentUser && (
-          <div className="bg-slate-50 px-6 py-2.5 border-b border-slate-200 text-xs flex items-center justify-between">
-            <span className="text-slate-600">
-              Đang đăng nhập: <strong>{currentUser.fullName}</strong> ({currentUser.position})
-            </span>
-            <span className={`px-2 py-0.5 rounded text-2xs font-bold ${
+          <div className="bg-slate-50 px-6 py-3 border-b border-slate-200 text-xs flex items-center justify-between">
+            <div className="min-w-0 pr-2">
+              <span className="text-slate-500 text-2xs block">Tài khoản hiện tại:</span>
+              <span className="font-bold text-slate-800 truncate block">{currentUser.fullName}</span>
+              <span className="text-slate-500 text-3xs">{currentUser.position}</span>
+            </div>
+            <span className={`px-2 py-0.5 rounded text-2xs font-bold shrink-0 ${
               currentUser.isLeader ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
             }`}>
               {currentUser.role === 'LEADER' ? 'CẤP LÃNH ĐẠO' : 'CẤP NHÂN VIÊN'}
@@ -88,12 +92,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           </div>
         )}
 
-        <div className="p-6 space-y-5 text-xs sm:text-sm">
+        <div className="p-6 space-y-4 text-xs sm:text-sm">
           
           {/* Custom Login Form */}
           <form onSubmit={handleLoginSubmit} className="space-y-3.5">
             {error && (
-              <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs">
+              <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs leading-relaxed">
                 {error}
               </div>
             )}
@@ -109,7 +113,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="VD: phong.giamdoc, duong.dtc, cuong.dvci..."
+                  placeholder="Nhập tên tài khoản cán bộ..."
                   className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
               </div>
@@ -122,104 +126,62 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Nhập mật khẩu (hoặc để trống khi thử nghiệm)..."
-                  className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-600"
+                  placeholder="Nhập mật khẩu công vụ..."
+                  className="w-full pl-9 pr-9 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((p) => !p)}
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
+            </div>
+
+            <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 text-2xs text-slate-600 flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <span>Đăng nhập đúng tài khoản để hiển thị màn hình Lãnh đạo hoặc Nhân viên.</span>
             </div>
 
             <button
               type="submit"
-              className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+              className="w-full py-2.5 bg-red-700 hover:bg-red-800 text-white font-bold text-xs rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer uppercase tracking-wider"
             >
-              <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+              <KeyRound className="w-3.5 h-3.5 text-amber-300" />
               <span>Xác Nhận Đăng Nhập</span>
             </button>
           </form>
 
-          {/* Quick 1-Click Role Switcher */}
-          <div className="pt-4 border-t border-slate-200 space-y-4">
-            <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <ShieldCheck className="w-4 h-4 text-red-700" />
-                <h3 className="font-bold text-slate-900 text-xs uppercase tracking-wider">
-                  1. Tài khoản Cấp Lãnh Đạo (Quyền: Giao việc, Chỉ đạo, Đôn đốc, Phê duyệt)
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {leaders.map((u) => {
-                  const isCurrent = currentUser?.id === u.id;
-                  return (
-                    <button
-                      key={u.id}
-                      type="button"
-                      onClick={() => handleSelectAccount(u.id)}
-                      className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
-                        isCurrent
-                          ? 'border-red-600 bg-red-50 text-red-950 ring-1 ring-red-600'
-                          : 'border-slate-200 hover:border-red-300 hover:bg-slate-50 text-slate-800'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between font-bold text-xs">
-                        <span>{u.fullName}</span>
-                        {isCurrent && <Check className="w-3.5 h-3.5 text-red-700" />}
-                      </div>
-                      <div className="text-2xs text-slate-500 mt-0.5">{u.position}</div>
-                      <div className="font-mono text-2xs text-red-700 mt-1">user: {u.username}</div>
-                    </button>
-                  );
-                })}
-              </div>
+          {/* Quick Logout Button */}
+          {currentUser && (
+            <div className="pt-3 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-full py-2 bg-slate-100 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 border border-slate-200 text-slate-700 font-semibold text-xs rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5 text-rose-600" />
+                <span>Đăng Xuất Khỏi Hệ Thống</span>
+              </button>
             </div>
-
-            <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <UserCheck className="w-4 h-4 text-blue-700" />
-                <h3 className="font-bold text-slate-900 text-xs uppercase tracking-wider">
-                  2. Tài khoản Cấp Nhân Viên (Quyền: Xem việc được giao, Cập nhật tiến độ)
-                </h3>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {staff.map((u) => {
-                  const isCurrent = currentUser?.id === u.id;
-                  return (
-                    <button
-                      key={u.id}
-                      type="button"
-                      onClick={() => handleSelectAccount(u.id)}
-                      className={`p-2 rounded-lg border text-left transition-all cursor-pointer ${
-                        isCurrent
-                          ? 'border-blue-600 bg-blue-50 text-blue-950 ring-1 ring-blue-600'
-                          : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50 text-slate-800'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between font-bold text-xs">
-                        <span className="truncate">{u.shortName}</span>
-                        {isCurrent && <Check className="w-3 h-3 text-blue-700 shrink-0" />}
-                      </div>
-                      <div className="text-2xs text-slate-500 truncate mt-0.5">{u.unit.replace('Tổ ', '')}</div>
-                      <div className="font-mono text-2xs text-blue-700 mt-1 truncate">user: {u.username}</div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
+          )}
 
         </div>
 
         {/* Footer info */}
-        <div className="bg-slate-50 px-6 py-3 border-t border-slate-200 flex items-center justify-between text-2xs text-slate-500">
+        <div className="bg-slate-50 px-6 py-2.5 border-t border-slate-200 flex items-center justify-between text-2xs text-slate-500">
           <span>Phân quyền RBAC bám sát chức danh công vụ</span>
           <button
             type="button"
             onClick={onClose}
             className="text-slate-600 hover:text-slate-900 font-semibold cursor-pointer"
           >
-            Đóng cửa sổ
+            Đóng
           </button>
         </div>
 

@@ -13,6 +13,7 @@ import { OfficialNoticeModal } from './components/OfficialNoticeModal';
 import { LoginModal } from './components/LoginModal';
 import { EditTaskModal } from './components/EditTaskModal';
 import { DatabaseSchemaModal } from './components/DatabaseSchemaModal';
+import { LoginScreen } from './components/LoginScreen';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { 
   initializeDatabase, 
@@ -21,10 +22,10 @@ import {
   deleteTaskFromDb, 
   resetDatabaseToOriginal 
 } from './services/firebaseDbService';
-import { ShieldCheck, UserCheck, Cloud } from 'lucide-react';
+import { ShieldCheck, UserCheck, Cloud, LogOut } from 'lucide-react';
 
 function AppContent() {
-  const { currentUser, isLeader, switchUser } = useAuth();
+  const { currentUser, isLeader, switchUser, logout } = useAuth();
   const [tasks, setTasks] = useState<Task[]>(() => getStoredTasks());
   const [dbConnected, setDbConnected] = useState<boolean>(true);
   
@@ -197,6 +198,16 @@ function AppContent() {
     }
     setCurrentRole('staff');
   };
+
+  // If user is logged out, render dedicated full-screen Login Screen
+  if (!currentUser) {
+    return (
+      <LoginScreen
+        tasksCount={tasks.length}
+        dbConnected={dbConnected}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">

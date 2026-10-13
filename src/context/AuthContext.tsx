@@ -33,8 +33,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (e) {
       console.error('Failed to load session:', e);
     }
-    // Default to leader account (Phạm Thanh Phong) to enter main dashboard directly
-    return USER_ACCOUNTS[0];
+    // If not logged in or logged out, require login
+    return null;
   });
 
   useEffect(() => {
@@ -48,8 +48,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = (username: string, password?: string): boolean => {
     if (!username.trim()) return false;
     
+    const cleanUser = username.trim().toLowerCase();
     const user = USER_ACCOUNTS.find(
-      (u) => u.username.toLowerCase() === username.trim().toLowerCase() || u.id === username.trim()
+      (u) =>
+        u.username.toLowerCase() === cleanUser ||
+        u.id.toLowerCase() === cleanUser ||
+        u.id.replace('usr-', '').toLowerCase() === cleanUser
     );
     if (!user) return false;
 
@@ -71,8 +75,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
-    localStorage.removeItem(AUTH_STORAGE_KEY);
-    setCurrentUser(USER_ACCOUNTS[0]);
+    try {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+    } catch (e) {
+      console.error('Failed to remove auth key:', e);
+    }
+    setCurrentUser(null);
   };
 
   const role = currentUser ? currentUser.role : null;
