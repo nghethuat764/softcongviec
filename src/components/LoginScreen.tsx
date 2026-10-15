@@ -39,7 +39,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     }
 
     if (!password) {
-      setError('Vui lòng nhập mật khẩu (mật khẩu mặc định hệ thống: 123456).');
+      setError('Vui lòng nhập mật khẩu.');
       return;
     }
 
@@ -51,7 +51,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
       if (!success) {
         setError(
-          'Tên đăng nhập hoặc mật khẩu không chính xác. Mật khẩu mặc định hệ thống: 123456. Vui lòng kiểm tra lại.'
+          'Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.'
         );
       }
     }, 200);
@@ -62,14 +62,11 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       
       {/* 1. Dải Băng Quốc Hiệu & Cơ Quan Nhà Nước Chuẩn Thể Thức */}
       <header className="bg-[#8b1818] border-b border-[#731313] px-4 sm:px-8 py-2 text-white">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-2">
             <span className="font-bold uppercase tracking-wider">UBND PHƯỜNG HỐ NAI</span>
             <span className="text-red-200">/</span>
             <span className="uppercase text-red-100 font-medium">TRUNG TÂM DỊCH VỤ TỔNG HỢP</span>
-          </div>
-          <div className="text-2xs text-red-200 text-center sm:text-right hidden sm:block">
-            <span>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM · Độc lập - Tự do - Hạnh phúc</span>
           </div>
         </div>
       </header>
@@ -83,9 +80,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
               <h1 className="text-sm sm:text-base font-bold text-white tracking-wide uppercase">
                 HỆ THỐNG PHÂN CÔNG NHIỆM VỤ & BÁO CÁO TIẾN ĐỘ
               </h1>
-              <p className="text-2xs text-blue-200">
-                Theo dõi Kết luận giao ban tuần ngày 28/9/2026 · TTDVTH Phường Hố Nai
-              </p>
             </div>
           </div>
           <div className="hidden sm:flex items-center gap-2 text-2xs text-blue-200">
@@ -210,11 +204,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                 <span>{isSubmitting ? 'Đang xác thực...' : 'ĐĂNG NHẬP HỆ THỐNG'}</span>
               </button>
             </form>
-
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-3xs text-slate-500">
-              <span>Mật khẩu mặc định hệ thống: <strong>123456</strong></span>
-              <span className="font-mono">Bảo mật chuẩn cơ quan</span>
-            </div>
           </div>
         </div>
 

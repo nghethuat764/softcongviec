@@ -178,7 +178,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                 Trung Tâm Chỉ Đạo & Giám Sát Nhiệm Vụ Giao Ban
               </h2>
               <p className="text-xs text-slate-600 mt-1 max-w-2xl leading-relaxed">
-                Theo dõi và kiểm soát toàn diện 40 nhiệm vụ giao ban tuần ngày 28/9/2026. Phân công giao việc cho từng nhân viên, phát lệnh chỉ đạo đôn đốc và tháo gỡ vướng mắc.
+                Theo dõi và kiểm soát toàn diện các nhiệm vụ giao ban. Phân công giao việc cho từng nhân viên, phát lệnh chỉ đạo đôn đốc và tháo gỡ vướng mắc.
               </p>
             </div>
           </div>

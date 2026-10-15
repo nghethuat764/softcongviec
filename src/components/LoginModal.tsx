@@ -39,7 +39,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       setPassword('');
       onClose();
     } else {
-      setError('Tên đăng nhập hoặc mật khẩu không chính xác. Mật khẩu mặc định: 123456.');
+      setError('Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.');
     }
   };
 

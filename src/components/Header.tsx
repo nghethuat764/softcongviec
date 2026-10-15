@@ -49,10 +49,6 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="font-bold tracking-wide uppercase">UBND PHƯỜNG HỐ NAI</span>
             <span className="text-red-300">/</span>
             <span className="uppercase text-red-100 font-semibold">TRUNG TÂM DỊCH VỤ TỔNG HỢP</span>
-            <span className="text-red-300 hidden md:inline">|</span>
-            <span className="text-red-200 hidden md:inline text-2xs">
-              Theo dõi Kết luận giao ban tuần ngày 28/9/2026 (Chủ trì: Đ/c Phạm Thanh Phong – Giám đốc)
-            </span>
           </div>
 
           {/* User Account Bar */}
