@@ -160,27 +160,24 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
       {/* =========================================================================
           CẤP 1: BANNER ĐIỀU HÀNH & CHỈ ĐẠO CỦA BAN GIÁM ĐỐC
          ========================================================================= */}
-      <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] text-white rounded-2xl p-5 sm:p-6 shadow-xl border-t-4 border-amber-400 border-x border-b border-blue-900/60 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-start sm:items-center gap-3.5">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 bg-linear-to-br from-[#8a1414] to-[#600a0a] p-2.5 rounded-2xl border-2 border-amber-400/50 shadow-md flex items-center justify-center">
-              <ShieldCheck className="w-8 h-8 sm:w-9 sm:h-9 text-amber-300 drop-shadow-xs" />
+      <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs font-sans">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <div className="w-11 h-11 shrink-0 bg-[#153e6b] text-white rounded-lg flex items-center justify-center shadow-2xs">
+              <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="bg-[#801010] text-amber-200 font-mono text-xs px-2.5 py-0.5 rounded-full font-extrabold uppercase tracking-wider border border-amber-400/40 flex items-center gap-1.5 shadow-xs">
-                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                  Phân Hệ Chỉ Đạo & Điều Hành
-                </span>
-                <span className="text-blue-100/90 text-xs">
-                  Chủ trì: <strong className="text-white">Đ/c Phạm Thanh Phong – Giám đốc</strong> · Phó Giám đốc: <strong className="text-white">Đ/c Tuyến</strong>
-                </span>
+              <div className="flex items-center gap-2 mb-1 text-2xs text-slate-500 flex-wrap">
+                <span className="font-bold text-[#153e6b] uppercase">BAN GIÁM ĐỐC · PHÂN HỆ ĐIỀU HÀNH</span>
+                <span>·</span>
+                <span>Chủ trì: <strong>Đ/c Phạm Thanh Phong – Giám đốc</strong></span>
+                <span>·</span>
+                <span>Phó Giám đốc: <strong>Đ/c Tuyến</strong></span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2 drop-shadow-xs">
-                Trung Tâm Chỉ Huy Giao Ban & Đôn Đốc Nhiệm Vụ
+              <h2 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900">
+                Trung Tâm Chỉ Đạo & Giám Sát Nhiệm Vụ Giao Ban
               </h2>
-              <p className="text-xs sm:text-sm text-blue-100/90 mt-1 max-w-2xl leading-relaxed">
+              <p className="text-xs text-slate-600 mt-1 max-w-2xl leading-relaxed">
                 Theo dõi và kiểm soát toàn diện 40 nhiệm vụ giao ban tuần ngày 28/9/2026. Phân công giao việc cho từng nhân viên, phát lệnh chỉ đạo đôn đốc và tháo gỡ vướng mắc.
               </p>
             </div>
@@ -190,9 +187,9 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
             <button
               type="button"
               onClick={onOpenNotice}
-              className="px-4 py-2 bg-linear-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-red-950 font-black rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
+              className="px-3.5 py-2 bg-[#153e6b] hover:bg-[#103257] text-white font-medium rounded-lg text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
             >
-              <FileText className="w-4 h-4 text-red-950" />
+              <FileText className="w-4 h-4 text-blue-200" />
               <span>Xem Văn Bản Kết Luận 28/9</span>
             </button>
           </div>
@@ -202,27 +199,22 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
       {/* =========================================================================
           CẤP 2: HỆ THỐNG MENU PHÂN CẤP CHUYÊN BIỆT DÀNH CHO LÃNH ĐẠO (BAN GIÁM ĐỐC)
          ========================================================================= */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs p-4 space-y-3 font-sans">
         
         {/* 1. Dải Breadcrumb Phân Cấp Cấp Bậc (Hierarchy Breadcrumb) */}
-        <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-100 text-xs">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="font-semibold text-slate-500 flex items-center gap-1">
-              <Building2 className="w-3.5 h-3.5 text-slate-500 inline-block" />
-              UBND P. Hố Nai
-            </span>
+        <div className="flex items-center justify-between flex-wrap gap-2 pb-2.5 border-b border-slate-100 text-xs">
+          <div className="flex items-center gap-1.5 flex-wrap text-2xs text-slate-500">
+            <span>UBND P. Hố Nai</span>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-            <span className="px-2 py-0.5 rounded font-bold text-red-800 bg-red-100 border border-red-200">
-              CẤP 1: PHÂN HỆ LÃNH ĐẠO
-            </span>
+            <span className="font-semibold text-slate-700">Phân Hệ Lãnh Đạo</span>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-            <span className="px-2 py-0.5 rounded font-semibold text-slate-700 bg-slate-100">
+            <span>
               {activeLeaderMenu === 'overview' || activeLeaderMenu === 'bottlenecks' || activeLeaderMenu === 'sections'
-                ? 'NHÓM 1: CHỈ ĐẠO & GIÁM SÁT TIẾN ĐỘ'
-                : 'NHÓM 2: PHÂN CÔNG GIAO VIỆC & LỘ TRÌNH'}
+                ? 'Nhóm 1: Chỉ đạo & Giám sát'
+                : 'Nhóm 2: Phân công & Lộ trình'}
             </span>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-            <span className="px-2.5 py-0.5 rounded font-bold text-white bg-red-800 shadow-xs">
+            <span className="font-bold text-[#153e6b]">
               {activeLeaderMenu === 'overview' && '1.1 Tổng Quan KPI & Tiến Độ'}
               {activeLeaderMenu === 'bottlenecks' && `1.2 Radar Đôn Đốc (${urgentTasks.length} Vướng Mắc)`}
               {activeLeaderMenu === 'sections' && '1.3 Giám Sát 5 Tổ Chuyên Môn'}
@@ -232,9 +224,8 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-2xs text-slate-500">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
-            <span>Chỉ đạo trực tuyến: <strong>Giám đốc Phạm Thanh Phong</strong></span>
+          <div className="text-2xs text-slate-500">
+            Chỉ đạo trực tuyến: <strong>Giám đốc Phạm Thanh Phong</strong>
           </div>
         </div>
 
@@ -242,15 +233,13 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
           
           {/* Nhóm 1: CHỈ ĐẠO & GIÁM SÁT TIẾN ĐỘ (6 cols) */}
-          <div className="lg:col-span-6 bg-slate-50/80 p-2.5 rounded-xl border border-slate-200/90">
-            <div className="flex items-center justify-between mb-2 px-1.5">
-              <span className="text-2xs font-extrabold text-red-900 uppercase tracking-wider flex items-center gap-1.5">
-                <BarChart3 className="w-3.5 h-3.5 text-red-700" />
+          <div className="lg:col-span-6 bg-slate-50/70 p-2.5 rounded-lg border border-slate-200">
+            <div className="flex items-center justify-between mb-2 px-1">
+              <span className="text-3xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                <BarChart3 className="w-3.5 h-3.5 text-[#153e6b]" />
                 NHÓM 1: CHỈ ĐẠO & GIÁM SÁT TIẾN ĐỘ
               </span>
-              <span className="text-3xs text-slate-500 font-medium bg-white px-2 py-0.5 rounded border border-slate-200">
-                Chức năng giám sát
-              </span>
+              <span className="text-3xs text-slate-500">Giám sát</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
@@ -259,22 +248,22 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveLeaderMenu('overview')}
-                className={`p-2 rounded-lg text-left transition-all cursor-pointer flex flex-col justify-between ${
+                className={`p-2 rounded-lg text-left transition-colors cursor-pointer flex flex-col justify-between border ${
                   activeLeaderMenu === 'overview'
-                    ? 'bg-red-800 text-white shadow-sm ring-1 ring-red-900 font-bold'
-                    : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80 font-medium'
+                    ? 'bg-[#153e6b] text-white border-[#153e6b] font-semibold shadow-2xs'
+                    : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1">
-                  <BarChart3 className={`w-3.5 h-3.5 ${activeLeaderMenu === 'overview' ? 'text-amber-300' : 'text-slate-500'}`} />
-                  <span className={`text-3xs font-mono px-1.5 py-0.2 rounded font-bold ${
-                    activeLeaderMenu === 'overview' ? 'bg-red-900/60 text-amber-200' : 'bg-slate-100 text-slate-600'
+                  <BarChart3 className={`w-3.5 h-3.5 ${activeLeaderMenu === 'overview' ? 'text-white' : 'text-slate-500'}`} />
+                  <span className={`text-3xs font-mono px-1 py-0.2 rounded font-bold ${
+                    activeLeaderMenu === 'overview' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
                   }`}>
                     1.1
                   </span>
                 </div>
-                <span className="text-xs leading-snug">Tổng Quan KPI & Bản Đồ</span>
-                <span className={`text-3xs mt-1 ${activeLeaderMenu === 'overview' ? 'text-red-200' : 'text-slate-500'}`}>
+                <span className="text-xs leading-snug">Tổng quan KPI</span>
+                <span className={`text-3xs mt-1 ${activeLeaderMenu === 'overview' ? 'text-blue-100' : 'text-slate-500'}`}>
                   40 nhiệm vụ giao ban
                 </span>
               </button>
@@ -283,22 +272,22 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveLeaderMenu('bottlenecks')}
-                className={`p-2 rounded-lg text-left transition-all cursor-pointer flex flex-col justify-between ${
+                className={`p-2 rounded-lg text-left transition-colors cursor-pointer flex flex-col justify-between border ${
                   activeLeaderMenu === 'bottlenecks'
-                    ? 'bg-red-800 text-white shadow-sm ring-1 ring-red-900 font-bold'
-                    : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80 font-medium'
+                    ? 'bg-[#153e6b] text-white border-[#153e6b] font-semibold shadow-2xs'
+                    : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1">
-                  <AlertOctagon className={`w-3.5 h-3.5 ${activeLeaderMenu === 'bottlenecks' ? 'text-amber-300' : 'text-rose-500'}`} />
-                  <span className={`text-3xs font-mono px-1.5 py-0.2 rounded font-bold ${
-                    activeLeaderMenu === 'bottlenecks' ? 'bg-amber-400 text-red-950' : 'bg-rose-100 text-rose-800'
+                  <AlertOctagon className={`w-3.5 h-3.5 ${activeLeaderMenu === 'bottlenecks' ? 'text-white' : 'text-rose-600'}`} />
+                  <span className={`text-3xs font-mono px-1 py-0.2 rounded font-bold ${
+                    activeLeaderMenu === 'bottlenecks' ? 'bg-white/20 text-white' : 'bg-rose-50 text-rose-700'
                   }`}>
                     {urgentTasks.length} việc
                   </span>
                 </div>
-                <span className="text-xs leading-snug">Radar Đôn Đốc & Vướng Mắc</span>
-                <span className={`text-3xs mt-1 ${activeLeaderMenu === 'bottlenecks' ? 'text-red-200' : 'text-slate-500'}`}>
+                <span className="text-xs leading-snug">Radar đôn đốc</span>
+                <span className={`text-3xs mt-1 ${activeLeaderMenu === 'bottlenecks' ? 'text-blue-100' : 'text-slate-500'}`}>
                   Tháo gỡ điểm nghẽn
                 </span>
               </button>
@@ -307,23 +296,23 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveLeaderMenu('sections')}
-                className={`p-2 rounded-lg text-left transition-all cursor-pointer flex flex-col justify-between ${
+                className={`p-2 rounded-lg text-left transition-colors cursor-pointer flex flex-col justify-between border ${
                   activeLeaderMenu === 'sections'
-                    ? 'bg-red-800 text-white shadow-sm ring-1 ring-red-900 font-bold'
-                    : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80 font-medium'
+                    ? 'bg-[#153e6b] text-white border-[#153e6b] font-semibold shadow-2xs'
+                    : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1">
-                  <Building2 className={`w-3.5 h-3.5 ${activeLeaderMenu === 'sections' ? 'text-amber-300' : 'text-blue-600'}`} />
-                  <span className={`text-3xs font-mono px-1.5 py-0.2 rounded font-bold ${
-                    activeLeaderMenu === 'sections' ? 'bg-red-900/60 text-amber-200' : 'bg-slate-100 text-slate-600'
+                  <Building2 className={`w-3.5 h-3.5 ${activeLeaderMenu === 'sections' ? 'text-white' : 'text-slate-500'}`} />
+                  <span className={`text-3xs font-mono px-1 py-0.2 rounded font-bold ${
+                    activeLeaderMenu === 'sections' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
                   }`}>
                     1.3
                   </span>
                 </div>
-                <span className="text-xs leading-snug">Giám Sát 5 Tổ Chuyên Môn</span>
-                <span className={`text-3xs mt-1 ${activeLeaderMenu === 'sections' ? 'text-red-200' : 'text-slate-500'}`}>
-                  Hành chính, XD, ĐT...
+                <span className="text-xs leading-snug">Giám sát 5 tổ</span>
+                <span className={`text-3xs mt-1 ${activeLeaderMenu === 'sections' ? 'text-blue-100' : 'text-slate-500'}`}>
+                  Hành chính, DVCI, ĐT...
                 </span>
               </button>
 
@@ -331,15 +320,13 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
           </div>
 
           {/* Nhóm 2: PHÂN CÔNG GIAO VIỆC & LỘ TRÌNH (6 cols) */}
-          <div className="lg:col-span-6 bg-slate-50/80 p-2.5 rounded-xl border border-slate-200/90">
-            <div className="flex items-center justify-between mb-2 px-1.5">
-              <span className="text-2xs font-extrabold text-blue-950 uppercase tracking-wider flex items-center gap-1.5">
-                <Briefcase className="w-3.5 h-3.5 text-blue-700" />
+          <div className="lg:col-span-6 bg-slate-50/70 p-2.5 rounded-lg border border-slate-200">
+            <div className="flex items-center justify-between mb-2 px-1">
+              <span className="text-3xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                <Briefcase className="w-3.5 h-3.5 text-[#153e6b]" />
                 NHÓM 2: PHÂN CÔNG GIAO VIỆC & LỘ TRÌNH
               </span>
-              <span className="text-3xs text-slate-500 font-medium bg-white px-2 py-0.5 rounded border border-slate-200">
-                Chức năng điều hành
-              </span>
+              <span className="text-3xs text-slate-500">Điều hành</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
@@ -348,23 +335,23 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveLeaderMenu('master')}
-                className={`p-2 rounded-lg text-left transition-all cursor-pointer flex flex-col justify-between ${
+                className={`p-2 rounded-lg text-left transition-colors cursor-pointer flex flex-col justify-between border ${
                   activeLeaderMenu === 'master'
-                    ? 'bg-blue-800 text-white shadow-sm ring-1 ring-blue-900 font-bold'
-                    : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80 font-medium'
+                    ? 'bg-[#153e6b] text-white border-[#153e6b] font-semibold shadow-2xs'
+                    : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1">
-                  <ListOrdered className={`w-3.5 h-3.5 ${activeLeaderMenu === 'master' ? 'text-blue-200' : 'text-blue-600'}`} />
-                  <span className={`text-3xs font-mono px-1.5 py-0.2 rounded font-bold ${
-                    activeLeaderMenu === 'master' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800'
+                  <ListOrdered className={`w-3.5 h-3.5 ${activeLeaderMenu === 'master' ? 'text-white' : 'text-slate-500'}`} />
+                  <span className={`text-3xs font-mono px-1 py-0.2 rounded font-bold ${
+                    activeLeaderMenu === 'master' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
                   }`}>
                     {filteredTasks.length}
                   </span>
                 </div>
-                <span className="text-xs leading-snug">Bảng Phân Công 40 Nhiệm Vụ</span>
-                <span className={`text-3xs mt-1 ${activeLeaderMenu === 'master' ? 'text-blue-200' : 'text-slate-500'}`}>
-                  Giao việc theo từng cán bộ
+                <span className="text-xs leading-snug">Bảng phân công việc</span>
+                <span className={`text-3xs mt-1 ${activeLeaderMenu === 'master' ? 'text-blue-100' : 'text-slate-500'}`}>
+                  Giao việc theo cán bộ
                 </span>
               </button>
 
@@ -372,23 +359,23 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveLeaderMenu('kanban')}
-                className={`p-2 rounded-lg text-left transition-all cursor-pointer flex flex-col justify-between ${
+                className={`p-2 rounded-lg text-left transition-colors cursor-pointer flex flex-col justify-between border ${
                   activeLeaderMenu === 'kanban'
-                    ? 'bg-blue-800 text-white shadow-sm ring-1 ring-blue-900 font-bold'
-                    : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80 font-medium'
+                    ? 'bg-[#153e6b] text-white border-[#153e6b] font-semibold shadow-2xs'
+                    : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1">
-                  <Kanban className={`w-3.5 h-3.5 ${activeLeaderMenu === 'kanban' ? 'text-blue-200' : 'text-indigo-600'}`} />
-                  <span className={`text-3xs font-mono px-1.5 py-0.2 rounded font-bold ${
-                    activeLeaderMenu === 'kanban' ? 'bg-blue-900 text-blue-200' : 'bg-slate-100 text-slate-600'
+                  <Kanban className={`w-3.5 h-3.5 ${activeLeaderMenu === 'kanban' ? 'text-white' : 'text-slate-500'}`} />
+                  <span className={`text-3xs font-mono px-1 py-0.2 rounded font-bold ${
+                    activeLeaderMenu === 'kanban' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
                   }`}>
                     2.2
                   </span>
                 </div>
-                <span className="text-xs leading-snug">Bảng Kanban Trực Quan</span>
-                <span className={`text-3xs mt-1 ${activeLeaderMenu === 'kanban' ? 'text-blue-200' : 'text-slate-500'}`}>
-                  Theo dõi luồng 4 cột
+                <span className="text-xs leading-snug">Bảng Kanban</span>
+                <span className={`text-3xs mt-1 ${activeLeaderMenu === 'kanban' ? 'text-blue-100' : 'text-slate-500'}`}>
+                  Luồng 4 cột tiến độ
                 </span>
               </button>
 
@@ -396,22 +383,22 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveLeaderMenu('timeline')}
-                className={`p-2 rounded-lg text-left transition-all cursor-pointer flex flex-col justify-between ${
+                className={`p-2 rounded-lg text-left transition-colors cursor-pointer flex flex-col justify-between border ${
                   activeLeaderMenu === 'timeline'
-                    ? 'bg-blue-800 text-white shadow-sm ring-1 ring-blue-900 font-bold'
-                    : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80 font-medium'
+                    ? 'bg-[#153e6b] text-white border-[#153e6b] font-semibold shadow-2xs'
+                    : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1">
-                  <Milestone className={`w-3.5 h-3.5 ${activeLeaderMenu === 'timeline' ? 'text-blue-200' : 'text-emerald-600'}`} />
-                  <span className={`text-3xs font-mono px-1.5 py-0.2 rounded font-bold ${
-                    activeLeaderMenu === 'timeline' ? 'bg-blue-900 text-blue-200' : 'bg-slate-100 text-slate-600'
+                  <Milestone className={`w-3.5 h-3.5 ${activeLeaderMenu === 'timeline' ? 'text-white' : 'text-slate-500'}`} />
+                  <span className={`text-3xs font-mono px-1 py-0.2 rounded font-bold ${
+                    activeLeaderMenu === 'timeline' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
                   }`}>
                     2.3
                   </span>
                 </div>
-                <span className="text-xs leading-snug">Lộ Trình & Dòng Thời Gian</span>
-                <span className={`text-3xs mt-1 ${activeLeaderMenu === 'timeline' ? 'text-blue-200' : 'text-slate-500'}`}>
+                <span className="text-xs leading-snug">Dòng thời gian</span>
+                <span className={`text-3xs mt-1 ${activeLeaderMenu === 'timeline' ? 'text-blue-100' : 'text-slate-500'}`}>
                   Mốc 28/8 - 12/10
                 </span>
               </button>
@@ -423,37 +410,36 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
 
         {/* Nhóm 3: TÁC VỤ ĐIỀU HÀNH & KẾT LUẬN GIAO BAN */}
         <div className="pt-2 border-t border-slate-100 flex items-center justify-between flex-wrap gap-2 text-xs">
-          <div className="flex items-center gap-1.5 text-2xs font-extrabold text-slate-700 uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>NHÓM 3: TÁC VỤ ĐIỀU HÀNH & KẾT LUẬN GIAO BAN</span>
+          <div className="text-2xs font-bold text-slate-600 uppercase tracking-wider">
+            TÁC VỤ ĐIỀU HÀNH
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             {onOpenNewTask && (
               <button
                 type="button"
                 onClick={onOpenNewTask}
-                className="px-3 py-1.5 rounded-lg bg-red-700 hover:bg-red-800 text-white font-bold text-2xs flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                className="px-3 py-1.5 rounded-lg bg-[#153e6b] hover:bg-[#103257] text-white font-medium text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
               >
                 <PlusCircle className="w-3.5 h-3.5" />
-                <span>Lãnh Đạo Giao Việc Mới Cho Cán Bộ</span>
+                <span>Giao việc mới</span>
               </button>
             )}
             <button
               type="button"
               onClick={onOpenNotice}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold text-2xs flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-medium text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <FileText className="w-3.5 h-3.5 text-amber-300" />
-              <span>Xem / In Thông Báo Kết Luận 28/9</span>
+              <FileText className="w-3.5 h-3.5 text-slate-500" />
+              <span>Xem kết luận 28/9</span>
             </button>
             {onOpenAttachments && (
               <button
                 type="button"
                 onClick={onOpenAttachments}
-                className="px-3 py-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white font-semibold text-2xs flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-medium text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
               >
-                <Paperclip className="w-3.5 h-3.5 text-blue-200" />
-                <span>Kho File Đính Kèm ({tasks.reduce((sum, t) => sum + (t.relatedDocs ? t.relatedDocs.length : 0), 0)} tệp)</span>
+                <Paperclip className="w-3.5 h-3.5 text-slate-500" />
+                <span>File đính kèm ({tasks.reduce((sum, t) => sum + (t.relatedDocs ? t.relatedDocs.length : 0), 0)})</span>
               </button>
             )}
           </div>
@@ -470,65 +456,65 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
         <div className="space-y-6">
           {/* Executive KPI Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5">
-            <div className="bg-white p-4 rounded-xl border border-slate-200 border-t-4 border-t-[#0a2f5c] shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
               <div className="flex items-center justify-between text-slate-500 text-xs mb-1">
-                <span className="font-bold text-slate-700">Tổng nhiệm vụ giao</span>
-                <Building2 className="w-4 h-4 text-[#0a2f5c]" />
+                <span className="font-semibold text-slate-700">Tổng nhiệm vụ</span>
+                <Building2 className="w-4 h-4 text-slate-500" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-extrabold text-[#0a2f5c] font-mono tabular-nums">{summary.total}</span>
-                <span className="text-2xs text-slate-500 font-semibold">100% việc</span>
+                <span className="text-2xl sm:text-3xl font-extrabold text-[#153e6b] font-mono tabular-nums">{summary.total}</span>
+                <span className="text-2xs text-slate-500 font-medium">100% việc</span>
               </div>
-              <div className="mt-2 text-2xs text-slate-500 font-medium">Phân bổ trên 5 tổ chuyên môn</div>
+              <div className="mt-2 text-2xs text-slate-500">Phân bổ trên 5 tổ chuyên môn</div>
             </div>
 
-            <div className="bg-white p-4 rounded-xl border border-slate-200 border-t-4 border-t-emerald-600 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between text-emerald-800 text-xs mb-1">
-                <span className="font-bold text-emerald-900">Đã hoàn thành</span>
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+              <div className="flex items-center justify-between text-slate-500 text-xs mb-1">
+                <span className="font-semibold text-slate-700">Đã hoàn thành</span>
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-extrabold text-emerald-700 font-mono tabular-nums">{summary.completed}</span>
-                <span className="text-2xs font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">({Math.round((summary.completed / summary.total) * 100)}%)</span>
+                <span className="text-2xl sm:text-3xl font-extrabold text-emerald-800 font-mono tabular-nums">{summary.completed}</span>
+                <span className="text-2xs font-semibold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">({Math.round((summary.completed / summary.total) * 100)}%)</span>
               </div>
-              <div className="mt-2 text-2xs text-emerald-700/80 font-medium">Đã nghiệm thu / kết thúc hồ sơ</div>
+              <div className="mt-2 text-2xs text-slate-500">Đã nghiệm thu / kết thúc hồ sơ</div>
             </div>
 
-            <div className="bg-white p-4 rounded-xl border border-slate-200 border-t-4 border-t-blue-600 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between text-blue-800 text-xs mb-1">
-                <span className="font-bold text-blue-900">Đang triển khai</span>
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+              <div className="flex items-center justify-between text-slate-500 text-xs mb-1">
+                <span className="font-semibold text-slate-700">Đang triển khai</span>
                 <Clock className="w-4 h-4 text-blue-600" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-extrabold text-blue-700 font-mono tabular-nums">{summary.inProgress}</span>
-                <span className="text-2xs font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">({Math.round((summary.inProgress / summary.total) * 100)}%)</span>
+                <span className="text-2xl sm:text-3xl font-extrabold text-blue-800 font-mono tabular-nums">{summary.inProgress}</span>
+                <span className="text-2xs font-semibold text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">({Math.round((summary.inProgress / summary.total) * 100)}%)</span>
               </div>
-              <div className="mt-2 text-2xs text-blue-700/80 font-medium">Đúng tiến độ kế hoạch</div>
+              <div className="mt-2 text-2xs text-slate-500">Đang thực hiện theo tiến độ</div>
             </div>
 
-            <div className="bg-white p-4 rounded-xl border border-rose-200 border-t-4 border-t-rose-600 shadow-sm hover:shadow-md transition-shadow bg-rose-50/20">
-              <div className="flex items-center justify-between text-rose-800 text-xs mb-1">
-                <span className="font-bold text-rose-900">Vướng mắc / Chậm</span>
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+              <div className="flex items-center justify-between text-slate-500 text-xs mb-1">
+                <span className="font-semibold text-slate-700">Vướng mắc / Chậm</span>
                 <AlertTriangle className="w-4 h-4 text-rose-600" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-extrabold text-rose-700 font-mono tabular-nums">{summary.delayed + summary.paused}</span>
-                <span className="text-2xs font-bold text-rose-700 bg-rose-100 px-1.5 py-0.5 rounded border border-rose-300">cần chỉ đạo</span>
+                <span className="text-2xl sm:text-3xl font-extrabold text-rose-800 font-mono tabular-nums">{summary.delayed + summary.paused}</span>
+                <span className="text-2xs font-semibold text-rose-800 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">cần chỉ đạo</span>
               </div>
-              <div className="mt-2 text-2xs text-rose-700 font-medium">Do mưa, vốn, hoặc thủ tục</div>
+              <div className="mt-2 text-2xs text-slate-500">Do thời tiết, vốn hoặc thủ tục</div>
             </div>
 
-            <div className="bg-white p-4 rounded-xl border border-slate-200 border-t-4 border-t-amber-500 shadow-sm hover:shadow-md transition-shadow col-span-2 lg:col-span-1">
-              <div className="flex items-center justify-between text-slate-700 text-xs mb-1">
-                <span className="font-bold text-amber-900">Tiến độ trung bình</span>
-                <TrendingUp className="w-4 h-4 text-amber-600" />
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs col-span-2 lg:col-span-1">
+              <div className="flex items-center justify-between text-slate-500 text-xs mb-1">
+                <span className="font-semibold text-slate-700">Tiến độ trung bình</span>
+                <TrendingUp className="w-4 h-4 text-slate-500" />
               </div>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-mono tabular-nums">{summary.avgProgress}%</span>
-                <span className="text-2xs text-amber-800 font-bold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">toàn đơn vị</span>
+                <span className="text-2xs text-slate-600 font-medium bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">toàn đơn vị</span>
               </div>
               <div className="mt-2 bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200/60">
-                <div className="bg-linear-to-r from-amber-500 to-emerald-600 h-full rounded-full transition-all" style={{ width: `${summary.avgProgress}%` }} />
+                <div className="bg-[#153e6b] h-full rounded-full transition-all" style={{ width: `${summary.avgProgress}%` }} />
               </div>
             </div>
           </div>

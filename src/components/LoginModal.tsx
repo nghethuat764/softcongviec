@@ -53,17 +53,17 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         
         {/* Official Banner Header */}
-        <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] px-6 py-4 text-white flex items-center justify-between border-b border-blue-900 shadow-md">
+        <div className="bg-[#153e6b] px-6 py-4 text-white flex items-center justify-between border-b border-[#0f2f52]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#7a1212] border border-amber-400/40 flex items-center justify-center text-amber-300 shadow-sm">
-              <Building2 className="w-5 h-5 text-amber-300" />
+            <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-white">
+              <Building2 className="w-5 h-5 text-white" />
             </div>
             <div>
-              <span className="text-2xs font-mono uppercase tracking-wider text-amber-300 font-bold block">
+              <span className="text-2xs font-semibold uppercase tracking-wider text-blue-200 block">
                 UBND PHƯỜNG HỐ NAI · TTDVTH
               </span>
-              <h2 className="text-base font-extrabold text-white">
-                Chuyển Đổi Tài Khoản Công Vụ
+              <h2 className="text-base font-bold text-white">
+                Chuyển Đổi Tài Khoản Cán Bộ
               </h2>
             </div>
           </div>

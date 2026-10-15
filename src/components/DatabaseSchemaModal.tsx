@@ -36,17 +36,17 @@ export const DatabaseSchemaModal: React.FC<DatabaseSchemaModalProps> = ({ isOpen
       <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150">
         
         {/* Modal Header */}
-        <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] px-6 py-4 text-white flex items-center justify-between border-b border-blue-900 shrink-0 shadow-md">
+        <div className="bg-[#153e6b] px-6 py-4 text-white flex items-center justify-between border-b border-[#0f2f52] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-emerald-600 border border-emerald-400/40 flex items-center justify-center shadow-inner">
+            <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center">
               <Database className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-base font-extrabold text-white">
-                Phân Tích & Cấu Trúc Cơ Sở Dữ Liệu (Database Architecture)
+              <h2 className="text-base font-bold text-white">
+                Cấu Trúc Cơ Sở Dữ Liệu & Lược Đồ SQL
               </h2>
-              <p className="text-xs text-blue-200/90 font-medium">
-                Lược đồ dữ liệu phân công nhiệm vụ, báo cáo tiến độ và phân quyền Lãnh đạo / Nhân viên
+              <p className="text-xs text-blue-200 font-medium">
+                Lược đồ dữ liệu phân công nhiệm vụ, báo cáo tiến độ và phân quyền cán bộ
               </p>
             </div>
           </div>

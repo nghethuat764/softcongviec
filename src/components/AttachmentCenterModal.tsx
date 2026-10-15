@@ -125,22 +125,22 @@ export const AttachmentCenterModal: React.FC<AttachmentCenterModalProps> = ({
       <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150">
         
         {/* Header */}
-        <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] px-6 py-4 text-white flex items-center justify-between border-b border-blue-900 shrink-0 shadow-md">
+        <div className="bg-[#153e6b] px-6 py-4 text-white flex items-center justify-between border-b border-[#0f2f52] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#7a1212] border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0 shadow-sm">
-              <FolderOpen className="w-5 h-5 text-amber-300" />
+            <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-white shrink-0">
+              <FolderOpen className="w-5 h-5 text-white" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-2xs font-mono uppercase tracking-wider text-amber-300 font-bold">
+                <span className="text-2xs font-semibold uppercase tracking-wider text-blue-200">
                   UBND PHƯỜNG HỐ NAI · TTDVTH
                 </span>
-                <span className="text-3xs bg-[#7a1212] text-amber-200 border border-amber-400/30 px-2 py-0.5 rounded-full font-mono font-bold">
+                <span className="text-3xs bg-white/15 text-white px-2 py-0.5 rounded font-mono">
                   {allAttachments.length} tệp đính kèm
                 </span>
               </div>
-              <h2 className="text-base sm:text-lg font-extrabold text-white">
-                Kho Hồ Sơ & Văn Bản Đính Kèm Của Lãnh Đạo
+              <h2 className="text-base sm:text-lg font-bold text-white">
+                Hồ Sơ & Văn Bản Đính Kèm Của Lãnh Đạo
               </h2>
             </div>
           </div>

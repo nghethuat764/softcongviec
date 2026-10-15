@@ -105,10 +105,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
         }`}
       >
         {/* Top Control Bar - Official Government Styled */}
-        <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] px-4 sm:px-6 py-3 border-b border-blue-900 text-white flex items-center justify-between shrink-0 print:hidden gap-3 shadow-md">
+        <div className="bg-[#153e6b] px-4 sm:px-6 py-3 border-b border-[#0f2f52] text-white flex items-center justify-between shrink-0 print:hidden gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-[#7a1212] border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0 shadow-sm">
-              <FileText className="w-5 h-5 text-amber-300" />
+            <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-white shrink-0">
+              <FileText className="w-5 h-5 text-white" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
@@ -116,12 +116,12 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                   {typeBadge.label}
                 </span>
                 {task && (
-                  <span className="font-mono text-3xs bg-red-900/80 text-red-200 px-1.5 py-0.5 rounded font-bold border border-red-700/60">
+                  <span className="font-mono text-3xs bg-white/15 text-white px-1.5 py-0.5 rounded font-bold">
                     {task.code}
                   </span>
                 )}
                 {allDocs.length > 1 && (
-                  <span className="text-3xs text-slate-400 font-mono">
+                  <span className="text-3xs text-blue-200 font-mono">
                     ({currentIndex + 1}/{allDocs.length} tệp)
                   </span>
                 )}
@@ -202,7 +202,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
               type="button"
               onClick={handleDownload}
               title="Tải tệp này về máy tính"
-              className="px-3 sm:px-3.5 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-2xs sm:text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-md shadow-emerald-950/40 transition-all cursor-pointer"
+              className="px-3 sm:px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white text-2xs sm:text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Tải File</span>

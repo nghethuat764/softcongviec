@@ -241,7 +241,7 @@ function AppContent() {
           onOpenNotice={() => setIsNoticeOpen(true)}
           onOpenNewTask={() => {
             if (!isLeader) {
-              alert('Chức năng giao việc mới chỉ dành riêng cho cấp Lãnh đạo (Ban Giám Đốc).');
+              setIsLoginModalOpen(true);
               return;
             }
             setIsNewTaskOpen(true);

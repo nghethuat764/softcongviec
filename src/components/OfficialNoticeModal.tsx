@@ -32,15 +32,15 @@ export const OfficialNoticeModal: React.FC<OfficialNoticeModalProps> = ({
       <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[94vh] print:max-h-none print:shadow-none print:border-none print:rounded-none">
         
         {/* Controls Bar (Hidden during print) */}
-        <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] px-6 py-3.5 text-white flex items-center justify-between border-b border-blue-900 shrink-0 print:hidden shadow-md">
+        <div className="bg-[#153e6b] px-6 py-3.5 text-white flex items-center justify-between border-b border-[#0f2f52] shrink-0 print:hidden">
           <div className="flex items-center gap-2">
-            <span className="font-extrabold text-sm text-white">Văn Bản Kết Luận Giao Ban Tuần (Số: /TB-TTDVTH)</span>
+            <span className="font-bold text-sm text-white">Văn Bản Kết Luận Giao Ban Tuần (Số: /TB-TTDVTH)</span>
           </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handlePrint}
-              className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-3.5 py-1.5 bg-white/15 hover:bg-white/25 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer border border-white/20"
             >
               <Printer className="w-4 h-4" />
               <span>In Văn Bản / Xuất PDF</span>
@@ -48,7 +48,7 @@ export const OfficialNoticeModal: React.FC<OfficialNoticeModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              className="p-1 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>

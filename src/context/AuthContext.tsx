@@ -53,7 +53,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       (u) =>
         u.username.toLowerCase() === cleanUser ||
         u.id.toLowerCase() === cleanUser ||
-        u.id.replace('usr-', '').toLowerCase() === cleanUser
+        u.id.replace('usr-', '').toLowerCase() === cleanUser ||
+        u.fullName.toLowerCase() === cleanUser ||
+        u.email.toLowerCase() === cleanUser
     );
     if (!user) return false;
 

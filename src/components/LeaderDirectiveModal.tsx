@@ -61,20 +61,20 @@ export const LeaderDirectiveModal: React.FC<LeaderDirectiveModalProps> = ({
       <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         
         {/* Modal Header */}
-        <div className="bg-linear-to-r from-[#0a2f5c] via-[#0d3b73] to-[#0a2f5c] px-6 py-4 text-white flex items-center justify-between border-b border-blue-900 shadow-md">
+        <div className="bg-[#153e6b] px-6 py-4 text-white flex items-center justify-between border-b border-[#0f2f52]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#8a1313] border border-amber-400/40 flex items-center justify-center text-amber-300 shadow-sm">
-              <ShieldCheck className="w-5 h-5 text-amber-300" />
+            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
+              <ShieldCheck className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-base font-extrabold text-white">Chỉ Đạo & Đôn Đốc Của Giám Đốc</h2>
-              <p className="text-xs text-blue-200/90 font-medium">Ý kiến chỉ đạo trực tiếp - Lưu vết lịch sử điều hành</p>
+              <h2 className="text-base font-bold text-white">Chỉ Đạo & Đôn Đốc Của Giám Đốc</h2>
+              <p className="text-xs text-blue-200 font-medium">Ý kiến chỉ đạo trực tiếp - Lưu vết lịch sử điều hành</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
