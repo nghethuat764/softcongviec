@@ -6,7 +6,8 @@ import {
   LogOut,
   Menu,
   Paperclip,
-  CheckCircle2
+  CheckCircle2,
+  Users
 } from 'lucide-react';
 import { StaffMember } from '../types';
 import { useAuth } from '../context/AuthContext';
@@ -22,6 +23,7 @@ interface HeaderProps {
   onOpenDatabaseSchema: () => void;
   onOpenLoginModal: () => void;
   onOpenAttachments?: () => void;
+  onOpenUserManagement?: () => void;
   onResetData: () => void;
   taskCount: number;
   onToggleMobileMenu?: () => void;
@@ -34,6 +36,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenDatabaseSchema,
   onOpenLoginModal,
   onOpenAttachments,
+  onOpenUserManagement,
   onResetData,
   taskCount,
   onToggleMobileMenu,
@@ -120,6 +123,17 @@ export const Header: React.FC<HeaderProps> = ({
                 <Database className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">CSDL</span>
               </button>
+              {onOpenUserManagement && isLeader && (
+                <button
+                  type="button"
+                  onClick={onOpenUserManagement}
+                  className="text-blue-100 hover:text-white flex items-center gap-1.5 cursor-pointer px-1.5 py-0.5 rounded hover:bg-white/10"
+                  title="Quản lý người dùng & phân quyền hệ thống"
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Quản lý người dùng</span>
+                </button>
+              )}
               <button
                 type="button"
                 onClick={onResetData}

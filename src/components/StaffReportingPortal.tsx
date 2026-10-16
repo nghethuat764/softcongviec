@@ -48,9 +48,23 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
   onOpenNewTask,
 }) => {
   const { currentUser, isLeader, isStaff } = useAuth();
-  // Filter tasks for this staff member
+
+  // Strict RBAC: Lock effectiveStaff permanently to currentUser when logged in as staff
+  const effectiveStaff: StaffMember = (!isLeader && currentUser)
+    ? {
+        id: currentUser.id.replace('usr-', ''),
+        name: currentUser.fullName,
+        shortName: currentUser.shortName || currentUser.fullName,
+        role: currentUser.position || 'Viên chức chuyên môn',
+        unit: currentUser.unit || 'Tổ chuyên môn',
+        avatarBg: currentUser.avatarBg || 'bg-blue-700 text-white',
+      }
+    : selectedStaff;
+
+  // Filter tasks strictly for this staff member (NEVER show tasks of other comrades)
   const myTasks = tasks.filter((t) =>
-    isTaskRelatedToStaff(t, selectedStaff.id, selectedStaff.shortName)
+    isTaskRelatedToStaff(t, effectiveStaff.id, effectiveStaff.shortName) ||
+    isTaskRelatedToStaff(t, effectiveStaff.id, effectiveStaff.name)
   );
 
   const [activeTaskId, setActiveTaskId] = useState<string>(
@@ -89,8 +103,8 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
     }
   });
 
-  // Current active task for reporting
-  const currentTask = tasks.find((t) => t.id === activeTaskId) || myTasks[0] || null;
+  // Current active task for reporting - STRICTLY confined to myTasks!
+  const currentTask = myTasks.find((t) => t.id === activeTaskId) || myTasks[0] || null;
 
   // Form State initialized from currentTask
   const [progressVal, setProgressVal] = useState<number>(currentTask ? currentTask.progress : 0);
@@ -239,18 +253,18 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
       <div className="bg-white rounded-[8px] shadow-xs border border-[#E5E7EB] border-t-4 border-t-[#003366] p-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className={`w-14 h-14 rounded-[8px] flex items-center justify-center font-extrabold text-[20px] shadow-xs border border-[#E5E7EB] ${selectedStaff.avatarBg}`}>
-              {selectedStaff.name.charAt(0)}
+            <div className={`w-14 h-14 rounded-[8px] flex items-center justify-center font-extrabold text-[20px] shadow-xs border border-[#E5E7EB] ${effectiveStaff.avatarBg}`}>
+              {effectiveStaff.name.charAt(0)}
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-[18px] sm:text-[20px] font-bold text-[#111827]">{selectedStaff.name}</h2>
+                <h2 className="text-[18px] sm:text-[20px] font-bold text-[#111827]">{effectiveStaff.name}</h2>
                 <span className="bg-blue-50 text-[#003366] text-[12px] px-2.5 py-0.5 rounded-[4px] font-bold border border-blue-200">
-                  {selectedStaff.role}
+                  {effectiveStaff.role}
                 </span>
               </div>
               <div className="text-[13px] text-[#4B5563] mt-1 flex items-center gap-1.5 flex-wrap">
-                <span>Đơn vị: <strong className="text-[#111827]">{selectedStaff.unit}</strong></span>
+                <span>Đơn vị: <strong className="text-[#111827]">{effectiveStaff.unit}</strong></span>
                 <span className="text-gray-300">·</span>
                 <span className="inline-flex items-center gap-1 text-[12px] text-[#003366] bg-blue-50 px-2 py-0.5 rounded-[4px] border border-blue-200 font-semibold">
                   <Building className="w-3.5 h-3.5 text-[#003366]" />
@@ -262,44 +276,51 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
             </div>
           </div>
 
-          {/* Quick Staff Switcher for testing/demo */}
-          <div className="flex items-center gap-2.5">
-            <span className="text-[13px] text-[#4B5563] font-medium whitespace-nowrap">Chuyển cán bộ:</span>
-            <select
-              value={selectedStaff.id}
-              onChange={(e) => {
-                const found = STAFF_MEMBERS.find((m) => m.id === e.target.value);
-                if (found) {
-                  onStaffChange(found);
-                  const firstTaskOfStaff = tasks.find((t) =>
-                    isTaskRelatedToStaff(t, found.id, found.shortName)
-                  );
-                  if (firstTaskOfStaff) {
-                    handleSelectTask(firstTaskOfStaff);
+          {/* Quick Staff Switcher - ONLY for Leader testing/demo */}
+          {isLeader ? (
+            <div className="flex items-center gap-2.5">
+              <span className="text-[13px] text-[#4B5563] font-medium whitespace-nowrap">Chuyển cán bộ (Chế độ Lãnh đạo):</span>
+              <select
+                value={selectedStaff.id}
+                onChange={(e) => {
+                  const found = STAFF_MEMBERS.find((m) => m.id === e.target.value);
+                  if (found) {
+                    onStaffChange(found);
+                    const firstTaskOfStaff = tasks.find((t) =>
+                      isTaskRelatedToStaff(t, found.id, found.shortName)
+                    );
+                    if (firstTaskOfStaff) {
+                      handleSelectTask(firstTaskOfStaff);
+                    }
                   }
-                }
-              }}
-              className="text-[13px] bg-[#F4F6F9] border border-[#E5E7EB] rounded-[8px] p-2 font-medium text-[#111827] focus:outline-none focus:ring-1 focus:ring-[#003366] cursor-pointer"
-            >
-              {STAFF_MEMBERS.filter((m) => m.id !== 'phong').map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.shortName} ({m.unit})
-                </option>
-              ))}
-            </select>
-
-            {isLeader && onOpenNewTask && (
-              <button
-                type="button"
-                onClick={onOpenNewTask}
-                className="px-3.5 py-2 bg-[#003366] hover:bg-[#002244] text-white text-[13px] font-semibold rounded-[8px] flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer shadow-xs"
-                title="Lãnh đạo phân công nhiệm vụ mới"
+                }}
+                className="text-[13px] bg-[#F4F6F9] border border-[#E5E7EB] rounded-[8px] p-2 font-medium text-[#111827] focus:outline-none focus:ring-1 focus:ring-[#003366] cursor-pointer"
               >
-                <PlusCircle className="w-4 h-4 text-blue-200" />
-                <span>Giao Việc Mới</span>
-              </button>
-            )}
-          </div>
+                {STAFF_MEMBERS.filter((m) => m.id !== 'phong').map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.shortName} ({m.unit})
+                  </option>
+                ))}
+              </select>
+
+              {onOpenNewTask && (
+                <button
+                  type="button"
+                  onClick={onOpenNewTask}
+                  className="px-3.5 py-2 bg-[#003366] hover:bg-[#002244] text-white text-[13px] font-semibold rounded-[8px] flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer shadow-xs"
+                  title="Lãnh đạo phân công nhiệm vụ mới"
+                >
+                  <PlusCircle className="w-4 h-4 text-blue-200" />
+                  <span>Giao Việc Mới</span>
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 bg-[#F4F6F9] px-3.5 py-2 rounded-[8px] border border-[#E5E7EB] text-[13px] text-[#003366]">
+              <Lock className="w-4 h-4 text-[#003366] shrink-0" />
+              <span className="font-semibold">Bảo mật công vụ: Chỉ hiển thị nhiệm vụ được giao riêng cho đồng chí</span>
+            </div>
+          )}
         </div>
 
         {/* Metric Badges - enlarged numbers 24-28px */}
@@ -354,12 +375,12 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
           {/* Cán bộ tác nghiệp */}
           <div className="flex items-center gap-2 bg-[#F4F6F9] px-3 py-1 rounded-[6px] border border-[#E5E7EB] text-[13px]">
             <div className="w-6 h-6 rounded bg-[#003366] text-white flex items-center justify-center font-bold text-[12px]">
-              {selectedStaff.name.split(' ').slice(-1)[0][0]}
+              {effectiveStaff.name.split(' ').slice(-1)[0][0]}
             </div>
             <div className="text-left leading-tight">
-              <span className="font-semibold text-[#111827] text-[13px] block">{selectedStaff.name}</span>
+              <span className="font-semibold text-[#111827] text-[13px] block">{effectiveStaff.name}</span>
               <span className="text-[11px] text-[#4B5563]">
-                {selectedStaff.role}
+                {effectiveStaff.role}
               </span>
             </div>
           </div>
@@ -988,7 +1009,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                 {/* Submit Action Button */}
                 <div className="pt-3 border-t border-[#E5E7EB] flex items-center justify-between flex-wrap gap-2">
                   <span className="text-[13px] text-[#4B5563]">
-                    Báo cáo bởi: <strong className="text-[#111827]">{selectedStaff.name}</strong> · Tự động đồng bộ lên Lãnh đạo
+                    Báo cáo bởi: <strong className="text-[#111827]">{effectiveStaff.name}</strong> · Tự động đồng bộ lên Lãnh đạo
                   </span>
 
                   <button
@@ -1059,10 +1080,10 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                 </span>
                 <div>
                   <h3 className="text-base font-bold text-slate-900">
-                    Bảng Phân Công Nhiệm Vụ Của Viên Chức: {selectedStaff.name}
+                    Bảng Phân Công Nhiệm Vụ Của Viên Chức: {effectiveStaff.name}
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Tổng số: <strong>{myTasks.length} nhiệm vụ</strong> theo Thông báo kết luận giao ban tuần ngày 28/9/2026
+                    Tổng số: <strong>{myTasks.length} nhiệm vụ</strong> được Ban Giám đốc phân công trực tiếp
                   </p>
                 </div>
               </div>
@@ -1300,7 +1321,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
               </span>
               <div>
                 <h3 className="text-base font-bold text-slate-900">
-                  Sổ Nhật Ký Báo Cáo Tiến Độ Tuần Của Viên Chức
+                  Sổ Nhật Ký Báo Cáo Tiến Độ Của: {effectiveStaff.name}
                 </h3>
                 <p className="text-xs text-slate-500">
                   Lịch sử lưu trữ toàn bộ các lần báo cáo tiến độ chuyên môn đã gửi lên Ban Giám đốc ({allMyReportLogs.length} bản ghi)

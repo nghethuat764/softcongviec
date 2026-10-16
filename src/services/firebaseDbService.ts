@@ -8,6 +8,7 @@ import {
 } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { Task } from '../types';
+import { UserAccount } from '../types/database';
 import { INITIAL_TASKS } from '../data/initialTasks';
 import { USER_ACCOUNTS } from '../data/userAccounts';
 
@@ -186,3 +187,90 @@ export async function resetDatabaseToOriginal(): Promise<Task[]> {
     return INITIAL_TASKS;
   }
 }
+
+// Fetch all users from Firestore
+export async function fetchUsersFromDb(): Promise<UserAccount[]> {
+  const usersRef = collection(db, USERS_COLLECTION);
+  try {
+    const snapshot = await getDocs(usersRef);
+    if (snapshot.empty) {
+      console.log('Users collection is empty. Seeding default accounts...');
+      for (const u of USER_ACCOUNTS) {
+        await setDoc(doc(db, USERS_COLLECTION, u.id), sanitizeForFirestore(u));
+      }
+      return USER_ACCOUNTS;
+    }
+    const users: UserAccount[] = [];
+    snapshot.forEach((docSnap) => {
+      users.push(docSnap.data() as UserAccount);
+    });
+    return users;
+  } catch (error) {
+    try {
+      handleFirestoreError(error, OperationType.LIST, USERS_COLLECTION);
+    } catch (e) {
+      console.warn('Firestore users fetch warning:', e);
+    }
+    return USER_ACCOUNTS;
+  }
+}
+
+// Subscribe to real-time updates for users
+export function subscribeToUsers(onUpdate: (users: UserAccount[]) => void, onError?: (err: any) => void) {
+  const usersRef = collection(db, USERS_COLLECTION);
+  return onSnapshot(
+    usersRef,
+    (snapshot) => {
+      if (snapshot.empty) {
+        fetchUsersFromDb().then(onUpdate);
+        return;
+      }
+      const users: UserAccount[] = [];
+      snapshot.forEach((d) => {
+        users.push(d.data() as UserAccount);
+      });
+      onUpdate(users);
+    },
+    (error) => {
+      try {
+        handleFirestoreError(error, OperationType.GET, USERS_COLLECTION);
+      } catch (e) {
+        if (onError) onError(e);
+      }
+    }
+  );
+}
+
+// Save or update user account
+export async function saveUserToDb(user: UserAccount): Promise<void> {
+  const docRef = doc(db, USERS_COLLECTION, user.id);
+  const sanitized = sanitizeForFirestore(user);
+  try {
+    await setDoc(docRef, sanitized, { merge: true });
+    console.log(`User ${user.username} (${user.id}) saved to Firestore successfully.`);
+  } catch (error) {
+    try {
+      handleFirestoreError(error, OperationType.WRITE, `${USERS_COLLECTION}/${user.id}`);
+    } catch (e) {
+      console.warn('Firestore user write warning:', e);
+      throw e;
+    }
+  }
+}
+
+// Delete user account
+export async function deleteUserFromDb(userId: string): Promise<void> {
+  const docRef = doc(db, USERS_COLLECTION, userId);
+  try {
+    await deleteDoc(docRef);
+    console.log(`User ${userId} deleted from Firestore successfully.`);
+  } catch (error) {
+    try {
+      handleFirestoreError(error, OperationType.DELETE, `${USERS_COLLECTION}/${userId}`);
+    } catch (e) {
+      console.warn('Firestore user delete warning:', e);
+      throw e;
+    }
+  }
+}
+

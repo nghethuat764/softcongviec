@@ -42,7 +42,9 @@ export interface Task {
   title: string;
   category: string;           // Phân loại nhóm việc (Chi thường xuyên, Dự án xây dựng, Vệ sinh môi trường, Tuyên truyền,...)
   assignee: string;           // Cán bộ phụ trách chính (Đ/c Cường, Đ/c Dương, Đ/c Đạt, Đ/c Trổi, Đ/c Thiện, Đ/c Tuyến, Kế toán,...)
+  assigneeId?: string;
   coAssignees?: string[];     // Cán bộ phối hợp
+  coAssigneeIds?: string[];
   leadershipDirector?: string;// Lãnh đạo chỉ đạo (e.g. "Đ/c Tuyến chỉ đạo")
   requirement: string;        // Chỉ đạo kết luận giao ban của Giám đốc
   currentReport: string;      // Tình hình thực hiện cập nhật nhất

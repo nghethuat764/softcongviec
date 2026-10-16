@@ -16,7 +16,9 @@ import { DatabaseSchemaModal } from './components/DatabaseSchemaModal';
 import { LoginScreen } from './components/LoginScreen';
 import { AttachmentCenterModal } from './components/AttachmentCenterModal';
 import { DocumentViewerModal } from './components/DocumentViewerModal';
+import { UserManagementModal } from './components/UserManagementModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { isTaskRelatedToStaff } from './utils/helpers';
 import { 
   initializeDatabase, 
   subscribeToTasks, 
@@ -36,13 +38,38 @@ function AppContent() {
     currentUser?.isLeader ? 'leader' : 'staff'
   );
 
+  // If user is not leader, effective role is STRICTLY staff
+  const effectiveRole = isLeader ? currentRole : 'staff';
+
   const [selectedStaff, setSelectedStaff] = useState<StaffMember>(() => {
     if (currentUser && !currentUser.isLeader) {
       const match = STAFF_MEMBERS.find((m) => m.id === currentUser.id.replace('usr-', ''));
       if (match) return match;
+      return {
+        id: currentUser.id.replace('usr-', ''),
+        name: currentUser.fullName,
+        shortName: currentUser.shortName || currentUser.fullName,
+        role: currentUser.position,
+        unit: currentUser.unit,
+        avatarBg: currentUser.avatarBg || 'bg-blue-700 text-white',
+      };
     }
     return STAFF_MEMBERS.find((m) => m.id === 'cuong') || STAFF_MEMBERS[2];
   });
+
+  // Strict task isolation: Staff ONLY receives their own assigned tasks
+  const myAssignedTasks = isLeader
+    ? tasks
+    : tasks.filter((t) => {
+        const staffId = currentUser?.id || '';
+        const staffShort = currentUser?.shortName || '';
+        const staffFull = currentUser?.fullName || '';
+        return (
+          isTaskRelatedToStaff(t, staffId.replace('usr-', ''), staffShort) ||
+          isTaskRelatedToStaff(t, staffId, staffFull) ||
+          isTaskRelatedToStaff(t, staffId.replace('usr-', ''), staffFull)
+        );
+      });
 
   // Real-time synchronization with Cloud Firestore
   useEffect(() => {
@@ -100,6 +127,7 @@ function AppContent() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isAttachmentCenterOpen, setIsAttachmentCenterOpen] = useState(false);
   const [viewingDocData, setViewingDocData] = useState<{ docName: string; task?: Task } | null>(null);
+  const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
 
   // Sync tasks to localStorage as local cache
   useEffect(() => {
@@ -218,17 +246,24 @@ function AppContent() {
       
       {/* Top Main Navigation Header */}
       <Header
-        currentRole={currentRole}
-        onRoleChange={setCurrentRole}
+        currentRole={effectiveRole}
+        onRoleChange={(role) => {
+          if (isLeader) setCurrentRole(role);
+        }}
         selectedStaff={selectedStaff}
-        onStaffChange={setSelectedStaff}
+        onStaffChange={(s) => {
+          if (isLeader) setSelectedStaff(s);
+        }}
         onOpenNotice={() => setIsNoticeOpen(true)}
-        onOpenNewTask={() => setIsNewTaskOpen(true)}
+        onOpenNewTask={() => {
+          if (isLeader) setIsNewTaskOpen(true);
+        }}
         onOpenDatabaseSchema={() => setIsDatabaseSchemaOpen(true)}
         onOpenLoginModal={() => setIsLoginModalOpen(true)}
         onOpenAttachments={() => setIsAttachmentCenterOpen(true)}
-        onResetData={handleResetData}
-        taskCount={tasks.length}
+        onOpenUserManagement={isLeader ? () => setIsUserManagementOpen(true) : undefined}
+        onResetData={isLeader ? handleResetData : () => alert('Chỉ có Ban Giám Đốc mới có quyền khôi phục CSDL.')}
+        taskCount={isLeader ? tasks.length : myAssignedTasks.length}
         onToggleMobileMenu={() => setIsMobileSidebarOpen((prev) => !prev)}
       />
 
@@ -236,8 +271,10 @@ function AppContent() {
       <div className="flex-1 flex w-full relative">
         {/* Vertical Left Menu */}
         <Sidebar
-          currentRole={currentRole}
-          onRoleChange={setCurrentRole}
+          currentRole={effectiveRole}
+          onRoleChange={(role) => {
+            if (isLeader) setCurrentRole(role);
+          }}
           onOpenNotice={() => setIsNoticeOpen(true)}
           onOpenNewTask={() => {
             if (!isLeader) {
@@ -249,15 +286,16 @@ function AppContent() {
           onOpenDatabaseSchema={() => setIsDatabaseSchemaOpen(true)}
           onOpenLoginModal={() => setIsLoginModalOpen(true)}
           onOpenAttachments={() => setIsAttachmentCenterOpen(true)}
-          onResetData={handleResetData}
-          taskCount={tasks.length}
+          onOpenUserManagement={isLeader ? () => setIsUserManagementOpen(true) : undefined}
+          onResetData={isLeader ? handleResetData : () => alert('Chỉ có Ban Giám Đốc mới có quyền khôi phục CSDL.')}
+          taskCount={isLeader ? tasks.length : myAssignedTasks.length}
           isOpenMobile={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
         />
 
         {/* Main Content Area */}
         <main className="flex-1 min-w-0 pb-16 overflow-x-hidden">
-          {currentRole === 'leader' ? (
+          {effectiveRole === 'leader' && isLeader ? (
             <LeaderDashboard
               tasks={tasks}
               onOpenDirectiveModal={(t) => setDirectiveTask(t)}
@@ -265,16 +303,18 @@ function AppContent() {
               onOpenReportForm={handleOpenReportFormFromElsewhere}
               onUpdateTask={handleUpdateTask}
               onOpenNotice={() => setIsNoticeOpen(true)}
-              onOpenNewTask={isLeader ? () => setIsNewTaskOpen(true) : undefined}
+              onOpenNewTask={() => setIsNewTaskOpen(true)}
               onOpenAttachments={() => setIsAttachmentCenterOpen(true)}
               onEditTask={handleOpenEditTask}
               onDeleteTask={handleDeleteTask}
             />
           ) : (
             <StaffReportingPortal
-              tasks={tasks}
+              tasks={myAssignedTasks}
               selectedStaff={selectedStaff}
-              onStaffChange={setSelectedStaff}
+              onStaffChange={(s) => {
+                if (isLeader) setSelectedStaff(s);
+              }}
               onUpdateTask={handleUpdateTask}
               onOpenNewTask={isLeader ? () => setIsNewTaskOpen(true) : undefined}
             />
@@ -343,7 +383,7 @@ function AppContent() {
       <AttachmentCenterModal
         isOpen={isAttachmentCenterOpen}
         onClose={() => setIsAttachmentCenterOpen(false)}
-        tasks={tasks}
+        tasks={isLeader ? tasks : myAssignedTasks}
         onViewDoc={(docName, task) => setViewingDocData({ docName, task })}
         onSelectTask={(task) => setDetailTask(task)}
       />
@@ -356,6 +396,12 @@ function AppContent() {
         task={viewingDocData?.task}
         allDocs={viewingDocData?.task?.relatedDocs || (viewingDocData ? [viewingDocData.docName] : [])}
         onSelectDoc={(doc) => setViewingDocData((prev) => prev ? { ...prev, docName: doc } : null)}
+      />
+
+      {/* Modal: User Management & RBAC Permissions */}
+      <UserManagementModal
+        isOpen={isUserManagementOpen}
+        onClose={() => setIsUserManagementOpen(false)}
       />
 
       {/* Sticky Bottom Role Indicator */}
@@ -380,6 +426,15 @@ function AppContent() {
           </div>
 
           <div className="flex items-center gap-3">
+            {isLeader && (
+              <button
+                type="button"
+                onClick={() => setIsUserManagementOpen(true)}
+                className="text-2xs font-semibold text-[#003366] hover:underline cursor-pointer flex items-center gap-1"
+              >
+                <span>Quản Lý Người Dùng</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setIsDatabaseSchemaOpen(true)}

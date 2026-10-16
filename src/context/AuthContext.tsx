@@ -1,15 +1,25 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { UserAccount, UserRole } from '../types/database';
 import { USER_ACCOUNTS } from '../data/userAccounts';
+import { 
+  subscribeToUsers, 
+  saveUserToDb, 
+  deleteUserFromDb,
+  fetchUsersFromDb 
+} from '../services/firebaseDbService';
 
 interface AuthContextType {
   currentUser: UserAccount | null;
+  users: UserAccount[];
   role: UserRole | null;
   isLeader: boolean;
   isStaff: boolean;
   login: (username: string, password?: string) => boolean;
   switchUser: (userId: string) => void;
   logout: () => void;
+  addUser: (user: UserAccount) => Promise<void>;
+  updateUser: (user: UserAccount) => Promise<void>;
+  deleteUser: (userId: string) => Promise<void>;
   canAssignTasks: boolean;
   canSendDirectives: boolean;
   canDeleteTasks: boolean;
@@ -22,6 +32,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AUTH_STORAGE_KEY = 'ttdvth_auth_session_user';
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [users, setUsers] = useState<UserAccount[]>(USER_ACCOUNTS);
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => {
     try {
       const stored = localStorage.getItem(AUTH_STORAGE_KEY);
@@ -29,13 +40,47 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const parsed = JSON.parse(stored);
         const matched = USER_ACCOUNTS.find((u) => u.id === parsed.id);
         if (matched) return matched;
+        return parsed as UserAccount;
       }
     } catch (e) {
       console.error('Failed to load session:', e);
     }
-    // If not logged in or logged out, require login
     return null;
   });
+
+  // Subscribe to real-time users from Firestore
+  useEffect(() => {
+    let isMounted = true;
+
+    // Initial fetch
+    fetchUsersFromDb().then((initialUsers) => {
+      if (isMounted && initialUsers && initialUsers.length > 0) {
+        setUsers(initialUsers);
+      }
+    });
+
+    const unsubscribe = subscribeToUsers(
+      (latestUsers) => {
+        if (isMounted && latestUsers && latestUsers.length > 0) {
+          setUsers(latestUsers);
+          // If current user info changed in DB, sync currentUser
+          setCurrentUser((prev) => {
+            if (!prev) return null;
+            const updated = latestUsers.find((u) => u.id === prev.id);
+            return updated || prev;
+          });
+        }
+      },
+      (err) => {
+        console.warn('Realtime users listener error:', err);
+      }
+    );
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     if (currentUser) {
@@ -49,7 +94,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (!username.trim()) return false;
     
     const cleanUser = username.trim().toLowerCase();
-    const user = USER_ACCOUNTS.find(
+    const candidateList = users.length > 0 ? users : USER_ACCOUNTS;
+    const user = candidateList.find(
       (u) =>
         u.username.toLowerCase() === cleanUser ||
         u.id.toLowerCase() === cleanUser ||
@@ -70,7 +116,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const switchUser = (userId: string) => {
-    const user = USER_ACCOUNTS.find((u) => u.id === userId);
+    const candidateList = users.length > 0 ? users : USER_ACCOUNTS;
+    const user = candidateList.find((u) => u.id === userId);
     if (user) {
       setCurrentUser(user);
     }
@@ -83,6 +130,36 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error('Failed to remove auth key:', e);
     }
     setCurrentUser(null);
+  };
+
+  // Add new user to Firestore
+  const addUser = async (newUser: UserAccount) => {
+    // Optimistic update
+    setUsers((prev) => [...prev.filter((u) => u.id !== newUser.id), newUser]);
+    // Save to Firestore
+    await saveUserToDb(newUser);
+  };
+
+  // Update existing user in Firestore
+  const updateUser = async (updatedUser: UserAccount) => {
+    // Optimistic update
+    setUsers((prev) => prev.map((u) => (u.id === updatedUser.id ? updatedUser : u)));
+    if (currentUser?.id === updatedUser.id) {
+      setCurrentUser(updatedUser);
+    }
+    // Save to Firestore
+    await saveUserToDb(updatedUser);
+  };
+
+  // Delete user from Firestore
+  const deleteUser = async (userId: string) => {
+    // Optimistic update
+    setUsers((prev) => prev.filter((u) => u.id !== userId));
+    if (currentUser?.id === userId) {
+      logout();
+    }
+    // Delete from Firestore
+    await deleteUserFromDb(userId);
   };
 
   const role = currentUser ? currentUser.role : null;
@@ -100,12 +177,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     <AuthContext.Provider
       value={{
         currentUser,
+        users,
         role,
         isLeader,
         isStaff,
         login,
         switchUser,
         logout,
+        addUser,
+        updateUser,
+        deleteUser,
         canAssignTasks,
         canSendDirectives,
         canDeleteTasks,

@@ -11,7 +11,8 @@ import {
   ChevronRight,
   KeyRound,
   X,
-  Paperclip
+  Paperclip,
+  Users
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -23,6 +24,7 @@ interface SidebarProps {
   onOpenDatabaseSchema: () => void;
   onOpenLoginModal: () => void;
   onOpenAttachments?: () => void;
+  onOpenUserManagement?: () => void;
   onResetData: () => void;
   taskCount: number;
   isOpenMobile?: boolean;
@@ -37,6 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenDatabaseSchema,
   onOpenLoginModal,
   onOpenAttachments,
+  onOpenUserManagement,
   onResetData,
   taskCount,
   isOpenMobile = false,
@@ -90,36 +93,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           <div className="flex flex-col gap-2.5">
-            {/* 1. Nút Phân Hệ Lãnh Đạo - padding 16px (p-4) chuẩn cơ quan */}
-            <button
-              type="button"
-              onClick={handleLeaderClick}
-              className={`w-full p-4 rounded-[8px] text-left transition-colors flex items-center justify-between cursor-pointer border ${
-                currentRole === 'leader'
-                  ? 'bg-[#003366] text-white border-[#003366] font-semibold shadow-xs'
-                  : isLeader
-                    ? 'bg-white hover:bg-[#F4F6F9] text-[#111827] border-[#E5E7EB]'
-                    : 'bg-[#F4F6F9] text-[#9CA3AF] border-[#E5E7EB] cursor-not-allowed opacity-75'
-              }`}
-              title={isLeader ? "Mở phân hệ Lãnh đạo" : "Yêu cầu quyền Ban Giám Đốc"}
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className={`w-8 h-8 rounded-[6px] flex items-center justify-center shrink-0 ${
-                  currentRole === 'leader' ? 'bg-white/20 text-white' : 'bg-[#F4F6F9] text-[#003366]'
-                }`}>
-                  {isLeader ? <ShieldCheck className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
-                </div>
-                <div className="truncate">
-                  <div className="text-[14px] font-bold leading-tight truncate">
-                    Phân Hệ Lãnh Đạo
+            {/* 1. Nút Phân Hệ Lãnh Đạo - Chỉ hiển thị cho Ban Giám Đốc */}
+            {isLeader && (
+              <button
+                type="button"
+                onClick={handleLeaderClick}
+                className={`w-full p-4 rounded-[8px] text-left transition-colors flex items-center justify-between cursor-pointer border ${
+                  currentRole === 'leader'
+                    ? 'bg-[#003366] text-white border-[#003366] font-semibold shadow-xs'
+                    : 'bg-white hover:bg-[#F4F6F9] text-[#111827] border-[#E5E7EB]'
+                }`}
+                title="Mở phân hệ Lãnh đạo điều hành"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-8 h-8 rounded-[6px] flex items-center justify-center shrink-0 ${
+                    currentRole === 'leader' ? 'bg-white/20 text-white' : 'bg-[#F4F6F9] text-[#003366]'
+                  }`}>
+                    <ShieldCheck className="w-5 h-5" />
                   </div>
-                  <div className={`text-[12px] mt-0.5 truncate ${currentRole === 'leader' ? 'text-blue-100' : 'text-[#4B5563]'}`}>
-                    {isLeader ? 'Ban Giám Đốc điều hành' : 'Yêu cầu quyền Lãnh đạo'}
+                  <div className="truncate">
+                    <div className="text-[14px] font-bold leading-tight truncate">
+                      Phân Hệ Lãnh Đạo
+                    </div>
+                    <div className={`text-[12px] mt-0.5 truncate ${currentRole === 'leader' ? 'text-blue-100' : 'text-[#4B5563]'}`}>
+                      Ban Giám Đốc điều hành
+                    </div>
                   </div>
                 </div>
-              </div>
-              <ChevronRight className={`w-4 h-4 shrink-0 ${currentRole === 'leader' ? 'text-blue-200' : 'text-[#9CA3AF]'}`} />
-            </button>
+                <ChevronRight className={`w-4 h-4 shrink-0 ${currentRole === 'leader' ? 'text-blue-200' : 'text-[#9CA3AF]'}`} />
+              </button>
+            )}
 
             {/* 2. Nút Phân Hệ Nhân Viên - padding 16px (p-4) chuẩn cơ quan */}
             <button
@@ -255,6 +258,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
         </div>
+
+        {/* Section 4: Quản Trị Người Dùng (Ngay sau Tiện ích dữ liệu - Chỉ Lãnh Đạo) */}
+        {onOpenUserManagement && isLeader && (
+          <div className="pt-1">
+            <div className="px-1 mb-2">
+              <span className="text-[12px] font-bold uppercase tracking-wider text-[#4B5563]">
+                QUẢN TRỊ NGƯỜI DÙNG
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                onOpenUserManagement();
+                if (onCloseMobile) onCloseMobile();
+              }}
+              title="Quản lý người dùng, thay đổi, thêm, xoá, sửa tài khoản đăng nhập"
+              className="w-full p-3 sm:p-3.5 rounded-[8px] text-left bg-blue-50/70 hover:bg-blue-100/80 text-[#003366] border border-blue-200 flex items-center justify-between text-[14px] font-semibold transition-colors cursor-pointer shadow-xs group"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Users className="w-5 h-5 text-[#003366] shrink-0 group-hover:scale-105 transition-transform" />
+                <span className="truncate">Quản lý người dùng</span>
+              </div>
+              <span className="text-[11px] bg-[#003366] text-white px-2 py-0.5 rounded font-mono font-bold">
+                CSDL
+              </span>
+            </button>
+          </div>
+        )}
 
       </div>
 

@@ -65,30 +65,56 @@ export function getSectionShortName(section: SectionType): string {
 export function isTaskRelatedToStaff(task: Task, staffId: string, staffName: string): boolean {
   if (staffId === 'all') return true;
 
+  const cleanId = staffId.replace('usr-', '').toLowerCase();
+  
+  // 1. Direct ID matching if available
+  if (task.assigneeId) {
+    const taskAssigneeCleanId = task.assigneeId.replace('usr-', '').toLowerCase();
+    if (taskAssigneeCleanId === cleanId) return true;
+  }
+  if (task.coAssigneeIds && Array.isArray(task.coAssigneeIds)) {
+    if (task.coAssigneeIds.some((id: string) => id.replace('usr-', '').toLowerCase() === cleanId)) {
+      return true;
+    }
+  }
+
   const normalize = (s: string) => s.toLowerCase().replace(/đ\/c\s*/g, '').trim();
-  const targetNorm = normalize(staffName);
+  const targetNorm = normalize(staffName || '');
+  const assigneeNorm = normalize(task.assignee || '');
 
-  const assigneeNorm = normalize(task.assignee);
-  if (assigneeNorm.includes(targetNorm) || targetNorm.includes(assigneeNorm)) {
+  // 2. Direct string match on assignee
+  if (targetNorm && (assigneeNorm.includes(targetNorm) || targetNorm.includes(assigneeNorm))) {
     return true;
   }
 
-  if (task.coAssignees && task.coAssignees.some(co => {
-    const coNorm = normalize(co);
-    return coNorm.includes(targetNorm) || targetNorm.includes(coNorm);
-  })) {
-    return true;
+  // 3. Match by last name word (e.g. "Cường", "Dương", "Đạt", "Trổi", "Thiện", "Nhân")
+  const nameParts = targetNorm.split(' ').filter(Boolean);
+  const firstName = nameParts.length > 0 ? nameParts[nameParts.length - 1] : '';
+  if (firstName && firstName.length >= 2) {
+    const assigneeWords = assigneeNorm.split(/[\s,./-]+/).filter(Boolean);
+    if (assigneeWords.includes(firstName)) {
+      return true;
+    }
   }
 
-  if (task.leadershipDirector && normalize(task.leadershipDirector).includes(targetNorm)) {
-    return true;
+  // 4. Co-assignees matching
+  if (task.coAssignees && task.coAssignees.length > 0) {
+    for (const co of task.coAssignees) {
+      const coNorm = normalize(co);
+      if (targetNorm && (coNorm.includes(targetNorm) || targetNorm.includes(coNorm))) {
+        return true;
+      }
+      if (firstName && firstName.length >= 2) {
+        const coWords = coNorm.split(/[\s,./-]+/).filter(Boolean);
+        if (coWords.includes(firstName)) {
+          return true;
+        }
+      }
+    }
   }
 
-  // Handle staffId specific mapping
-  if (staffId === 'hckt' && (task.section.includes('HÀNH CHÍNH') || task.assignee.includes('Kế toán') || task.assignee.includes('HC-KT'))) {
-    return true;
-  }
-  if (staffId === 'tuyen' && (task.leadershipDirector?.includes('Tuyến') || task.assignee.includes('Tuyến'))) {
+  // 5. Special group mapping for HCKT
+  if (cleanId.includes('hckt') && (task.section.includes('HÀNH CHÍNH') || task.assignee.includes('Kế toán') || task.assignee.includes('HC-KT'))) {
     return true;
   }
 
