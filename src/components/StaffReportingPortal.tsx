@@ -220,7 +220,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
       
       {/* Toast Alert */}
       {toastMessage && (
-        <div className="bg-emerald-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center justify-between text-xs sm:text-sm animate-in fade-in slide-in-from-top-2">
+        <div className="bg-emerald-700 text-white px-4 py-3 rounded-[8px] shadow-md flex items-center justify-between text-[14px] animate-in fade-in slide-in-from-top-2">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 shrink-0" />
             <span className="font-semibold">{toastMessage}</span>
@@ -236,35 +236,35 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
       )}
 
       {/* Staff Identity & Overview Banner */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 border-t-4 border-t-[#0a2f5c] p-5">
+      <div className="bg-white rounded-[8px] shadow-xs border border-[#E5E7EB] border-t-4 border-t-[#003366] p-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className={`w-14 h-14 rounded-xl flex items-center justify-center font-extrabold text-lg shadow-sm border border-black/5 ${selectedStaff.avatarBg}`}>
+            <div className={`w-14 h-14 rounded-[8px] flex items-center justify-center font-extrabold text-[20px] shadow-xs border border-[#E5E7EB] ${selectedStaff.avatarBg}`}>
               {selectedStaff.name.charAt(0)}
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-lg font-extrabold text-slate-900">{selectedStaff.name}</h2>
-                <span className="bg-blue-50 text-blue-800 text-xs px-2.5 py-0.5 rounded-full font-bold border border-blue-200">
+                <h2 className="text-[18px] sm:text-[20px] font-bold text-[#111827]">{selectedStaff.name}</h2>
+                <span className="bg-blue-50 text-[#003366] text-[12px] px-2.5 py-0.5 rounded-[4px] font-bold border border-blue-200">
                   {selectedStaff.role}
                 </span>
               </div>
-              <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
-                <span>Đơn vị: <strong className="text-slate-800">{selectedStaff.unit}</strong></span>
-                <span className="text-slate-300">·</span>
-                <span className="inline-flex items-center gap-1 text-2xs text-[#0a2f5c] bg-blue-50 px-2 py-0.5 rounded border border-blue-200 font-bold">
-                  <Building className="w-3 h-3 text-[#0a2f5c]" />
+              <div className="text-[13px] text-[#4B5563] mt-1 flex items-center gap-1.5 flex-wrap">
+                <span>Đơn vị: <strong className="text-[#111827]">{selectedStaff.unit}</strong></span>
+                <span className="text-gray-300">·</span>
+                <span className="inline-flex items-center gap-1 text-[12px] text-[#003366] bg-blue-50 px-2 py-0.5 rounded-[4px] border border-blue-200 font-semibold">
+                  <Building className="w-3.5 h-3.5 text-[#003366]" />
                   <span>TTDVTH Hố Nai</span>
                 </span>
-                <span className="text-slate-300">·</span>
-                <span>Phân công theo Kết luận giao ban tuần 28/9/2026</span>
+                <span className="text-gray-300">·</span>
+                <span>Phân công theo Kết luận giao ban tuần</span>
               </div>
             </div>
           </div>
 
           {/* Quick Staff Switcher for testing/demo */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-600 font-medium whitespace-nowrap">Chuyển cán bộ:</span>
+          <div className="flex items-center gap-2.5">
+            <span className="text-[13px] text-[#4B5563] font-medium whitespace-nowrap">Chuyển cán bộ:</span>
             <select
               value={selectedStaff.id}
               onChange={(e) => {
@@ -279,7 +279,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                   }
                 }
               }}
-              className="text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer shadow-2xs"
+              className="text-[13px] bg-[#F4F6F9] border border-[#E5E7EB] rounded-[8px] p-2 font-medium text-[#111827] focus:outline-none focus:ring-1 focus:ring-[#003366] cursor-pointer"
             >
               {STAFF_MEMBERS.filter((m) => m.id !== 'phong').map((m) => (
                 <option key={m.id} value={m.id}>
@@ -292,33 +292,33 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
               <button
                 type="button"
                 onClick={onOpenNewTask}
-                className="px-3 py-2 bg-[#153e6b] hover:bg-[#103257] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer shadow-2xs"
+                className="px-3.5 py-2 bg-[#003366] hover:bg-[#002244] text-white text-[13px] font-semibold rounded-[8px] flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer shadow-xs"
                 title="Lãnh đạo phân công nhiệm vụ mới"
               >
-                <PlusCircle className="w-3.5 h-3.5 text-blue-200" />
+                <PlusCircle className="w-4 h-4 text-blue-200" />
                 <span>Giao Việc Mới</span>
               </button>
             )}
           </div>
         </div>
 
-        {/* Metric Badges */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-100 text-xs">
-          <div className="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200 shadow-2xs">
-            <span className="text-slate-500 font-medium block">Nhiệm vụ được giao</span>
-            <strong className="text-xl text-[#153e6b] font-mono font-extrabold tabular-nums mt-0.5 block">{myTasks.length} việc</strong>
+        {/* Metric Badges - enlarged numbers 24-28px */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mt-4 pt-4 border-t border-[#E5E7EB] text-[13px]">
+          <div className="bg-[#F4F6F9] p-3.5 rounded-[8px] border border-[#E5E7EB]">
+            <span className="text-[#4B5563] font-medium block text-[13px]">Nhiệm vụ được giao</span>
+            <strong className="text-[26px] text-[#003366] font-mono font-bold tabular-nums mt-0.5 block">{myTasks.length} việc</strong>
           </div>
-          <div className="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200 shadow-2xs">
-            <span className="text-slate-600 font-medium block">Đã hoàn thành</span>
-            <strong className="text-xl text-emerald-800 font-mono font-extrabold tabular-nums mt-0.5 block">{completedCount} việc</strong>
+          <div className="bg-[#F4F6F9] p-3.5 rounded-[8px] border border-[#E5E7EB]">
+            <span className="text-[#4B5563] font-medium block text-[13px]">Đã hoàn thành</span>
+            <strong className="text-[26px] text-emerald-700 font-mono font-bold tabular-nums mt-0.5 block">{completedCount} việc</strong>
           </div>
-          <div className="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200 shadow-2xs">
-            <span className="text-slate-600 font-medium block">Đang triển khai</span>
-            <strong className="text-xl text-blue-800 font-mono font-extrabold tabular-nums mt-0.5 block">{inProgressCount} việc</strong>
+          <div className="bg-[#F4F6F9] p-3.5 rounded-[8px] border border-[#E5E7EB]">
+            <span className="text-[#4B5563] font-medium block text-[13px]">Đang triển khai</span>
+            <strong className="text-[26px] text-[#1D4ED8] font-mono font-bold tabular-nums mt-0.5 block">{inProgressCount} việc</strong>
           </div>
-          <div className="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200 shadow-2xs">
-            <span className="text-slate-600 font-medium block">Vướng mắc / Chậm</span>
-            <strong className="text-xl text-rose-800 font-mono font-extrabold tabular-nums mt-0.5 block">{issueCount} việc</strong>
+          <div className="bg-[#F4F6F9] p-3.5 rounded-[8px] border border-[#E5E7EB]">
+            <span className="text-[#4B5563] font-medium block text-[13px]">Vướng mắc / Chậm</span>
+            <strong className="text-[26px] text-[#D32F2F] font-mono font-bold tabular-nums mt-0.5 block">{issueCount} việc</strong>
           </div>
         </div>
       </div>
@@ -326,23 +326,23 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
       {/* =========================================================================
           CẤP 2: HỆ THỐNG MENU PHÂN CẤP CHUYÊN BIỆT DÀNH CHO VIÊN CHỨC (NHÂN VIÊN)
          ========================================================================= */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 sm:p-5 space-y-3.5">
+      <div className="bg-white rounded-[8px] border border-[#E5E7EB] shadow-xs p-4 sm:p-5 space-y-3.5">
         
-        {/* 1. Dải Breadcrumb & Thông Tin Cán Bộ Tác Nghiệp (Gọn gàng, không tràn dòng) */}
-        <div className="flex items-center justify-between flex-wrap gap-2.5 pb-3 border-b border-slate-100">
-          <div className="flex items-center gap-1.5 flex-wrap text-xs">
-            <span className="font-semibold text-slate-500 flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200/70">
-              <Building className="w-3.5 h-3.5 text-slate-500" />
+        {/* 1. Dải Breadcrumb & Thông Tin Cán Bộ Tác Nghiệp */}
+        <div className="flex items-center justify-between flex-wrap gap-2.5 pb-3 border-b border-[#E5E7EB]">
+          <div className="flex items-center gap-1.5 flex-wrap text-[13px]">
+            <span className="font-semibold text-[#4B5563] flex items-center gap-1.5 bg-[#F4F6F9] px-2.5 py-1 rounded-[6px] border border-[#E5E7EB] text-[12px]">
+              <Building className="w-3.5 h-3.5 text-[#003366]" />
               TTDVTH Hố Nai
             </span>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-            <span className="font-medium text-slate-600 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200/70">
+            <ChevronRight className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+            <span className="font-medium text-[#4B5563] bg-[#F4F6F9] px-2 py-1 rounded-[6px] border border-[#E5E7EB] text-[12px]">
               Phân Hệ Viên Chức
             </span>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <ChevronRight className="w-3.5 h-3.5 text-gray-400 shrink-0" />
             {/* Active Sub-view Indicator */}
-            <span className="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 bg-slate-100 text-[#153e6b] flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#153e6b]" />
+            <span className="px-2.5 py-1 rounded-[6px] text-[12px] font-bold border border-[#E5E7EB] bg-[#F4F6F9] text-[#003366] flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#003366]" />
               {activeStaffMenu === 'report_form' && '1.1 Form Báo Cáo Từng Nhiệm Vụ'}
               {activeStaffMenu === 'my_tasks_matrix' && `1.2 Danh Mục Việc Giao (${myTasks.length})`}
               {activeStaffMenu === 'directives_inbox' && `2.1 Hòm Thư Lệnh Chỉ Đạo (${myDirectives.length})`}
@@ -351,31 +351,31 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
             </span>
           </div>
 
-          {/* Cán bộ tác nghiệp Pill */}
-          <div className="flex items-center gap-2 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200 text-xs">
-            <div className="w-6 h-6 rounded bg-[#153e6b] text-white flex items-center justify-center font-bold text-2xs">
+          {/* Cán bộ tác nghiệp */}
+          <div className="flex items-center gap-2 bg-[#F4F6F9] px-3 py-1 rounded-[6px] border border-[#E5E7EB] text-[13px]">
+            <div className="w-6 h-6 rounded bg-[#003366] text-white flex items-center justify-center font-bold text-[12px]">
               {selectedStaff.name.split(' ').slice(-1)[0][0]}
             </div>
             <div className="text-left leading-tight">
-              <span className="font-semibold text-slate-800 text-xs block">{selectedStaff.name}</span>
-              <span className="text-3xs text-slate-500">
+              <span className="font-semibold text-[#111827] text-[13px] block">{selectedStaff.name}</span>
+              <span className="text-[11px] text-[#4B5563]">
                 {selectedStaff.role}
               </span>
             </div>
           </div>
         </div>
 
-        {/* 2. Menu Phân Cấp Theo 3 Nhóm Tác Nghiệp Viên Chức (Grid 3 Cột Đều Nhau, Gọn Gàng Chuẩn Cơ Quan) */}
+        {/* 2. Menu Phân Cấp Theo 3 Nhóm Tác Nghiệp Viên Chức */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           
           {/* Nhóm 1: BÁO CÁO TIẾN ĐỘ CHUYÊN MÔN */}
-          <div className="bg-slate-50/70 p-3 rounded-xl border border-slate-200 flex flex-col justify-between space-y-2.5">
+          <div className="bg-[#F4F6F9] p-3 rounded-[8px] border border-[#E5E7EB] flex flex-col justify-between space-y-2.5">
             <div className="flex items-center justify-between px-1">
-              <span className="text-2xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                <ClipboardList className="w-4 h-4 text-[#153e6b]" />
+              <span className="text-[12px] font-bold text-[#111827] uppercase tracking-wider flex items-center gap-1.5">
+                <ClipboardList className="w-4 h-4 text-[#003366]" />
                 NHÓM 1: BÁO CÁO TIẾN ĐỘ
               </span>
-              <span className="text-3xs text-slate-600 font-medium bg-slate-200/70 px-2 py-0.5 rounded">
+              <span className="text-[11px] text-[#4B5563] font-medium bg-white px-2 py-0.5 rounded border border-[#E5E7EB]">
                 Tác nghiệp
               </span>
             </div>
@@ -385,23 +385,23 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveStaffMenu('report_form')}
-                className={`p-2.5 rounded-lg text-left transition-colors cursor-pointer flex flex-col justify-between border ${
+                className={`p-3 rounded-[8px] text-left transition-colors cursor-pointer flex flex-col justify-between border ${
                   activeStaffMenu === 'report_form'
-                    ? 'bg-[#153e6b] text-white border-[#153e6b] font-semibold shadow-2xs'
-                    : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+                    ? 'bg-[#003366] text-white border-[#003366] font-semibold shadow-xs'
+                    : 'bg-white hover:bg-[#F4F6F9] text-[#111827] border-[#E5E7EB]'
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1.5">
-                  <FileText className={`w-4 h-4 ${activeStaffMenu === 'report_form' ? 'text-white' : 'text-slate-500'}`} />
-                  <span className={`text-3xs font-mono px-1.5 py-0.5 rounded font-bold ${
-                    activeStaffMenu === 'report_form' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
+                  <FileText className={`w-4 h-4 ${activeStaffMenu === 'report_form' ? 'text-white' : 'text-[#4B5563]'}`} />
+                  <span className={`text-[12px] font-mono px-1.5 py-0.5 rounded font-bold ${
+                    activeStaffMenu === 'report_form' ? 'bg-white/20 text-white' : 'bg-[#F4F6F9] text-[#4B5563]'
                   }`}>
                     1.1
                   </span>
                 </div>
                 <div>
-                  <span className="text-xs font-bold block leading-tight">Form Báo Cáo Việc</span>
-                  <span className={`text-3xs block mt-0.5 ${activeStaffMenu === 'report_form' ? 'text-blue-100' : 'text-slate-500'}`}>
+                  <span className="text-[14px] font-bold block leading-tight">Form Báo Cáo Việc</span>
+                  <span className={`text-[12px] block mt-0.5 ${activeStaffMenu === 'report_form' ? 'text-blue-100' : 'text-[#4B5563]'}`}>
                     Nhập %, tiến độ, minh chứng
                   </span>
                 </div>
@@ -411,23 +411,23 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveStaffMenu('my_tasks_matrix')}
-                className={`p-2.5 rounded-lg text-left transition-colors cursor-pointer flex flex-col justify-between border ${
+                className={`p-3 rounded-[8px] text-left transition-colors cursor-pointer flex flex-col justify-between border ${
                   activeStaffMenu === 'my_tasks_matrix'
-                    ? 'bg-[#153e6b] text-white border-[#153e6b] font-semibold shadow-2xs'
-                    : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+                    ? 'bg-[#003366] text-white border-[#003366] font-semibold shadow-xs'
+                    : 'bg-white hover:bg-[#F4F6F9] text-[#111827] border-[#E5E7EB]'
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1.5">
-                  <ListOrdered className={`w-4 h-4 ${activeStaffMenu === 'my_tasks_matrix' ? 'text-white' : 'text-slate-500'}`} />
-                  <span className={`text-3xs font-mono px-1.5 py-0.5 rounded font-bold ${
-                    activeStaffMenu === 'my_tasks_matrix' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
+                  <ListOrdered className={`w-4 h-4 ${activeStaffMenu === 'my_tasks_matrix' ? 'text-white' : 'text-[#4B5563]'}`} />
+                  <span className={`text-[12px] font-mono px-1.5 py-0.5 rounded font-bold ${
+                    activeStaffMenu === 'my_tasks_matrix' ? 'bg-white/20 text-white' : 'bg-[#F4F6F9] text-[#4B5563]'
                   }`}>
                     {myTasks.length} việc
                   </span>
                 </div>
                 <div>
-                  <span className="text-xs font-bold block leading-tight">Bảng Việc Của Tôi</span>
-                  <span className={`text-3xs block mt-0.5 ${activeStaffMenu === 'my_tasks_matrix' ? 'text-blue-100' : 'text-slate-500'}`}>
+                  <span className="text-[14px] font-bold block leading-tight">Bảng Việc Của Tôi</span>
+                  <span className={`text-[12px] block mt-0.5 ${activeStaffMenu === 'my_tasks_matrix' ? 'text-blue-100' : 'text-[#4B5563]'}`}>
                     Toàn bộ danh mục nhiệm vụ
                   </span>
                 </div>
@@ -436,13 +436,13 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
           </div>
 
           {/* Nhóm 2: TIẾP THU CHỈ ĐẠO CỦA LÃNH ĐẠO */}
-          <div className="bg-slate-50/70 p-3 rounded-xl border border-slate-200 flex flex-col justify-between space-y-2.5">
+          <div className="bg-[#F4F6F9] p-3 rounded-[8px] border border-[#E5E7EB] flex flex-col justify-between space-y-2.5">
             <div className="flex items-center justify-between px-1">
-              <span className="text-2xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-[#153e6b]" />
+              <span className="text-[12px] font-bold text-[#111827] uppercase tracking-wider flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-[#003366]" />
                 NHÓM 2: CHỈ ĐẠO LÃNH ĐẠO
               </span>
-              <span className="text-3xs text-slate-600 font-medium bg-slate-200/70 px-2 py-0.5 rounded">
+              <span className="text-[11px] text-[#4B5563] font-medium bg-white px-2 py-0.5 rounded border border-[#E5E7EB]">
                 Chỉ đạo
               </span>
             </div>
@@ -452,27 +452,27 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveStaffMenu('directives_inbox')}
-                className={`p-2.5 rounded-lg text-left transition-colors cursor-pointer flex flex-col justify-between h-full border ${
+                className={`p-3 rounded-[8px] text-left transition-colors cursor-pointer flex flex-col justify-between h-full border ${
                   activeStaffMenu === 'directives_inbox'
-                    ? 'bg-[#153e6b] text-white border-[#153e6b] font-semibold shadow-2xs'
-                    : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+                    ? 'bg-[#003366] text-white border-[#003366] font-semibold shadow-xs'
+                    : 'bg-white hover:bg-[#F4F6F9] text-[#111827] border-[#E5E7EB]'
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1.5">
-                  <Inbox className={`w-4 h-4 ${activeStaffMenu === 'directives_inbox' ? 'text-white' : 'text-slate-500'}`} />
-                  <span className={`text-3xs font-mono px-2 py-0.5 rounded font-bold ${
+                  <Inbox className={`w-4 h-4 ${activeStaffMenu === 'directives_inbox' ? 'text-white' : 'text-[#4B5563]'}`} />
+                  <span className={`text-[12px] font-mono px-2 py-0.5 rounded font-bold ${
                     activeStaffMenu === 'directives_inbox'
                       ? 'bg-white/20 text-white'
                       : myDirectives.length > 0
-                      ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                      : 'bg-slate-100 text-slate-600'
+                      ? 'bg-amber-100 text-amber-900 border border-amber-200'
+                      : 'bg-[#F4F6F9] text-[#4B5563]'
                   }`}>
                     {myDirectives.length} chỉ đạo
                   </span>
                 </div>
                 <div>
-                  <span className="text-xs font-bold block leading-tight">Hòm Thư Lệnh Đôn Đốc</span>
-                  <span className={`text-3xs block mt-0.5 ${activeStaffMenu === 'directives_inbox' ? 'text-blue-100' : 'text-slate-500'}`}>
+                  <span className="text-[14px] font-bold block leading-tight">Hòm Thư Lệnh Đôn Đốc</span>
+                  <span className={`text-[12px] block mt-0.5 ${activeStaffMenu === 'directives_inbox' ? 'text-blue-100' : 'text-[#4B5563]'}`}>
                     Ý kiến đôn đốc & chỉ đạo trực tiếp
                   </span>
                 </div>
@@ -481,13 +481,13 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
           </div>
 
           {/* Nhóm 3: SỔ NHẬT KÝ & ĐỀ XUẤT VIỆC MỚI */}
-          <div className="bg-slate-50/70 p-3 rounded-xl border border-slate-200 flex flex-col justify-between space-y-2.5">
+          <div className="bg-[#F4F6F9] p-3 rounded-[8px] border border-[#E5E7EB] flex flex-col justify-between space-y-2.5">
             <div className="flex items-center justify-between px-1">
-              <span className="text-2xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                <History className="w-4 h-4 text-[#153e6b]" />
+              <span className="text-[12px] font-bold text-[#111827] uppercase tracking-wider flex items-center gap-1.5">
+                <History className="w-4 h-4 text-[#003366]" />
                 NHÓM 3: NHẬT KÝ & ĐỀ XUẤT
               </span>
-              <span className="text-3xs text-slate-600 font-medium bg-slate-200/70 px-2 py-0.5 rounded">
+              <span className="text-[11px] text-[#4B5563] font-medium bg-white px-2 py-0.5 rounded border border-[#E5E7EB]">
                 Lưu trữ
               </span>
             </div>
@@ -497,23 +497,23 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveStaffMenu('report_history')}
-                className={`p-2.5 rounded-lg text-left transition-colors cursor-pointer flex flex-col justify-between border ${
+                className={`p-3 rounded-[8px] text-left transition-colors cursor-pointer flex flex-col justify-between border ${
                   activeStaffMenu === 'report_history'
-                    ? 'bg-[#153e6b] text-white border-[#153e6b] font-semibold shadow-2xs'
-                    : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+                    ? 'bg-[#003366] text-white border-[#003366] font-semibold shadow-xs'
+                    : 'bg-white hover:bg-[#F4F6F9] text-[#111827] border-[#E5E7EB]'
                 }`}
               >
                 <div className="flex items-center justify-between w-full mb-1.5">
-                  <Clock className={`w-4 h-4 ${activeStaffMenu === 'report_history' ? 'text-white' : 'text-slate-500'}`} />
-                  <span className={`text-3xs font-mono px-1.5 py-0.5 rounded font-bold ${
-                    activeStaffMenu === 'report_history' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
+                  <Clock className={`w-4 h-4 ${activeStaffMenu === 'report_history' ? 'text-white' : 'text-[#4B5563]'}`} />
+                  <span className={`text-[12px] font-mono px-1.5 py-0.5 rounded font-bold ${
+                    activeStaffMenu === 'report_history' ? 'bg-white/20 text-white' : 'bg-[#F4F6F9] text-[#4B5563]'
                   }`}>
                     {allMyReportLogs.length} bản ghi
                   </span>
                 </div>
                 <div>
-                  <span className="text-xs font-bold block leading-tight">Sổ Nhật Ký Đã Gửi</span>
-                  <span className={`text-3xs block mt-0.5 ${activeStaffMenu === 'report_history' ? 'text-blue-100' : 'text-slate-500'}`}>
+                  <span className="text-[14px] font-bold block leading-tight">Sổ Nhật Ký Đã Gửi</span>
+                  <span className={`text-[12px] block mt-0.5 ${activeStaffMenu === 'report_history' ? 'text-blue-100' : 'text-[#4B5563]'}`}>
                     Lịch sử các lần báo cáo tiến độ
                   </span>
                 </div>
@@ -524,23 +524,23 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveStaffMenu('proposal_new')}
-                  className={`p-2.5 rounded-lg text-left transition-colors cursor-pointer flex flex-col justify-between border ${
+                  className={`p-3 rounded-[8px] text-left transition-colors cursor-pointer flex flex-col justify-between border ${
                     activeStaffMenu === 'proposal_new'
-                      ? 'bg-[#153e6b] text-white border-[#153e6b] font-semibold shadow-2xs'
-                      : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+                      ? 'bg-[#003366] text-white border-[#003366] font-semibold shadow-xs'
+                      : 'bg-white hover:bg-[#F4F6F9] text-[#111827] border-[#E5E7EB]'
                   }`}
                 >
                   <div className="flex items-center justify-between w-full mb-1.5">
-                    <Sparkles className={`w-4 h-4 ${activeStaffMenu === 'proposal_new' ? 'text-white' : 'text-slate-500'}`} />
-                    <span className={`text-3xs font-mono px-1.5 py-0.5 rounded font-bold ${
-                      activeStaffMenu === 'proposal_new' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
+                    <Sparkles className={`w-4 h-4 ${activeStaffMenu === 'proposal_new' ? 'text-white' : 'text-[#4B5563]'}`} />
+                    <span className={`text-[12px] font-mono px-1.5 py-0.5 rounded font-bold ${
+                      activeStaffMenu === 'proposal_new' ? 'bg-white/20 text-white' : 'bg-[#F4F6F9] text-[#4B5563]'
                     }`}>
                       3.2
                     </span>
                   </div>
                   <div>
-                    <span className="text-xs font-bold block leading-tight">Đề Xuất Việc Mới</span>
-                    <span className={`text-3xs block mt-0.5 ${activeStaffMenu === 'proposal_new' ? 'text-blue-100' : 'text-slate-500'}`}>
+                    <span className="text-[14px] font-bold block leading-tight">Đề Xuất Việc Mới</span>
+                    <span className={`text-[12px] block mt-0.5 ${activeStaffMenu === 'proposal_new' ? 'text-blue-100' : 'text-[#4B5563]'}`}>
                       Quyền Lãnh đạo
                     </span>
                   </div>
@@ -562,26 +562,26 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* Left Column: Tasks List of this Staff (5 cols) */}
-        <div className="lg:col-span-5 bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
-          <div className="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+        <div className="lg:col-span-5 bg-white rounded-[8px] shadow-xs border border-[#E5E7EB] overflow-hidden">
+          <div className="p-4 border-b border-[#E5E7EB] bg-[#F4F6F9] flex items-center justify-between">
             <div>
-              <h3 className="font-bold text-slate-900 text-sm">Danh Sách Nhiệm Vụ Của Tôi</h3>
-              <p className="text-xs text-slate-500">Chọn nhiệm vụ để mở form báo cáo</p>
+              <h3 className="font-bold text-[#111827] text-[15px]">Danh Sách Nhiệm Vụ Của Tôi</h3>
+              <p className="text-[13px] text-[#4B5563]">Chọn nhiệm vụ để mở form báo cáo</p>
             </div>
-            <span className="font-mono text-xs font-bold bg-slate-200 text-slate-700 px-2 py-0.5 rounded">
+            <span className="font-mono text-[12px] font-bold bg-white text-[#111827] px-2.5 py-0.5 rounded-[4px] border border-[#E5E7EB]">
               {filteredMyTasks.length}/{myTasks.length}
             </span>
           </div>
 
           {/* Quick Filter Tabs */}
-          <div className="p-2 border-b border-slate-200 flex items-center gap-1 overflow-x-auto text-xs bg-white">
+          <div className="p-2 border-b border-[#E5E7EB] flex items-center gap-1.5 overflow-x-auto text-[13px] bg-white">
             <button
               type="button"
               onClick={() => setFilterStatus('all')}
-              className={`px-2.5 py-1 rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 rounded-[6px] transition-colors whitespace-nowrap cursor-pointer text-[13px] ${
                 filterStatus === 'all'
-                  ? 'bg-slate-900 text-white font-medium'
-                  : 'text-slate-600 hover:bg-slate-100'
+                  ? 'bg-[#003366] text-white font-medium'
+                  : 'text-[#4B5563] hover:bg-[#F4F6F9]'
               }`}
             >
               Tất cả ({myTasks.length})
@@ -589,10 +589,10 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
             <button
               type="button"
               onClick={() => setFilterStatus('in_progress')}
-              className={`px-2.5 py-1 rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 rounded-[6px] transition-colors whitespace-nowrap cursor-pointer text-[13px] ${
                 filterStatus === 'in_progress'
-                  ? 'bg-blue-600 text-white font-medium'
-                  : 'text-slate-600 hover:bg-slate-100'
+                  ? 'bg-[#003366] text-white font-medium'
+                  : 'text-[#4B5563] hover:bg-[#F4F6F9]'
               }`}
             >
               Đang làm ({inProgressCount})
@@ -600,10 +600,10 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
             <button
               type="button"
               onClick={() => setFilterStatus('issues')}
-              className={`px-2.5 py-1 rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 rounded-[6px] transition-colors whitespace-nowrap cursor-pointer text-[13px] ${
                 filterStatus === 'issues'
-                  ? 'bg-rose-600 text-white font-medium'
-                  : 'text-slate-600 hover:bg-slate-100'
+                  ? 'bg-[#D32F2F] text-white font-medium'
+                  : 'text-[#4B5563] hover:bg-[#F4F6F9]'
               }`}
             >
               Vướng mắc ({issueCount})
@@ -611,10 +611,10 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
             <button
               type="button"
               onClick={() => setFilterStatus('completed')}
-              className={`px-2.5 py-1 rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 rounded-[6px] transition-colors whitespace-nowrap cursor-pointer text-[13px] ${
                 filterStatus === 'completed'
-                  ? 'bg-emerald-600 text-white font-medium'
-                  : 'text-slate-600 hover:bg-slate-100'
+                  ? 'bg-emerald-700 text-white font-medium'
+                  : 'text-[#4B5563] hover:bg-[#F4F6F9]'
               }`}
             >
               Đã xong ({completedCount})
@@ -622,59 +622,59 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
           </div>
 
           {/* Task Items */}
-          <div className="divide-y divide-slate-100 max-h-[620px] overflow-y-auto">
+          <div className="divide-y divide-[#E5E7EB] max-h-[620px] overflow-y-auto">
             {filteredMyTasks.length === 0 ? (
-              <div className="p-6 text-center text-xs text-slate-500">
+              <div className="p-6 text-center text-[14px] text-[#4B5563]">
                 Không tìm thấy nhiệm vụ nào trong danh mục lọc này.
               </div>
             ) : (
               filteredMyTasks.map((t) => {
                 const isSelected = currentTask && currentTask.id === t.id;
-                const hasDirective = t.leaderDirectives.length > 0;
+                const hasDirective = t.leaderDirectives && t.leaderDirectives.length > 0;
                 return (
                   <div
                     key={t.id}
                     onClick={() => handleSelectTask(t)}
-                    className={`p-3.5 transition-colors cursor-pointer text-xs ${
+                    className={`p-3.5 transition-colors cursor-pointer text-[14px] ${
                       isSelected
-                        ? 'bg-blue-50/80 border-l-4 border-l-blue-600'
-                        : 'hover:bg-slate-50'
+                        ? 'bg-blue-50/90 border-l-4 border-l-[#003366]'
+                        : 'hover:bg-[#F4F6F9]'
                     }`}
                   >
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="font-mono font-bold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <span className="font-mono font-bold text-[#003366] bg-blue-50 px-2 py-0.5 rounded-[4px] text-[12px] border border-blue-200">
                         {t.code}
                       </span>
-                      <span className={`px-2 py-0.5 rounded font-medium text-2xs ${getStatusBadgeClasses(t.status)}`}>
+                      <span className={`px-2 py-0.5 rounded-[4px] font-medium text-[12px] ${getStatusBadgeClasses(t.status)}`}>
                         {getStatusLabel(t.status)}
                       </span>
                     </div>
 
-                    <h4 className="font-semibold text-slate-900 line-clamp-2 leading-snug">
+                    <h4 className="font-semibold text-[#111827] line-clamp-2 leading-snug text-[14px]">
                       {t.title}
                     </h4>
 
                     {/* Progress Bar in list */}
-                    <div className="mt-2 flex items-center gap-2">
-                      <div className="flex-1 bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                    <div className="mt-2.5 flex items-center gap-2">
+                      <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
                         <div
                           className={`h-full rounded-full ${
-                            t.progress === 100 ? 'bg-emerald-600' : 'bg-blue-600'
+                            t.progress === 100 ? 'bg-emerald-600' : 'bg-[#003366]'
                           }`}
                           style={{ width: `${t.progress}%` }}
                         />
                       </div>
-                      <span className="font-mono tabular-nums text-slate-700 font-bold text-2xs">
+                      <span className="font-mono tabular-nums text-[#111827] font-bold text-[12px]">
                         {t.progress}%
                       </span>
                     </div>
 
-                    <div className="mt-2 flex items-center justify-between text-2xs text-slate-500">
+                    <div className="mt-2 flex items-center justify-between text-[12px] text-[#4B5563]">
                       <span>Hạn: {t.deadline || 'Theo tiến độ'}</span>
                       {hasDirective && (
-                        <span className="text-red-700 font-medium flex items-center gap-1">
-                          <ShieldCheck className="w-3 h-3 text-red-600" />
-                          Có chỉ đạo
+                        <span className="text-[#003366] font-medium flex items-center gap-1">
+                          <ShieldCheck className="w-3.5 h-3.5 text-[#003366]" />
+                          Có chỉ đạo BGĐ
                         </span>
                       )}
                     </div>
@@ -686,55 +686,55 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
         </div>
 
         {/* Right Column: Dedicated Reporting Form for Selected Task (7 cols) */}
-        <div className="lg:col-span-7 bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
+        <div className="lg:col-span-7 bg-white rounded-[8px] shadow-xs border border-[#E5E7EB] overflow-hidden">
           {currentTask ? (
             <div>
               {/* Form Title Banner */}
-              <div className="bg-slate-900 text-white p-4 border-b border-slate-800 flex items-center justify-between">
+              <div className="bg-[#003366] text-white p-4 border-b border-[#002244] flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="bg-red-700 text-white font-mono text-xs px-2 py-0.5 rounded font-bold">
+                    <span className="bg-white/20 text-white font-mono text-[12px] px-2 py-0.5 rounded-[4px] font-bold border border-white/20">
                       {currentTask.code}
                     </span>
-                    <span className="text-xs text-slate-300 font-medium">
+                    <span className="text-[12px] text-blue-100 font-medium">
                       {currentTask.category}
                     </span>
                   </div>
-                  <h3 className="font-bold text-base text-white mt-1 leading-snug">
+                  <h3 className="font-bold text-[16px] text-white mt-1.5 leading-snug">
                     {currentTask.title}
                   </h3>
                 </div>
                 <div className="text-right shrink-0">
-                  <span className="text-xs text-slate-400 block">Tiến độ hiện tại</span>
-                  <span className="font-mono text-lg font-bold text-emerald-400">
+                  <span className="text-[12px] text-blue-200 block">Tiến độ hiện tại</span>
+                  <span className="font-mono text-[22px] font-bold text-white">
                     {progressVal}%
                   </span>
                 </div>
               </div>
 
               {/* Notice Directive Box (The foundation requirements) */}
-              <div className="bg-slate-50 p-4 border-b border-slate-200 text-xs space-y-2">
+              <div className="bg-[#F4F6F9] p-4 border-b border-[#E5E7EB] text-[13px] space-y-2.5">
                 <div>
-                  <span className="font-bold text-slate-800 flex items-center gap-1">
-                    <FileText className="w-3.5 h-3.5 text-red-700" />
-                    Chỉ đạo gốc từ Thông báo kết luận cuộc họp giao ban 28/9/2026:
+                  <span className="font-bold text-[#111827] flex items-center gap-1.5 text-[13px]">
+                    <FileText className="w-4 h-4 text-[#003366]" />
+                    Chỉ đạo giao nhiệm vụ từ Thông báo kết luận giao ban:
                   </span>
-                  <p className="text-slate-700 bg-white p-2.5 rounded border border-slate-200 mt-1 leading-relaxed">
+                  <p className="text-[#111827] bg-white p-3 rounded-[6px] border border-[#E5E7EB] mt-1.5 leading-relaxed text-[14px]">
                     {currentTask.requirement}
                   </p>
                 </div>
 
                 {/* Display Director's Directives if any */}
                 {currentTask.leaderDirectives && currentTask.leaderDirectives.length > 0 && (
-                  <div className="bg-red-50 border border-red-200 p-2.5 rounded text-red-950">
-                    <div className="font-bold flex items-center gap-1 text-red-800 mb-1">
-                      <ShieldCheck className="w-4 h-4 text-red-700" />
+                  <div className="bg-blue-50 border border-blue-200 p-3 rounded-[6px] text-[#111827]">
+                    <div className="font-bold flex items-center gap-1.5 text-[#003366] mb-1 text-[13px]">
+                      <ShieldCheck className="w-4 h-4 text-[#003366]" />
                       Ý kiến chỉ đạo mới nhất của Giám đốc Phạm Thanh Phong:
                     </div>
-                    <p className="leading-relaxed font-medium">
+                    <p className="leading-relaxed font-medium text-[14px]">
                       "{currentTask.leaderDirectives[0].content}"
                     </p>
-                    <div className="text-2xs text-red-700 mt-1">
+                    <div className="text-[12px] text-[#4B5563] mt-1.5">
                       Thời điểm chỉ đạo: {currentTask.leaderDirectives[0].timestamp}
                       {currentTask.leaderDirectives[0].targetDeadline && (
                         <span> · Hạn yêu cầu: {currentTask.leaderDirectives[0].targetDeadline}</span>
@@ -745,24 +745,24 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
               </div>
 
               {/* Form Controls */}
-              <form onSubmit={handleSubmitReport} className="p-5 space-y-4 text-xs sm:text-sm">
+              <form onSubmit={handleSubmitReport} className="p-5 space-y-4 text-[14px]">
                 
                 {/* 1. Progress Slider & Quick Presets */}
                 <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="font-bold text-slate-800 text-xs">
-                      1. Mức độ hoàn thành công việc (%): <span className="text-blue-700 font-mono text-sm">{progressVal}%</span>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="font-bold text-[#111827] text-[14px]">
+                      1. Mức độ hoàn thành công việc (%): <span className="text-[#003366] font-mono text-[16px]">{progressVal}%</span>
                     </label>
-                    <div className="flex items-center gap-1 text-2xs">
+                    <div className="flex items-center gap-1 text-[12px]">
                       {[0, 25, 50, 75, 90, 100].map((preset) => (
                         <button
                           key={preset}
                           type="button"
                           onClick={() => handleSetProgressPreset(preset)}
-                          className={`px-2 py-0.5 rounded border transition-colors cursor-pointer ${
+                          className={`px-2 py-0.5 rounded-[4px] border transition-colors cursor-pointer ${
                             progressVal === preset
-                              ? 'bg-blue-600 text-white border-blue-600 font-bold'
-                              : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300'
+                              ? 'bg-[#003366] text-white border-[#003366] font-bold'
+                              : 'bg-white hover:bg-[#F4F6F9] text-[#111827] border-[#E5E7EB]'
                           }`}
                         >
                           {preset}%
@@ -778,9 +778,9 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                     step="5"
                     value={progressVal}
                     onChange={(e) => handleSetProgressPreset(Number(e.target.value))}
-                    className="w-full accent-blue-600 cursor-pointer h-2 bg-slate-200 rounded-lg appearance-none"
+                    className="w-full accent-[#003366] cursor-pointer h-2 bg-gray-200 rounded-lg appearance-none"
                   />
-                  <div className="flex justify-between text-2xs text-slate-400 mt-1">
+                  <div className="flex justify-between text-[12px] text-[#4B5563] mt-1">
                     <span>0% (Chưa làm)</span>
                     <span>50% (Đang làm nửa khối lượng)</span>
                     <span>100% (Hoàn thành)</span>
@@ -789,8 +789,8 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
 
                 {/* 2. Task Status Selector */}
                 <div>
-                  <label className="font-bold text-slate-800 text-xs block mb-1.5">
-                    2. Trạng thái thực hiện hiện tại: <span className="text-red-500">*</span>
+                  <label className="font-bold text-[#111827] text-[14px] block mb-1.5">
+                    2. Trạng thái thực hiện hiện tại: <span className="text-[#D32F2F]">*</span>
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {[
@@ -807,17 +807,17 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                           setStatusVal(item.val as TaskStatus);
                           if (item.val === 'completed') setProgressVal(100);
                         }}
-                        className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
+                        className={`p-3 rounded-[8px] border text-left transition-all cursor-pointer ${
                           statusVal === item.val
-                            ? 'bg-blue-50 border-blue-600 text-blue-900 ring-1 ring-blue-600'
-                            : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
+                            ? 'bg-blue-50 border-[#003366] text-[#003366] ring-1 ring-[#003366]'
+                            : 'bg-white hover:bg-[#F4F6F9] border-[#E5E7EB] text-[#111827]'
                         }`}
                       >
-                        <div className="font-semibold text-xs flex items-center justify-between">
+                        <div className="font-semibold text-[13px] flex items-center justify-between">
                           <span>{item.label}</span>
-                          {statusVal === item.val && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                          {statusVal === item.val && <Check className="w-4 h-4 text-[#003366]" />}
                         </div>
-                        <div className="text-2xs text-slate-500 mt-0.5">{item.desc}</div>
+                        <div className="text-[12px] text-[#4B5563] mt-0.5">{item.desc}</div>
                       </button>
                     ))}
                   </div>
@@ -825,8 +825,8 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
 
                 {/* 3. Detailed Work Done */}
                 <div>
-                  <label className="font-bold text-slate-800 text-xs block mb-1">
-                    3. Nội dung cụ thể đã triển khai (Báo cáo thực tế) <span className="text-red-500">*</span>
+                  <label className="font-bold text-[#111827] text-[14px] block mb-1">
+                    3. Nội dung cụ thể đã triển khai (Báo cáo thực tế) <span className="text-[#D32F2F]">*</span>
                   </label>
                   <textarea
                     required
@@ -834,13 +834,13 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                     value={workDone}
                     onChange={(e) => setWorkDone(e.target.value)}
                     placeholder="Ghi rõ các công việc đã thực hiện trong tuần, khối lượng đạt được, số liệu cụ thể..."
-                    className="w-full text-xs p-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                    className="w-full text-[14px] p-3 rounded-[8px] border border-[#E5E7EB] bg-white text-[#111827] focus:outline-none focus:ring-1 focus:ring-[#003366]"
                   />
                 </div>
 
                 {/* 4. Difficulties / Bottlenecks */}
                 <div>
-                  <label className="font-bold text-slate-800 text-xs block mb-1">
+                  <label className="font-bold text-[#111827] text-[14px] block mb-1">
                     4. Khó khăn, vướng mắc phát sinh (nếu có):
                   </label>
                   <textarea
@@ -848,13 +848,13 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                     value={difficulties}
                     onChange={(e) => setDifficulties(e.target.value)}
                     placeholder="Ví dụ: Thời tiết mưa kéo dài không thảm nhựa được; Chờ HĐND phê duyệt kinh phí; Chờ hướng dẫn của Đảng ủy..."
-                    className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full text-[14px] p-3 rounded-[8px] border border-[#E5E7EB] bg-white text-[#111827] focus:outline-none focus:ring-1 focus:ring-[#D32F2F]"
                   />
                 </div>
 
                 {/* 5. Proposals to Leadership */}
                 <div>
-                  <label className="font-bold text-slate-800 text-xs block mb-1">
+                  <label className="font-bold text-[#111827] text-[14px] block mb-1">
                     5. Đề xuất, kiến nghị với Ban Giám đốc Trung tâm:
                   </label>
                   <textarea
@@ -862,32 +862,32 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                     value={proposals}
                     onChange={(e) => setProposals(e.target.value)}
                     placeholder="Ví dụ: Kiến nghị Giám đốc làm việc với Phòng KTHTĐT hỗ trợ thẩm định; Xin gia hạn tiến độ..."
-                    className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full text-[14px] p-3 rounded-[8px] border border-[#E5E7EB] bg-white text-[#111827] focus:outline-none focus:ring-1 focus:ring-[#003366]"
                   />
                 </div>
 
                 {/* 6. Hạn hoàn thành & Hồ sơ tài liệu đính kèm minh chứng */}
                 <div className="space-y-3 pt-1">
                   <div>
-                    <label className="font-bold text-slate-800 text-xs block mb-1">
+                    <label className="font-bold text-[#111827] text-[14px] block mb-1">
                       6. Hạn hoàn thành dự kiến / điều chỉnh:
                     </label>
                     <input
                       type="date"
                       value={deadlineVal}
                       onChange={(e) => setDeadlineVal(e.target.value)}
-                      className="w-full sm:w-72 text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-full sm:w-72 text-[14px] p-2.5 rounded-[8px] border border-[#E5E7EB] focus:outline-none focus:ring-1 focus:ring-[#003366] bg-white text-[#111827]"
                     />
                   </div>
 
                   {/* 7. Phần Văn Bản, Biên Bản & Hồ Sơ Đính Kèm Tối Ưu */}
-                  <div className="bg-slate-50/90 rounded-xl border border-slate-200/90 p-3.5 space-y-3 shadow-2xs">
+                  <div className="bg-[#F4F6F9] rounded-[8px] border border-[#E5E7EB] p-4 space-y-3 shadow-xs">
                     <div className="flex items-center justify-between flex-wrap gap-2">
-                      <label className="font-bold text-slate-800 text-xs flex items-center gap-1.5">
-                        <Paperclip className="w-3.5 h-3.5 text-blue-600" />
+                      <label className="font-bold text-[#111827] text-[14px] flex items-center gap-1.5">
+                        <Paperclip className="w-4 h-4 text-[#003366]" />
                         7. Hồ sơ, Biên bản & Văn bản đính kèm minh chứng:
                       </label>
-                      <span className="text-3xs font-mono font-bold text-blue-800 bg-blue-100/80 px-2 py-0.5 rounded-full border border-blue-200">
+                      <span className="text-[12px] font-mono font-bold text-[#003366] bg-blue-100 px-2 py-0.5 rounded-[4px] border border-blue-200">
                         {attachedDocs.length} tài liệu đính kèm
                       </span>
                     </div>
@@ -898,25 +898,25 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                         {attachedDocs.map((doc, idx) => (
                           <div
                             key={idx}
-                            className="inline-flex items-center gap-1.5 bg-white text-slate-800 text-xs px-2.5 py-1.5 rounded-lg border border-slate-300/80 shadow-2xs hover:border-blue-300 transition-colors"
+                            className="inline-flex items-center gap-1.5 bg-white text-[#111827] text-[13px] px-3 py-1.5 rounded-[6px] border border-[#E5E7EB] shadow-xs"
                           >
-                            <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                            <FileText className="w-4 h-4 text-[#003366] shrink-0" />
                             <span className="font-medium max-w-[280px] sm:max-w-[360px] truncate" title={doc}>
                               {doc}
                             </span>
                             <button
                               type="button"
                               onClick={() => handleRemoveDocument(doc)}
-                              className="text-slate-400 hover:text-rose-600 p-0.5 rounded-md hover:bg-rose-50 transition-colors ml-1 cursor-pointer"
+                              className="text-gray-400 hover:text-[#D32F2F] p-0.5 rounded transition-colors ml-1 cursor-pointer"
                               title="Gỡ bỏ tài liệu này"
                             >
-                              <X className="w-3 h-3" />
+                              <X className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <div className="text-2xs text-slate-500 italic bg-white/70 p-2.5 rounded-lg border border-dashed border-slate-300">
+                      <div className="text-[13px] text-[#4B5563] italic bg-white p-3 rounded-[6px] border border-dashed border-[#E5E7EB]">
                         Chưa có tài liệu đính kèm. Bạn có thể nhập số hiệu văn bản hoặc tải tệp minh chứng bên dưới.
                       </div>
                     )}
@@ -935,7 +935,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                             }
                           }}
                           placeholder="Nhập số hiệu/tên văn bản (VD: BB Nghiệm thu ngày 12/10, QĐ 111...)"
-                          className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                          className="w-full text-[14px] p-2.5 rounded-[8px] border border-[#E5E7EB] focus:outline-none focus:ring-1 focus:ring-[#003366] bg-white text-[#111827]"
                         />
                       </div>
                       
@@ -943,15 +943,15 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                         type="button"
                         onClick={() => handleAddDocument(newDocument)}
                         disabled={!newDocument.trim()}
-                        className="px-3.5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:hover:bg-blue-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer disabled:cursor-not-allowed shrink-0"
+                        className="px-4 py-2.5 bg-[#003366] hover:bg-[#002244] disabled:opacity-40 text-white text-[13px] font-semibold rounded-[8px] flex items-center gap-1.5 shadow-xs transition-all cursor-pointer disabled:cursor-not-allowed shrink-0"
                       >
-                        <PlusCircle className="w-3.5 h-3.5" />
+                        <PlusCircle className="w-4 h-4" />
                         <span>Thêm</span>
                       </button>
 
                       {/* Nút đính kèm tệp */}
-                      <label className="px-3 py-2.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer shrink-0">
-                        <Upload className="w-3.5 h-3.5 text-slate-600" />
+                      <label className="px-4 py-2.5 bg-white hover:bg-[#F4F6F9] text-[#111827] text-[13px] font-semibold rounded-[8px] border border-[#E5E7EB] flex items-center gap-1.5 shadow-xs transition-all cursor-pointer shrink-0">
+                        <Upload className="w-4 h-4 text-[#4B5563]" />
                         <span>Tải tệp</span>
                         <input
                           type="file"
@@ -964,7 +964,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
 
                     {/* Gợi ý mẫu văn bản nhanh */}
                     <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                      <span className="text-3xs text-slate-400 font-medium">Gợi ý nhanh:</span>
+                      <span className="text-[12px] text-[#4B5563] font-medium">Gợi ý nhanh:</span>
                       {[
                         'Biên bản nghiệm thu kỹ thuật',
                         'Tờ trình thẩm định phê duyệt',
@@ -976,7 +976,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                           key={template}
                           type="button"
                           onClick={() => handleAddDocument(template)}
-                          className="text-3xs bg-white hover:bg-blue-50 text-slate-600 hover:text-blue-700 px-2 py-0.5 rounded-md border border-slate-200 transition-colors cursor-pointer"
+                          className="text-[12px] bg-white hover:bg-blue-50 text-[#4B5563] hover:text-[#003366] px-2.5 py-0.5 rounded-[4px] border border-[#E5E7EB] transition-colors cursor-pointer"
                         >
                           + {template}
                         </button>
@@ -986,17 +986,17 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                 </div>
 
                 {/* Submit Action Button */}
-                <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
-                  <span className="text-2xs text-slate-500">
-                    Báo cáo bởi: <strong>{selectedStaff.name}</strong> · Tự động cập nhật lên Dashboard Lãnh đạo
+                <div className="pt-3 border-t border-[#E5E7EB] flex items-center justify-between flex-wrap gap-2">
+                  <span className="text-[13px] text-[#4B5563]">
+                    Báo cáo bởi: <strong className="text-[#111827]">{selectedStaff.name}</strong> · Tự động đồng bộ lên Lãnh đạo
                   </span>
 
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg flex items-center gap-2 shadow transition-all cursor-pointer"
+                    className="px-6 py-2.5 bg-[#003366] hover:bg-[#002244] text-white text-[14px] font-bold rounded-[8px] flex items-center gap-2 shadow-xs transition-all cursor-pointer"
                   >
-                    <Send className="w-4 h-4" />
-                    <span>Gửi Báo Cáo Tiến Độ</span>
+                    <Send className="w-4 h-4 text-blue-200" />
+                    <span>GỬI BÁO CÁO TIẾN ĐỘ</span>
                   </button>
                 </div>
 

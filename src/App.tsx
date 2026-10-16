@@ -214,7 +214,7 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f0f4f8] text-slate-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F4F6F9] text-[#111827] flex flex-col font-sans">
       
       {/* Top Main Navigation Header */}
       <Header
