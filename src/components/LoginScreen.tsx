@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LogoTTDVTH } from './LogoTTDVTH';
+import { DynamicGovCanvas } from './DynamicGovCanvas';
 import {
   Lock,
   User,
@@ -10,7 +11,7 @@ import {
   LogIn,
   AlertCircle,
   FileCheck2,
-  Building
+  ShieldCheck
 } from 'lucide-react';
 
 interface LoginScreenProps {
@@ -58,10 +59,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F6F9] text-[#111827] flex flex-col justify-between font-sans">
+    <div className="relative min-h-screen text-[#111827] flex flex-col justify-between font-sans overflow-hidden select-none">
       
+      {/* Dynamic Animated Canvas Background */}
+      <DynamicGovCanvas />
+
       {/* 1. Header Cơ Quan Nhà Nước */}
-      <header className="bg-[#003366] text-white border-b border-[#002244] shadow-xs">
+      <header className="relative z-10 bg-[#003366]/95 backdrop-blur-md text-white border-b border-white/10 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <LogoTTDVTH className="w-10 h-10 shrink-0" />
@@ -76,20 +80,20 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           </div>
 
           <div className="hidden sm:flex items-center gap-2 text-[12px] text-blue-100">
-            <span className="bg-white/10 px-2.5 py-1 rounded-[4px] border border-white/20 font-medium">
+            <span className="bg-white/15 px-2.5 py-1 rounded-[4px] border border-white/20 font-medium">
               {tasksCount} nhiệm vụ giao ban
             </span>
-            <span className="bg-white/10 px-2.5 py-1 rounded-[4px] border border-white/20 font-medium">
+            <span className="bg-white/15 px-2.5 py-1 rounded-[4px] border border-white/20 font-medium">
               {dbConnected ? 'Dữ liệu trực tuyến' : 'Ngoại tuyến'}
             </span>
           </div>
         </div>
       </header>
 
-      {/* 2. Khung Đăng Nhập Trang Trọng Chuẩn Cơ Quan Nhà Nước */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-8 sm:py-14 flex flex-col items-center justify-center">
+      {/* 2. Khung Đăng Nhập Trang Trọng Đặt Giữa Canvas */}
+      <main className="relative z-10 flex-1 max-w-5xl w-full mx-auto px-4 py-8 sm:py-12 flex flex-col items-center justify-center">
         
-        <div className="w-full max-w-md bg-white text-[#111827] rounded-[8px] shadow-sm border border-[#E5E7EB] overflow-hidden">
+        <div className="w-full max-w-md bg-white text-[#111827] rounded-[8px] shadow-2xl border border-white/40 overflow-hidden ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-200">
           
           {/* Card Title Header */}
           <div className="bg-[#F4F6F9] border-b border-[#E5E7EB] px-6 py-4 flex items-center justify-between">
@@ -203,10 +207,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       </main>
 
       {/* 3. Footer Cơ Quan Nhà Nước */}
-      <footer className="bg-white border-t border-[#E5E7EB] py-3.5 px-4 text-center text-[12px] text-[#4B5563]">
+      <footer className="relative z-10 bg-[#002244]/90 backdrop-blur-md border-t border-white/10 py-3 px-4 text-center text-[12px] text-blue-200">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5">
-          <span className="font-medium">Ủy Ban Nhân Dân Phường Hố Nai · Trung Tâm Dịch Vụ Tổng Hợp</span>
-          <span>Hệ thống chỉ đạo điều hành và quản lý tiến độ 40 nhiệm vụ giao ban</span>
+          <span className="font-medium text-white/90">Ủy Ban Nhân Dân Phường Hố Nai · Trung Tâm Dịch Vụ Tổng Hợp(©Copyright:Hoàng Văn Thiện-Sđt:0948820369)</span>
+          <span className="text-blue-200/80">Hệ thống chỉ đạo điều hành và quản lý tiến độ 40 nhiệm vụ giao ban</span>
         </div>
       </footer>
 
