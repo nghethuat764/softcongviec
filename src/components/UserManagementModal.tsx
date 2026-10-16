@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useDepartments } from '../context/DepartmentContext';
 import { UserAccount, UserRole } from '../types/database';
 import {
   Users,
@@ -44,6 +45,7 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
   onClose,
 }) => {
   const { users, currentUser, isLeader, addUser, updateUser, deleteUser, switchUser } = useAuth();
+  const { departments } = useDepartments();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState<'ALL' | 'LEADER' | 'STAFF'>('ALL');
@@ -456,11 +458,14 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
                       onChange={(e) => setFormUnit(e.target.value)}
                       className="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-[8px] text-[14px] text-[#111827] focus:outline-none focus:ring-1 focus:ring-[#003366]"
                     >
-                      <option value="Ban Giám đốc">Ban Giám đốc</option>
-                      <option value="Tổ Dịch vụ công ích - Xây dựng">Tổ Dịch vụ công ích - Xây dựng</option>
-                      <option value="Tổ Văn hóa - Thể thao - Thông tin - Tuyên truyền">Tổ Văn hóa - Thể thao - Thông tin - Tuyên truyền</option>
-                      <option value="Tổ Hành chính - Kế toán">Tổ Hành chính - Kế toán</option>
-                      <option value="Bộ phận Tiếp nhận & Trả kết quả">Bộ phận Tiếp nhận & Trả kết quả</option>
+                      {departments.map((d) => (
+                        <option key={d.id} value={d.name}>
+                          {d.name} ({d.code})
+                        </option>
+                      ))}
+                      {formUnit && !departments.some((d) => d.name === formUnit) && (
+                        <option value={formUnit}>{formUnit}</option>
+                      )}
                     </select>
                   </div>
 

@@ -47,7 +47,24 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
   onUpdateTask,
   onOpenNewTask,
 }) => {
-  const { currentUser, isLeader, isStaff } = useAuth();
+  const { currentUser, isLeader, isStaff, users } = useAuth();
+
+  const availableStaffList: StaffMember[] = React.useMemo(() => {
+    if (users && users.length > 0) {
+      const list = users
+        .filter((u) => !u.isLeader)
+        .map((u) => ({
+          id: u.id.replace('usr-', ''),
+          name: u.fullName,
+          shortName: u.shortName || u.fullName,
+          role: u.position || 'Viên chức chuyên môn',
+          unit: u.unit || 'Tổ chuyên môn',
+          avatarBg: u.avatarBg || 'bg-blue-700 text-white',
+        }));
+      if (list.length > 0) return list;
+    }
+    return STAFF_MEMBERS.filter((m) => m.id !== 'phong');
+  }, [users]);
 
   // Strict RBAC: Lock effectiveStaff permanently to currentUser when logged in as staff
   const effectiveStaff: StaffMember = (!isLeader && currentUser)
@@ -283,7 +300,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
               <select
                 value={selectedStaff.id}
                 onChange={(e) => {
-                  const found = STAFF_MEMBERS.find((m) => m.id === e.target.value);
+                  const found = availableStaffList.find((m) => m.id === e.target.value);
                   if (found) {
                     onStaffChange(found);
                     const firstTaskOfStaff = tasks.find((t) =>
@@ -296,7 +313,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                 }}
                 className="text-[13px] bg-[#F4F6F9] border border-[#E5E7EB] rounded-[8px] p-2 font-medium text-[#111827] focus:outline-none focus:ring-1 focus:ring-[#003366] cursor-pointer"
               >
-                {STAFF_MEMBERS.filter((m) => m.id !== 'phong').map((m) => (
+                {availableStaffList.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.shortName} ({m.unit})
                   </option>

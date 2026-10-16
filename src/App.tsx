@@ -17,7 +17,9 @@ import { LoginScreen } from './components/LoginScreen';
 import { AttachmentCenterModal } from './components/AttachmentCenterModal';
 import { DocumentViewerModal } from './components/DocumentViewerModal';
 import { UserManagementModal } from './components/UserManagementModal';
+import { DepartmentManagementModal } from './components/DepartmentManagementModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { DepartmentProvider } from './context/DepartmentContext';
 import { isTaskRelatedToStaff } from './utils/helpers';
 import { 
   initializeDatabase, 
@@ -110,7 +112,18 @@ function AppContent() {
       } else {
         setCurrentRole('staff');
         const match = STAFF_MEMBERS.find((m) => m.id === currentUser.id.replace('usr-', ''));
-        if (match) setSelectedStaff(match);
+        if (match) {
+          setSelectedStaff(match);
+        } else {
+          setSelectedStaff({
+            id: currentUser.id.replace('usr-', ''),
+            name: currentUser.fullName,
+            shortName: currentUser.shortName || currentUser.fullName,
+            role: currentUser.position || 'Viên chức chuyên môn',
+            unit: currentUser.unit || 'Tổ chuyên môn',
+            avatarBg: currentUser.avatarBg || 'bg-blue-700 text-white',
+          });
+        }
       }
     }
   }, [currentUser]);
@@ -128,6 +141,7 @@ function AppContent() {
   const [isAttachmentCenterOpen, setIsAttachmentCenterOpen] = useState(false);
   const [viewingDocData, setViewingDocData] = useState<{ docName: string; task?: Task } | null>(null);
   const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
+  const [isDepartmentManagementOpen, setIsDepartmentManagementOpen] = useState(false);
 
   // Sync tasks to localStorage as local cache
   useEffect(() => {
@@ -262,6 +276,7 @@ function AppContent() {
         onOpenLoginModal={() => setIsLoginModalOpen(true)}
         onOpenAttachments={() => setIsAttachmentCenterOpen(true)}
         onOpenUserManagement={isLeader ? () => setIsUserManagementOpen(true) : undefined}
+        onOpenDepartmentManagement={isLeader ? () => setIsDepartmentManagementOpen(true) : undefined}
         onResetData={isLeader ? handleResetData : () => alert('Chỉ có Ban Giám Đốc mới có quyền khôi phục CSDL.')}
         taskCount={isLeader ? tasks.length : myAssignedTasks.length}
         onToggleMobileMenu={() => setIsMobileSidebarOpen((prev) => !prev)}
@@ -287,6 +302,7 @@ function AppContent() {
           onOpenLoginModal={() => setIsLoginModalOpen(true)}
           onOpenAttachments={() => setIsAttachmentCenterOpen(true)}
           onOpenUserManagement={isLeader ? () => setIsUserManagementOpen(true) : undefined}
+          onOpenDepartmentManagement={isLeader ? () => setIsDepartmentManagementOpen(true) : undefined}
           onResetData={isLeader ? handleResetData : () => alert('Chỉ có Ban Giám Đốc mới có quyền khôi phục CSDL.')}
           taskCount={isLeader ? tasks.length : myAssignedTasks.length}
           isOpenMobile={isMobileSidebarOpen}
@@ -404,6 +420,12 @@ function AppContent() {
         onClose={() => setIsUserManagementOpen(false)}
       />
 
+      {/* Modal: Department Management & Organizational Structure */}
+      <DepartmentManagementModal
+        isOpen={isDepartmentManagementOpen}
+        onClose={() => setIsDepartmentManagementOpen(false)}
+      />
+
       {/* Sticky Bottom Role Indicator */}
       <footer className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xs border-t border-slate-200 py-2 px-4 z-30 shadow-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-slate-600">
@@ -427,13 +449,22 @@ function AppContent() {
 
           <div className="flex items-center gap-3">
             {isLeader && (
-              <button
-                type="button"
-                onClick={() => setIsUserManagementOpen(true)}
-                className="text-2xs font-semibold text-[#003366] hover:underline cursor-pointer flex items-center gap-1"
-              >
-                <span>Quản Lý Người Dùng</span>
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => setIsUserManagementOpen(true)}
+                  className="text-2xs font-semibold text-[#003366] hover:underline cursor-pointer flex items-center gap-1"
+                >
+                  <span>Quản Lý Người Dùng</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsDepartmentManagementOpen(true)}
+                  className="text-2xs font-semibold text-[#003366] hover:underline cursor-pointer flex items-center gap-1"
+                >
+                  <span>Quản Lý Phòng Ban</span>
+                </button>
+              </>
             )}
             <button
               type="button"
@@ -466,7 +497,9 @@ function AppContent() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <DepartmentProvider>
+        <AppContent />
+      </DepartmentProvider>
     </AuthProvider>
   );
 }

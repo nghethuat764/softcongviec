@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Task, SectionType, PriorityLevel, TaskStatus } from '../types';
-import { STAFF_MEMBERS } from '../data/staffMembers';
+import { useAuth } from '../context/AuthContext';
+import { useDepartments } from '../context/DepartmentContext';
 import { 
   X, 
   Edit3, 
@@ -28,6 +29,8 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
   onClose,
   onSaveTask,
 }) => {
+  const { users } = useAuth();
+  const { departments } = useDepartments();
   const [code, setCode] = useState('');
   const [section, setSection] = useState<SectionType>('III. TỔ DỊCH VỤ CÔNG ÍCH - XÂY DỰNG');
   const [category, setCategory] = useState('');
@@ -80,6 +83,11 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
       ? coAssigneesText.split(',').map((s) => s.trim()).filter(Boolean)
       : undefined;
 
+    const matchedAssignee = users.find((u) => u.shortName === assignee || u.fullName === assignee);
+    const coAssigneeIds = coAssignees && coAssignees.length > 0
+      ? users.filter((u) => coAssignees.some((co) => co.toLowerCase().includes((u.shortName || '').toLowerCase()) || co.toLowerCase().includes(u.fullName.toLowerCase()))).map((u) => u.id)
+      : undefined;
+
     const updatedTask: Task = {
       ...task,
       code: code.trim(),
@@ -87,7 +95,9 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
       category: category.trim(),
       title: title.trim(),
       assignee,
+      assigneeId: matchedAssignee?.id || task.assigneeId,
       coAssignees,
+      coAssigneeIds,
       requirement: requirement.trim(),
       deadline: deadline || undefined,
       budgetInfo: budgetInfo.trim() || undefined,
@@ -149,19 +159,27 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Tổ / Bộ phận chuyên môn phụ trách:
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700">
+                  Tổ / Bộ phận chuyên môn phụ trách:
+                </label>
+                <span className="text-[11px] text-[#003366] bg-blue-50 px-1.5 py-0.2 rounded font-mono font-medium border border-blue-200">
+                  CSDL phòng ban ({departments.length})
+                </span>
+              </div>
               <select
                 value={section}
                 onChange={(e) => setSection(e.target.value as SectionType)}
-                className="w-full p-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white"
+                className="w-full p-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white font-medium cursor-pointer"
               >
-                <option value="II. TỔ HÀNH CHÍNH - KẾ TOÁN">II. TỔ HÀNH CHÍNH - KẾ TOÁN</option>
-                <option value="III. TỔ DỊCH VỤ CÔNG ÍCH - XÂY DỰNG">III. TỔ DỊCH VỤ CÔNG ÍCH - XÂY DỰNG</option>
-                <option value="IV. TỔ VĂN HÓA - THỂ THAO - THÔNG TIN - TUYÊN TRUYỀN">IV. TỔ VĂN HÓA - THỂ THAO - THÔNG TIN - TUYÊN TRUYỀN</option>
-                <option value="V. TRẠM TRUYỀN THANH">V. TRẠM TRUYỀN THANH</option>
-                <option value="VI. KHU THỂ THAO">VI. KHU THỂ THAO</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.name}>
+                    {dept.code ? `[${dept.code}] ` : ''}{dept.name}
+                  </option>
+                ))}
+                {section && !departments.some((d) => d.name === section) && (
+                  <option value={section}>{section}</option>
+                )}
               </select>
             </div>
           </div>
@@ -195,20 +213,60 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
-                <User className="w-3.5 h-3.5 text-blue-600" />
-                Cán bộ chủ trì thực hiện:
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700 flex items-center gap-1">
+                  <User className="w-3.5 h-3.5 text-blue-600" />
+                  Cán bộ chủ trì thực hiện:
+                </label>
+                <span className="text-[11px] text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded font-mono font-medium border border-emerald-200">
+                  CSDL người dùng ({users.length})
+                </span>
+              </div>
               <select
                 value={assignee}
-                onChange={(e) => setAssignee(e.target.value)}
-                className="w-full p-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white font-medium"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setAssignee(val);
+                  // Tự động gợi ý phòng ban tương ứng
+                  const picked = users.find((u) => u.shortName === val || u.fullName === val);
+                  if (picked && picked.unit) {
+                    const matchedDept = departments.find((d) => 
+                      d.name.toLowerCase() === picked.unit.toLowerCase() ||
+                      d.name.toLowerCase().includes(picked.unit.toLowerCase()) ||
+                      picked.unit.toLowerCase().includes(d.name.toLowerCase())
+                    );
+                    if (matchedDept) {
+                      setSection(matchedDept.name);
+                    }
+                  }
+                }}
+                className="w-full p-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white font-medium cursor-pointer"
               >
-                {STAFF_MEMBERS.map((s) => (
-                  <option key={s.id} value={s.shortName}>
-                    {s.name} ({s.shortName}) - {s.role}
-                  </option>
-                ))}
+                <optgroup label="── Cán bộ / Viên chức chuyên môn ──">
+                  {users.filter(u => !u.isLeader).map((u) => {
+                    const val = u.shortName || u.fullName;
+                    const text = `${u.shortName ? `${u.shortName} (${u.fullName})` : u.fullName} - ${u.unit || u.position || 'Viên chức'}`;
+                    return (
+                      <option key={u.id} value={val}>
+                        {text}
+                      </option>
+                    );
+                  })}
+                </optgroup>
+                <optgroup label="── Ban Giám Đốc / Lãnh đạo ──">
+                  {users.filter(u => u.isLeader).map((u) => {
+                    const val = u.shortName || u.fullName;
+                    const text = `${u.shortName ? `${u.shortName} (${u.fullName})` : u.fullName} - ${u.position || 'Lãnh đạo'}`;
+                    return (
+                      <option key={u.id} value={val}>
+                        {text}
+                      </option>
+                    );
+                  })}
+                </optgroup>
+                {assignee && !users.some((u) => u.shortName === assignee || u.fullName === assignee) && (
+                  <option value={assignee}>{assignee}</option>
+                )}
               </select>
             </div>
 

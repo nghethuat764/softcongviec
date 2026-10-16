@@ -102,12 +102,38 @@
         "timestamp": { "type": "string" }
       },
       "required": ["id", "action", "userName", "details", "timestamp"]
+    },
+    "department": {
+      "title": "Department",
+      "description": "Collection of organizational departments and work units",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string" },
+        "name": { "type": "string" },
+        "shortName": { "type": "string" },
+        "leaderName": { "type": "string" },
+        "leaderId": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "location": { "type": "string" },
+        "description": { "type": "string" },
+        "colorBadge": { "type": "string" },
+        "order": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "code", "name", "shortName", "description"]
     }
   },
   "firestore": {
     "/users/{userId}": {
       "schema": "user",
       "description": "Collection of system user accounts and roles"
+    },
+    "/departments/{departmentId}": {
+      "schema": "department",
+      "description": "Collection of organizational departments and functional units"
     },
     "/tasks/{taskId}": {
       "schema": "task",

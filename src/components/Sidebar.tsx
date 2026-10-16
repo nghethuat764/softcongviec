@@ -12,7 +12,8 @@ import {
   KeyRound,
   X,
   Paperclip,
-  Users
+  Users,
+  Building2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -25,6 +26,7 @@ interface SidebarProps {
   onOpenLoginModal: () => void;
   onOpenAttachments?: () => void;
   onOpenUserManagement?: () => void;
+  onOpenDepartmentManagement?: () => void;
   onResetData: () => void;
   taskCount: number;
   isOpenMobile?: boolean;
@@ -40,6 +42,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenLoginModal,
   onOpenAttachments,
   onOpenUserManagement,
+  onOpenDepartmentManagement,
   onResetData,
   taskCount,
   isOpenMobile = false,
@@ -259,32 +262,58 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* Section 4: Quản Trị Người Dùng (Ngay sau Tiện ích dữ liệu - Chỉ Lãnh Đạo) */}
-        {onOpenUserManagement && isLeader && (
+        {/* Section 4: Quản Lý (Ngay sau Tiện ích dữ liệu - Chỉ Lãnh Đạo) */}
+        {isLeader && (
           <div className="pt-1">
             <div className="px-1 mb-2">
               <span className="text-[12px] font-bold uppercase tracking-wider text-[#4B5563]">
-                QUẢN TRỊ NGƯỜI DÙNG
+                QUẢN LÝ
               </span>
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                onOpenUserManagement();
-                if (onCloseMobile) onCloseMobile();
-              }}
-              title="Quản lý người dùng, thay đổi, thêm, xoá, sửa tài khoản đăng nhập"
-              className="w-full p-3 sm:p-3.5 rounded-[8px] text-left bg-blue-50/70 hover:bg-blue-100/80 text-[#003366] border border-blue-200 flex items-center justify-between text-[14px] font-semibold transition-colors cursor-pointer shadow-xs group"
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <Users className="w-5 h-5 text-[#003366] shrink-0 group-hover:scale-105 transition-transform" />
-                <span className="truncate">Quản lý người dùng</span>
-              </div>
-              <span className="text-[11px] bg-[#003366] text-white px-2 py-0.5 rounded font-mono font-bold">
-                CSDL
-              </span>
-            </button>
+            <div className="flex flex-col gap-1.5">
+              {/* Menu 1: Quản lý người dùng */}
+              {onOpenUserManagement && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenUserManagement();
+                    if (onCloseMobile) onCloseMobile();
+                  }}
+                  title="Quản lý người dùng, thay đổi, thêm, xoá, sửa tài khoản đăng nhập"
+                  className="w-full p-3 sm:p-3.5 rounded-[8px] text-left bg-blue-50/70 hover:bg-blue-100/80 text-[#003366] border border-blue-200 flex items-center justify-between text-[14px] font-semibold transition-colors cursor-pointer shadow-xs group"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Users className="w-5 h-5 text-[#003366] shrink-0 group-hover:scale-105 transition-transform" />
+                    <span className="truncate">Quản lý người dùng</span>
+                  </div>
+                  <span className="text-[11px] bg-[#003366] text-white px-2 py-0.5 rounded font-mono font-bold">
+                    CSDL
+                  </span>
+                </button>
+              )}
+
+              {/* Menu 2: Quản lý phòng ban (Ngay sau Quản lý người dùng) */}
+              {onOpenDepartmentManagement && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenDepartmentManagement();
+                    if (onCloseMobile) onCloseMobile();
+                  }}
+                  title="Quản lý phòng ban, tổ chuyên môn, thay đổi, thêm, xoá, sửa cơ cấu tổ chức"
+                  className="w-full p-3 sm:p-3.5 rounded-[8px] text-left bg-blue-50/70 hover:bg-blue-100/80 text-[#003366] border border-blue-200 flex items-center justify-between text-[14px] font-semibold transition-colors cursor-pointer shadow-xs group"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Building2 className="w-5 h-5 text-[#003366] shrink-0 group-hover:scale-105 transition-transform" />
+                    <span className="truncate">Quản lý phòng ban</span>
+                  </div>
+                  <span className="text-[11px] bg-[#003366] text-white px-2 py-0.5 rounded font-mono font-bold">
+                    CSDL
+                  </span>
+                </button>
+              )}
+            </div>
           </div>
         )}
 

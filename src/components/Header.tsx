@@ -24,6 +24,7 @@ interface HeaderProps {
   onOpenLoginModal: () => void;
   onOpenAttachments?: () => void;
   onOpenUserManagement?: () => void;
+  onOpenDepartmentManagement?: () => void;
   onResetData: () => void;
   taskCount: number;
   onToggleMobileMenu?: () => void;
@@ -37,6 +38,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenLoginModal,
   onOpenAttachments,
   onOpenUserManagement,
+  onOpenDepartmentManagement,
   onResetData,
   taskCount,
   onToggleMobileMenu,
@@ -132,6 +134,17 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   <Users className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">Quản lý người dùng</span>
+                </button>
+              )}
+              {onOpenDepartmentManagement && isLeader && (
+                <button
+                  type="button"
+                  onClick={onOpenDepartmentManagement}
+                  className="text-blue-100 hover:text-white flex items-center gap-1.5 cursor-pointer px-1.5 py-0.5 rounded hover:bg-white/10"
+                  title="Quản lý phòng ban, tổ chuyên môn & cơ cấu tổ chức"
+                >
+                  <Building2 className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Quản lý phòng ban</span>
                 </button>
               )}
               <button

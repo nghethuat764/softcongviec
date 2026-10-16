@@ -40,6 +40,8 @@ import {
   calculateSummary 
 } from '../utils/helpers';
 import { STAFF_MEMBERS } from '../data/staffMembers';
+import { useAuth } from '../context/AuthContext';
+import { useDepartments } from '../context/DepartmentContext';
 
 interface LeaderDashboardProps {
   tasks: Task[];
@@ -66,6 +68,8 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
   onEditTask,
   onDeleteTask,
 }) => {
+  const { users } = useAuth();
+  const { departments } = useDepartments();
   const summary = calculateSummary(tasks);
 
   // Cấp 2: Các Menu Chức Năng Phân Cấp Dành Riêng Cho Lãnh Đạo
@@ -124,8 +128,12 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
       if (!matchText) return false;
     }
 
-    if (selectedSection !== 'all' && task.section !== selectedSection) {
-      return false;
+    if (selectedSection !== 'all') {
+      const secNorm = task.section.toLowerCase();
+      const selNorm = selectedSection.toLowerCase();
+      if (secNorm !== selNorm && !secNorm.includes(selNorm) && !selNorm.includes(secNorm)) {
+        return false;
+      }
     }
 
     if (selectedAssignee !== 'all') {
@@ -635,8 +643,13 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                   onChange={(e) => setSelectedSection(e.target.value)}
                   className="w-full py-2 px-3 bg-[#F4F6F9] border border-[#E5E7EB] rounded-[8px] text-[13px] sm:text-[14px] text-[#111827] focus:outline-none focus:ring-1 focus:ring-[#003366] cursor-pointer"
                 >
-                  <option value="all">Tất cả Khối / Tổ công tác</option>
-                  {sections.map((s) => (
+                  <option value="all">Tất cả Khối / Tổ công tác ({departments.length})</option>
+                  {departments.map((d) => (
+                    <option key={d.id} value={d.name}>
+                      {d.code ? `[${d.code}] ` : ''}{d.shortName || d.name}
+                    </option>
+                  ))}
+                  {sections.filter(s => !departments.some(d => d.name === s || s.includes(d.name))).map((s) => (
                     <option key={s} value={s}>{getSectionShortName(s)}</option>
                   ))}
                 </select>
@@ -648,15 +661,27 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                   onChange={(e) => setSelectedAssignee(e.target.value)}
                   className="w-full py-2 px-3 bg-[#F4F6F9] border border-[#E5E7EB] rounded-[8px] text-[13px] sm:text-[14px] text-[#111827] focus:outline-none focus:ring-1 focus:ring-[#003366] cursor-pointer"
                 >
-                  <option value="all">Tất cả Cán bộ</option>
-                  <option value="Cường">Đ/c Cường</option>
-                  <option value="Dương">Đ/c Dương</option>
-                  <option value="Đạt">Đ/c Đạt</option>
-                  <option value="Trổi">Đ/c Trổi</option>
-                  <option value="Thiện">Đ/c Thiện</option>
-                  <option value="Tuyến">Đ/c Tuyến</option>
-                  <option value="Nhân">Đ/c Nhân</option>
-                  <option value="Hành chính">Tổ HC - KT</option>
+                  <option value="all">Tất cả Cán bộ ({users.length})</option>
+                  <optgroup label="── Cán bộ / Viên chức ──">
+                    {users.filter(u => !u.isLeader).map((u) => {
+                      const filterVal = u.shortName ? u.shortName.replace(/đ\/c\s*/i, '').trim() : u.fullName;
+                      return (
+                        <option key={u.id} value={filterVal}>
+                          {u.shortName || u.fullName}
+                        </option>
+                      );
+                    })}
+                  </optgroup>
+                  <optgroup label="── Ban Giám Đốc ──">
+                    {users.filter(u => u.isLeader).map((u) => {
+                      const filterVal = u.shortName ? u.shortName.replace(/đ\/c\s*/i, '').trim() : u.fullName;
+                      return (
+                        <option key={u.id} value={filterVal}>
+                          {u.shortName || u.fullName}
+                        </option>
+                      );
+                    })}
+                  </optgroup>
                 </select>
               </div>
 

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Task, SectionType, PriorityLevel, TaskStatus } from '../types';
-import { X, PlusCircle, User, Calendar, DollarSign, FileText, ShieldCheck, Lock } from 'lucide-react';
-import { STAFF_MEMBERS } from '../data/staffMembers';
+import { X, PlusCircle, User, Calendar, DollarSign, FileText, ShieldCheck, Lock, Building2, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useDepartments } from '../context/DepartmentContext';
 
 interface NewTaskModalProps {
   isOpen: boolean;
@@ -15,21 +15,42 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   onClose,
   onAddTask,
 }) => {
-  const { currentUser, isLeader } = useAuth();
+  const { currentUser, isLeader, users } = useAuth();
+  const { departments } = useDepartments();
 
   const [code, setCode] = useState(`PS-${Math.floor(Math.random() * 900 + 100)}`);
   const [section, setSection] = useState<SectionType>('III. TỔ DỊCH VỤ CÔNG ÍCH - XÂY DỰNG');
   const [category, setCategory] = useState('Nhiệm vụ phát sinh');
   const [title, setTitle] = useState('');
-  const [assignee, setAssignee] = useState(
-    isLeader ? 'Đ/c Cường' : (currentUser?.shortName || 'Đ/c Cường')
-  );
+  const [assignee, setAssignee] = useState('');
   const [coAssigneesText, setCoAssigneesText] = useState('');
   const [requirement, setRequirement] = useState('');
   const [deadline, setDeadline] = useState('');
   const [budgetInfo, setBudgetInfo] = useState('');
   const [priority, setPriority] = useState<PriorityLevel>('normal');
   const [initialProgress, setInitialProgress] = useState(0);
+
+  // Sync default assignee and section from database
+  useEffect(() => {
+    if (isOpen) {
+      if (!assignee) {
+        if (isLeader) {
+          const firstStaff = users.find((u) => !u.isLeader) || users[0];
+          if (firstStaff) {
+            setAssignee(firstStaff.shortName || firstStaff.fullName);
+          }
+        } else if (currentUser) {
+          setAssignee(currentUser.shortName || currentUser.fullName);
+        }
+      }
+      if (departments.length > 0 && !departments.some((d) => d.name === section)) {
+        const defaultDept = departments.find(d => d.code === 'DVCI-XD') || departments[0];
+        if (defaultDept) {
+          setSection(defaultDept.name);
+        }
+      }
+    }
+  }, [isOpen, users, departments, isLeader, currentUser]);
 
   if (!isOpen) return null;
 
@@ -72,6 +93,11 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
       ? coAssigneesText.split(',').map((s) => s.trim()).filter(Boolean)
       : undefined;
 
+    const matchedAssignee = users.find((u) => u.shortName === assignee || u.fullName === assignee);
+    const coAssigneeIds = coAssignees && coAssignees.length > 0
+      ? users.filter((u) => coAssignees.some((co) => co.toLowerCase().includes((u.shortName || '').toLowerCase()) || co.toLowerCase().includes(u.fullName.toLowerCase()))).map((u) => u.id)
+      : undefined;
+
     const newTask: Task = {
       id: 'task-' + Date.now(),
       code: code.trim(),
@@ -79,7 +105,9 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
       category: category.trim(),
       title: title.trim(),
       assignee,
+      assigneeId: matchedAssignee?.id,
       coAssignees,
+      coAssigneeIds,
       requirement: requirement.trim(),
       currentReport: isLeader 
         ? 'Nhiệm vụ mới do Lãnh đạo giao phân công.' 
@@ -147,19 +175,27 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Khối / Tổ công tác: <span className="text-red-500">*</span>
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700">
+                  Khối / Tổ công tác: <span className="text-red-500">*</span>
+                </label>
+                <span className="text-[11px] text-[#003366] bg-blue-50 px-1.5 py-0.2 rounded font-mono font-medium border border-blue-200">
+                  CSDL phòng ban ({departments.length})
+                </span>
+              </div>
               <select
                 value={section}
                 onChange={(e) => setSection(e.target.value as SectionType)}
-                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer bg-white"
               >
-                <option value="II. TỔ HÀNH CHÍNH - KẾ TOÁN">II. TỔ HÀNH CHÍNH - KẾ TOÁN</option>
-                <option value="III. TỔ DỊCH VỤ CÔNG ÍCH - XÂY DỰNG">III. TỔ DỊCH VỤ CÔNG ÍCH - XÂY DỰNG</option>
-                <option value="IV. CÁC DỰ ÁN ĐẦU TƯ CÔNG TRUNG HẠN">IV. CÁC DỰ ÁN ĐẦU TƯ CÔNG TRUNG HẠN</option>
-                <option value="V. CÁC DỰ ÁN ĐẦU TƯ NGÂN SÁCH CHI THƯỜNG XUYÊN">V. CÁC DỰ ÁN ĐẦU TƯ NGÂN SÁCH CHI THƯỜNG XUYÊN</option>
-                <option value="VI. TỔ VĂN HÓA - THỂ THAO - THÔNG TIN - TUYÊN TRUYỀN">VI. TỔ VĂN HÓA - THỂ THAO - THÔNG TIN - TUYÊN TRUYỀN</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.name}>
+                    {dept.code ? `[${dept.code}] ` : ''}{dept.name}
+                  </option>
+                ))}
+                {section && !departments.some((d) => d.name === section) && (
+                  <option value={section}>{section}</option>
+                )}
               </select>
             </div>
           </div>
@@ -180,19 +216,59 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Cán bộ phụ trách chính (Người nhận việc): <span className="text-red-500">*</span>
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700">
+                  Cán bộ phụ trách chính (Người nhận việc): <span className="text-red-500">*</span>
+                </label>
+                <span className="text-[11px] text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded font-mono font-medium border border-emerald-200">
+                  CSDL người dùng ({users.length})
+                </span>
+              </div>
               <select
                 value={assignee}
-                onChange={(e) => setAssignee(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setAssignee(val);
+                  // Tự động gợi ý / đồng bộ phòng ban tương ứng của cán bộ
+                  const picked = users.find((u) => u.shortName === val || u.fullName === val);
+                  if (picked && picked.unit) {
+                    const matchedDept = departments.find((d) => 
+                      d.name.toLowerCase() === picked.unit.toLowerCase() ||
+                      d.name.toLowerCase().includes(picked.unit.toLowerCase()) ||
+                      picked.unit.toLowerCase().includes(d.name.toLowerCase())
+                    );
+                    if (matchedDept) {
+                      setSection(matchedDept.name);
+                    }
+                  }
+                }}
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer bg-white font-medium"
               >
-                {STAFF_MEMBERS.filter((m) => m.id !== 'phong').map((m) => (
-                  <option key={m.id} value={m.name}>
-                    {m.shortName} ({m.unit})
-                  </option>
-                ))}
+                <optgroup label="── Cán bộ / Viên chức chuyên môn ──">
+                  {users.filter(u => !u.isLeader).map((u) => {
+                    const val = u.shortName || u.fullName;
+                    const text = `${u.shortName ? `${u.shortName} (${u.fullName})` : u.fullName} - ${u.unit || u.position || 'Viên chức'}`;
+                    return (
+                      <option key={u.id} value={val}>
+                        {text}
+                      </option>
+                    );
+                  })}
+                </optgroup>
+                <optgroup label="── Ban Giám Đốc / Lãnh đạo ──">
+                  {users.filter(u => u.isLeader).map((u) => {
+                    const val = u.shortName || u.fullName;
+                    const text = `${u.shortName ? `${u.shortName} (${u.fullName})` : u.fullName} - ${u.position || 'Lãnh đạo'}`;
+                    return (
+                      <option key={u.id} value={val}>
+                        {text}
+                      </option>
+                    );
+                  })}
+                </optgroup>
+                {assignee && !users.some((u) => u.shortName === assignee || u.fullName === assignee) && (
+                  <option value={assignee}>{assignee}</option>
+                )}
               </select>
             </div>
 

@@ -33,7 +33,8 @@ export type SectionType =
   | 'III. TỔ DỊCH VỤ CÔNG ÍCH - XÂY DỰNG'
   | 'IV. CÁC DỰ ÁN ĐẦU TƯ CÔNG TRUNG HẠN'
   | 'V. CÁC DỰ ÁN ĐẦU TƯ NGÂN SÁCH CHI THƯỜNG XUYÊN'
-  | 'VI. TỔ VĂN HÓA - THỂ THAO - THÔNG TIN - TUYÊN TRUYỀN';
+  | 'VI. TỔ VĂN HÓA - THỂ THAO - THÔNG TIN - TUYÊN TRUYỀN'
+  | string;
 
 export interface Task {
   id: string;

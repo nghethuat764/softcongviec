@@ -13,6 +13,11 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    // Departments collection
+    match /departments/{departmentId} {
+      allow read, write: if true;
+    }
+
     // Tasks collection
     match /tasks/{taskId} {
       allow read, write: if true;

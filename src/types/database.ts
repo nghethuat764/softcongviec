@@ -17,6 +17,24 @@ export interface UserAccount {
   isLeader: boolean;
 }
 
+// Database Entity: Departments / Units Table (Phòng ban / Tổ chuyên môn)
+export interface Department {
+  id: string;               // e.g. "dept-bgd", "dept-dvci-xd"
+  code: string;             // e.g. "BGD", "DVCI-XD", "VH-TT", "HC-KT"
+  name: string;             // e.g. "Tổ Dịch vụ công ích - Xây dựng"
+  shortName: string;        // e.g. "Tổ DVCI - XD"
+  leaderName: string;       // Trưởng phòng / Tổ trưởng / Lãnh đạo phụ trách
+  leaderId?: string;        // Liên kết users.id
+  phone?: string;           // Số điện thoại liên hệ
+  email?: string;           // Hộp thư công vụ
+  location?: string;        // Địa điểm văn phòng
+  description: string;      // Chức năng, nhiệm vụ quyền hạn chính
+  colorBadge?: string;      // Nhận diện màu sắc (blue, emerald, amber, red, purple)
+  order?: number;           // Thứ tự sắp xếp hiển thị
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 // Database Entity: Tasks Table
 export interface DbTask {
   id: string;
