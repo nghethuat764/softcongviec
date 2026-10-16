@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="bg-[#153e6b] text-white border-b border-[#0f2f52] sticky top-0 z-40 shadow-xs font-sans">
       {/* 1. Dải Băng Thể Thức Quốc Hiệu / Cơ Quan Nhà Nước */}
-      <div className="bg-[#8b1818] text-white px-4 sm:px-6 py-1 text-xs border-b border-[#731313]">
+      <div className="bg-[#224270] text-[#f8f8f8] px-4 sm:px-6 py-1 text-xs border-b border-[#bcb7b7]">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-2xs sm:text-xs">
             <span className="font-bold tracking-wide uppercase">UBND PHƯỜNG HỐ NAI</span>
