@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Task, Directive } from '../types';
+import { useAuth } from '../context/AuthContext';
 import { X, Send, AlertTriangle, Clock, ShieldCheck, User } from 'lucide-react';
 
 interface LeaderDirectiveModalProps {
@@ -15,6 +16,7 @@ export const LeaderDirectiveModal: React.FC<LeaderDirectiveModalProps> = ({
 }) => {
   if (!task) return null;
 
+  const { currentUser } = useAuth();
   const [content, setContent] = useState('');
   const [newDeadline, setNewDeadline] = useState(task.deadline || '');
   const [isUrgent, setIsUrgent] = useState(task.priority === 'urgent');
@@ -37,6 +39,10 @@ export const LeaderDirectiveModal: React.FC<LeaderDirectiveModalProps> = ({
     e.preventDefault();
     if (!content.trim()) return;
 
+    const authorName = currentUser 
+      ? `${currentUser.fullName} - ${currentUser.position || (currentUser.isLeader ? 'Ban Giám Đốc' : 'Lãnh đạo')}`
+      : 'Phạm Thanh Phong - Giám đốc Trung tâm';
+
     const newDirective: Directive = {
       id: 'dir-' + Date.now(),
       timestamp: new Date().toLocaleString('vi-VN', {
@@ -46,7 +52,7 @@ export const LeaderDirectiveModal: React.FC<LeaderDirectiveModalProps> = ({
         hour: '2-digit',
         minute: '2-digit',
       }),
-      author: 'Phạm Thanh Phong - Giám đốc Trung tâm',
+      author: authorName,
       content: content.trim(),
       targetDeadline: newDeadline || undefined,
       isUrgent: isUrgent,

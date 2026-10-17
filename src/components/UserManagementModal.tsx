@@ -251,10 +251,15 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5">
       <div className="bg-white rounded-[8px] shadow-2xl max-w-5xl w-full border border-[#E5E7EB] flex flex-col max-h-[92vh] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         
-        {/* Modal Header */}
-        <div className="bg-[#003366] px-5 py-4 text-white flex items-center justify-between border-b border-[#002244] shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-[6px] bg-white/10 flex items-center justify-center text-white shrink-0">
+        {/* Modal Header with Management Background */}
+        <div 
+          className="bg-[#003366] px-5 py-4 text-white flex items-center justify-between border-b border-[#002244] shrink-0 bg-cover bg-center relative"
+          style={{
+            backgroundImage: 'linear-gradient(to right, rgba(0, 51, 102, 0.96), rgba(0, 51, 102, 0.82)), url(/management_bg.jpg)',
+          }}
+        >
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="w-9 h-9 rounded-[6px] bg-white/10 flex items-center justify-center text-white shrink-0 border border-white/20">
               <Users className="w-5 h-5 text-white" />
             </div>
             <div>

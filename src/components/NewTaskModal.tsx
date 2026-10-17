@@ -30,19 +30,32 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   const [priority, setPriority] = useState<PriorityLevel>('normal');
   const [initialProgress, setInitialProgress] = useState(0);
 
-  // Sync default assignee and section from database
+  // Sync default assignee and section from live Firestore database
   useEffect(() => {
     if (isOpen) {
-      if (!assignee) {
-        if (isLeader) {
-          const firstStaff = users.find((u) => !u.isLeader) || users[0];
-          if (firstStaff) {
-            setAssignee(firstStaff.shortName || firstStaff.fullName);
+      // If current assignee is empty or not in the updated users list, pick the first staff
+      const isValidAssignee = users.some((u) => u.shortName === assignee || u.fullName === assignee);
+      if (!isValidAssignee && users.length > 0) {
+        const firstStaff = users.find((u) => !u.isLeader) || users[0];
+        if (firstStaff) {
+          const defaultName = firstStaff.shortName || firstStaff.fullName;
+          setAssignee(defaultName);
+          // Auto-sync section with this staff's unit
+          if (firstStaff.unit) {
+            const matchedDept = departments.find((d) =>
+              d.name.toLowerCase() === firstStaff.unit.toLowerCase() ||
+              d.code.toLowerCase() === firstStaff.unit.toLowerCase() ||
+              d.name.toLowerCase().includes(firstStaff.unit.toLowerCase()) ||
+              firstStaff.unit.toLowerCase().includes(d.name.toLowerCase())
+            );
+            if (matchedDept) {
+              setSection(matchedDept.name);
+            }
           }
-        } else if (currentUser) {
-          setAssignee(currentUser.shortName || currentUser.fullName);
         }
       }
+
+      // If current section is not in departments, default to first department
       if (departments.length > 0 && !departments.some((d) => d.name === section)) {
         const defaultDept = departments.find(d => d.code === 'DVCI-XD') || departments[0];
         if (defaultDept) {
@@ -50,7 +63,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
         }
       }
     }
-  }, [isOpen, users, departments, isLeader, currentUser]);
+  }, [isOpen, users, departments]);
 
   if (!isOpen) return null;
 
@@ -273,9 +286,14 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Cán bộ phối hợp (nếu có, cách nhau dấu phẩy):
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700">
+                  Cán bộ phối hợp (nếu có):
+                </label>
+                <span className="text-[10px] text-slate-500 font-normal">
+                  (Bấm tên để chọn nhanh)
+                </span>
+              </div>
               <input
                 type="text"
                 value={coAssigneesText}
@@ -283,6 +301,41 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
                 placeholder="VD: Đ/c Thiện, Đ/c Trổi"
                 className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              {/* Quick User Chips */}
+              <div className="flex flex-wrap gap-1 mt-1.5 max-h-16 overflow-y-auto pt-0.5">
+                {users.filter(u => (u.shortName || u.fullName) !== assignee).map((u) => {
+                  const name = u.shortName || u.fullName;
+                  const isPicked = (coAssigneesText || '')
+                    .split(',')
+                    .map((s) => s.trim().toLowerCase())
+                    .includes(name.toLowerCase());
+                  return (
+                    <button
+                      key={u.id}
+                      type="button"
+                      onClick={() => {
+                        const currentList = coAssigneesText
+                          ? coAssigneesText.split(',').map((s) => s.trim()).filter(Boolean)
+                          : [];
+                        if (isPicked) {
+                          setCoAssigneesText(
+                            currentList.filter((s) => s.toLowerCase() !== name.toLowerCase()).join(', ')
+                          );
+                        } else {
+                          setCoAssigneesText([...currentList, name].join(', '));
+                        }
+                      }}
+                      className={`px-1.5 py-0.5 rounded text-[10px] font-medium border transition-colors cursor-pointer ${
+                        isPicked
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 hover:text-slate-900'
+                      }`}
+                    >
+                      {isPicked ? '✓ ' : '+ '}{name}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 

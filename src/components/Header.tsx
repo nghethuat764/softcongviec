@@ -7,7 +7,8 @@ import {
   Menu,
   Paperclip,
   CheckCircle2,
-  Users
+  Users,
+  Image as ImageIcon
 } from 'lucide-react';
 import { StaffMember } from '../types';
 import { useAuth } from '../context/AuthContext';
@@ -25,6 +26,7 @@ interface HeaderProps {
   onOpenAttachments?: () => void;
   onOpenUserManagement?: () => void;
   onOpenDepartmentManagement?: () => void;
+  onOpenBgSettings?: () => void;
   onResetData: () => void;
   taskCount: number;
   onToggleMobileMenu?: () => void;
@@ -39,6 +41,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAttachments,
   onOpenUserManagement,
   onOpenDepartmentManagement,
+  onOpenBgSettings,
   onResetData,
   taskCount,
   onToggleMobileMenu,
@@ -145,6 +148,17 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   <Building2 className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">Quản lý phòng ban</span>
+                </button>
+              )}
+              {onOpenBgSettings && (
+                <button
+                  type="button"
+                  onClick={onOpenBgSettings}
+                  className="text-blue-100 hover:text-white flex items-center gap-1.5 cursor-pointer px-1.5 py-0.5 rounded hover:bg-white/10"
+                  title="Cài đặt và thay đổi hình nền cho trang quản lý"
+                >
+                  <ImageIcon className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Hình nền</span>
                 </button>
               )}
               <button

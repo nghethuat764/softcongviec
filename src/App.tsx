@@ -18,6 +18,7 @@ import { AttachmentCenterModal } from './components/AttachmentCenterModal';
 import { DocumentViewerModal } from './components/DocumentViewerModal';
 import { UserManagementModal } from './components/UserManagementModal';
 import { DepartmentManagementModal } from './components/DepartmentManagementModal';
+import { BackgroundSettingsModal } from './components/BackgroundSettingsModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DepartmentProvider } from './context/DepartmentContext';
 import { isTaskRelatedToStaff } from './utils/helpers';
@@ -142,6 +143,34 @@ function AppContent() {
   const [viewingDocData, setViewingDocData] = useState<{ docName: string; task?: Task } | null>(null);
   const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
   const [isDepartmentManagementOpen, setIsDepartmentManagementOpen] = useState(false);
+  const [isBgSettingsOpen, setIsBgSettingsOpen] = useState(false);
+
+  // Background Management Page Settings
+  const [bgImage, setBgImage] = useState<string>(() => {
+    return localStorage.getItem('custom_management_bg') || '/management_bg.jpg';
+  });
+  const [bgOpacity, setBgOpacity] = useState<number>(() => {
+    const saved = localStorage.getItem('management_bg_opacity');
+    return saved ? parseFloat(saved) : 0.90;
+  });
+  const [bgBlur, setBgBlur] = useState<string>(() => {
+    return localStorage.getItem('management_bg_blur') || 'none';
+  });
+
+  const handleUpdateBgImage = (url: string) => {
+    setBgImage(url);
+    localStorage.setItem('custom_management_bg', url);
+  };
+
+  const handleUpdateBgOpacity = (opacity: number) => {
+    setBgOpacity(opacity);
+    localStorage.setItem('management_bg_opacity', opacity.toString());
+  };
+
+  const handleUpdateBgBlur = (blur: string) => {
+    setBgBlur(blur);
+    localStorage.setItem('management_bg_blur', blur);
+  };
 
   // Sync tasks to localStorage as local cache
   useEffect(() => {
@@ -256,61 +285,84 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F6F9] text-[#111827] flex flex-col font-sans">
+    <div className="min-h-screen text-[#111827] flex flex-col font-sans relative">
       
-      {/* Top Main Navigation Header */}
-      <Header
-        currentRole={effectiveRole}
-        onRoleChange={(role) => {
-          if (isLeader) setCurrentRole(role);
+      {/* Background Image Layer for Management Page */}
+      {bgImage && (
+        <div 
+          className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-300 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url(${bgImage})`,
+            filter: bgBlur === 'sm' ? 'blur(4px)' : bgBlur === 'md' ? 'blur(8px)' : 'none',
+          }}
+        />
+      )}
+
+      {/* Translucent Administrative Tint Overlay for Crystal Clear Document Reading */}
+      <div 
+        className="fixed inset-0 pointer-events-none z-0 transition-colors duration-300"
+        style={{
+          backgroundColor: bgImage ? `rgba(244, 246, 249, ${bgOpacity})` : '#F4F6F9',
         }}
-        selectedStaff={selectedStaff}
-        onStaffChange={(s) => {
-          if (isLeader) setSelectedStaff(s);
-        }}
-        onOpenNotice={() => setIsNoticeOpen(true)}
-        onOpenNewTask={() => {
-          if (isLeader) setIsNewTaskOpen(true);
-        }}
-        onOpenDatabaseSchema={() => setIsDatabaseSchemaOpen(true)}
-        onOpenLoginModal={() => setIsLoginModalOpen(true)}
-        onOpenAttachments={() => setIsAttachmentCenterOpen(true)}
-        onOpenUserManagement={isLeader ? () => setIsUserManagementOpen(true) : undefined}
-        onOpenDepartmentManagement={isLeader ? () => setIsDepartmentManagementOpen(true) : undefined}
-        onResetData={isLeader ? handleResetData : () => alert('Chỉ có Ban Giám Đốc mới có quyền khôi phục CSDL.')}
-        taskCount={isLeader ? tasks.length : myAssignedTasks.length}
-        onToggleMobileMenu={() => setIsMobileSidebarOpen((prev) => !prev)}
       />
 
-      {/* Main Workspace Layout with Vertical Left Sidebar */}
-      <div className="flex-1 flex w-full relative">
-        {/* Vertical Left Menu */}
-        <Sidebar
+      {/* Main Content Shell */}
+      <div className="relative z-10 flex flex-col min-h-screen flex-1">
+        {/* Top Main Navigation Header */}
+        <Header
           currentRole={effectiveRole}
           onRoleChange={(role) => {
             if (isLeader) setCurrentRole(role);
           }}
+          selectedStaff={selectedStaff}
+          onStaffChange={(s) => {
+            if (isLeader) setSelectedStaff(s);
+          }}
           onOpenNotice={() => setIsNoticeOpen(true)}
           onOpenNewTask={() => {
-            if (!isLeader) {
-              setIsLoginModalOpen(true);
-              return;
-            }
-            setIsNewTaskOpen(true);
+            if (isLeader) setIsNewTaskOpen(true);
           }}
           onOpenDatabaseSchema={() => setIsDatabaseSchemaOpen(true)}
           onOpenLoginModal={() => setIsLoginModalOpen(true)}
           onOpenAttachments={() => setIsAttachmentCenterOpen(true)}
           onOpenUserManagement={isLeader ? () => setIsUserManagementOpen(true) : undefined}
           onOpenDepartmentManagement={isLeader ? () => setIsDepartmentManagementOpen(true) : undefined}
+          onOpenBgSettings={() => setIsBgSettingsOpen(true)}
           onResetData={isLeader ? handleResetData : () => alert('Chỉ có Ban Giám Đốc mới có quyền khôi phục CSDL.')}
           taskCount={isLeader ? tasks.length : myAssignedTasks.length}
-          isOpenMobile={isMobileSidebarOpen}
-          onCloseMobile={() => setIsMobileSidebarOpen(false)}
+          onToggleMobileMenu={() => setIsMobileSidebarOpen((prev) => !prev)}
         />
 
-        {/* Main Content Area */}
-        <main className="flex-1 min-w-0 pb-16 overflow-x-hidden">
+        {/* Main Workspace Layout with Vertical Left Sidebar */}
+        <div className="flex-1 flex w-full relative">
+          {/* Vertical Left Menu */}
+          <Sidebar
+            currentRole={effectiveRole}
+            onRoleChange={(role) => {
+              if (isLeader) setCurrentRole(role);
+            }}
+            onOpenNotice={() => setIsNoticeOpen(true)}
+            onOpenNewTask={() => {
+              if (!isLeader) {
+                setIsLoginModalOpen(true);
+                return;
+              }
+              setIsNewTaskOpen(true);
+            }}
+            onOpenDatabaseSchema={() => setIsDatabaseSchemaOpen(true)}
+            onOpenLoginModal={() => setIsLoginModalOpen(true)}
+            onOpenAttachments={() => setIsAttachmentCenterOpen(true)}
+            onOpenUserManagement={isLeader ? () => setIsUserManagementOpen(true) : undefined}
+            onOpenDepartmentManagement={isLeader ? () => setIsDepartmentManagementOpen(true) : undefined}
+            onOpenBgSettings={() => setIsBgSettingsOpen(true)}
+            onResetData={isLeader ? handleResetData : () => alert('Chỉ có Ban Giám Đốc mới có quyền khôi phục CSDL.')}
+            taskCount={isLeader ? tasks.length : myAssignedTasks.length}
+            isOpenMobile={isMobileSidebarOpen}
+            onCloseMobile={() => setIsMobileSidebarOpen(false)}
+          />
+
+          {/* Main Content Area */}
+          <main className="flex-1 min-w-0 pb-16 overflow-x-hidden">
           {effectiveRole === 'leader' && isLeader ? (
             <LeaderDashboard
               tasks={tasks}
@@ -426,6 +478,18 @@ function AppContent() {
         onClose={() => setIsDepartmentManagementOpen(false)}
       />
 
+      {/* Modal: Management Page Background Settings */}
+      <BackgroundSettingsModal
+        isOpen={isBgSettingsOpen}
+        onClose={() => setIsBgSettingsOpen(false)}
+        currentBgImage={bgImage}
+        onUpdateBgImage={handleUpdateBgImage}
+        bgOpacity={bgOpacity}
+        onUpdateBgOpacity={handleUpdateBgOpacity}
+        bgBlur={bgBlur}
+        onUpdateBgBlur={handleUpdateBgBlur}
+      />
+
       {/* Sticky Bottom Role Indicator */}
       <footer className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xs border-t border-slate-200 py-2 px-4 z-30 shadow-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-slate-600">
@@ -464,6 +528,13 @@ function AppContent() {
                 >
                   <span>Quản Lý Phòng Ban</span>
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setIsBgSettingsOpen(true)}
+                  className="text-2xs font-semibold text-slate-700 hover:text-[#003366] hover:underline cursor-pointer flex items-center gap-1"
+                >
+                  <span>Hình Nền Quản Lý</span>
+                </button>
               </>
             )}
             <button
@@ -490,6 +561,7 @@ function AppContent() {
         </div>
       </footer>
 
+      </div>
     </div>
   );
 }

@@ -13,7 +13,8 @@ import {
   X,
   Paperclip,
   Users,
-  Building2
+  Building2,
+  Image as ImageIcon
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -27,6 +28,7 @@ interface SidebarProps {
   onOpenAttachments?: () => void;
   onOpenUserManagement?: () => void;
   onOpenDepartmentManagement?: () => void;
+  onOpenBgSettings?: () => void;
   onResetData: () => void;
   taskCount: number;
   isOpenMobile?: boolean;
@@ -43,6 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenAttachments,
   onOpenUserManagement,
   onOpenDepartmentManagement,
+  onOpenBgSettings,
   onResetData,
   taskCount,
   isOpenMobile = false,
@@ -310,6 +313,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </div>
                   <span className="text-[11px] bg-[#003366] text-white px-2 py-0.5 rounded font-mono font-bold">
                     CSDL
+                  </span>
+                </button>
+              )}
+
+              {/* Menu 3: Hình nền trang quản lý */}
+              {onOpenBgSettings && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenBgSettings();
+                    if (onCloseMobile) onCloseMobile();
+                  }}
+                  title="Thay đổi hình nền cho trang quản lý hoặc tải ảnh từ máy tính"
+                  className="w-full p-3 sm:p-3.5 rounded-[8px] text-left bg-white hover:bg-blue-50/60 text-[#003366] border border-[#E5E7EB] hover:border-blue-200 flex items-center justify-between text-[14px] font-semibold transition-colors cursor-pointer shadow-xs group"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <ImageIcon className="w-5 h-5 text-[#003366] shrink-0 group-hover:scale-105 transition-transform" />
+                    <span className="truncate">Hình nền quản lý</span>
+                  </div>
+                  <span className="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono font-bold border border-slate-200">
+                    ẢNH NỀN
                   </span>
                 </button>
               )}
