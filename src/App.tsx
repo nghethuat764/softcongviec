@@ -505,24 +505,16 @@ function AppContent() {
         onUpdateBgBlur={handleUpdateBgBlur}
       />
 
-      {/* Sticky Bottom Role Indicator */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xs border-t border-slate-200 py-2 px-4 z-30 shadow-md">
-        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-slate-600">
+      {/* Quiet Professional Governmental Footer */}
+      <footer className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 py-2 px-4 sm:px-6 z-30 shadow-xs">
+        <div className="max-w-7xl mx-auto flex items-center justify-between text-[12px] text-slate-500">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={`w-2 h-2 rounded-full ${currentUser?.isLeader ? 'bg-red-600' : 'bg-blue-600'} animate-pulse`} />
-            <span className="hidden sm:inline">Tài khoản hiện tại:</span>
-            <span className="font-semibold text-slate-900">
-              {currentUser?.fullName} ({currentUser?.position})
-            </span>
-            <span className={`px-2 py-0.5 rounded text-2xs font-bold ${
-              currentUser?.isLeader ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
-            }`}>
-              {currentUser?.role === 'LEADER' ? 'CẤP LÃNH ĐẠO' : 'CẤP NHÂN VIÊN'}
-            </span>
-            <span className="text-slate-300 hidden sm:inline">|</span>
-            <span className="text-2xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 hidden sm:inline-flex items-center gap-1 font-medium">
-              <Cloud className="w-3 h-3 text-emerald-600" />
-              <span>Database Cloud Firestore: Đồng bộ trực tiếp</span>
+            <span className="font-semibold text-slate-700">UBND Phường Hố Nai</span>
+            <span aria-hidden="true" className="text-slate-300">·</span>
+            <span className="text-slate-600">Trung tâm Dịch vụ Tổng hợp</span>
+            <span aria-hidden="true" className="text-slate-300 hidden md:inline">·</span>
+            <span className="hidden md:inline text-slate-600">
+              Cán bộ: <strong className="text-slate-900 font-medium">{currentUser?.fullName}</strong> ({currentUser?.position})
             </span>
           </div>
 
@@ -531,13 +523,14 @@ function AppContent() {
               <button
                 type="button"
                 onClick={() => setCurrentRole(currentRole === 'leader' ? 'staff' : 'leader')}
-                className="text-xs font-semibold text-blue-700 hover:text-blue-900 hover:underline cursor-pointer"
+                className="text-[12px] font-semibold text-[#003366] hover:text-[#002244] hover:underline cursor-pointer transition-colors flex items-center gap-1"
               >
-                Chuyển sang {currentRole === 'leader' ? 'Phân Hệ Báo Cáo Nhân Viên' : 'Màn Hình Lãnh Đạo'} →
+                <span>Chuyển sang: {currentRole === 'leader' ? 'Phân hệ Viên chức' : 'Màn hình Lãnh đạo'}</span>
+                <span aria-hidden="true">→</span>
               </button>
             ) : (
-              <span className="text-xs text-slate-500 font-medium">
-                Phân hệ Viên chức Báo cáo Tiến độ
+              <span className="text-[12px] text-slate-500">
+                Phân hệ Viên chức thực hiện nhiệm vụ
               </span>
             )}
           </div>
