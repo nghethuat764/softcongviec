@@ -202,6 +202,20 @@ function AppContent() {
     deleteTaskFromDb(taskId);
   };
 
+  // Cascade department rename to existing tasks
+  const handleRenameDepartmentInTasks = (oldName: string, newName: string) => {
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.section === oldName || t.section.toLowerCase().trim() === oldName.toLowerCase().trim()) {
+          const updated = { ...t, section: newName };
+          saveTaskToDb(updated);
+          return updated;
+        }
+        return t;
+      })
+    );
+  };
+
   // Add directive from Leader
   const handleSubmitDirective = (
     taskId: string,
@@ -476,6 +490,7 @@ function AppContent() {
       <DepartmentManagementModal
         isOpen={isDepartmentManagementOpen}
         onClose={() => setIsDepartmentManagementOpen(false)}
+        onRenameDepartment={handleRenameDepartmentInTasks}
       />
 
       {/* Modal: Management Page Background Settings */}
@@ -512,38 +527,6 @@ function AppContent() {
           </div>
 
           <div className="flex items-center gap-3">
-            {isLeader && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setIsUserManagementOpen(true)}
-                  className="text-2xs font-semibold text-[#003366] hover:underline cursor-pointer flex items-center gap-1"
-                >
-                  <span>Quản Lý Người Dùng</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsDepartmentManagementOpen(true)}
-                  className="text-2xs font-semibold text-[#003366] hover:underline cursor-pointer flex items-center gap-1"
-                >
-                  <span>Quản Lý Phòng Ban</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsBgSettingsOpen(true)}
-                  className="text-2xs font-semibold text-slate-700 hover:text-[#003366] hover:underline cursor-pointer flex items-center gap-1"
-                >
-                  <span>Hình Nền Quản Lý</span>
-                </button>
-              </>
-            )}
-            <button
-              type="button"
-              onClick={() => setIsDatabaseSchemaOpen(true)}
-              className="text-2xs font-semibold text-slate-700 hover:text-slate-900 underline hidden md:inline cursor-pointer"
-            >
-              Xem Cấu Trúc Database
-            </button>
             {currentUser?.isLeader ? (
               <button
                 type="button"

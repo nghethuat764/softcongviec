@@ -173,13 +173,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
         </div>
 
-        {/* Footer info */}
-        <div className="bg-[#F4F6F9] px-5 py-3 border-t border-[#E5E7EB] flex items-center justify-between text-[12px] text-[#4B5563]">
-          <span>Phân quyền RBAC bám sát chức danh công vụ</span>
+        {/* Footer */}
+        <div className="bg-[#F4F6F9] px-5 py-3 border-t border-[#E5E7EB] flex items-center justify-end text-[12px] text-[#4B5563]">
           <button
             type="button"
             onClick={onClose}
-            className="text-[#003366] hover:underline font-semibold cursor-pointer"
+            className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium rounded text-xs transition-colors cursor-pointer"
           >
             Đóng
           </button>

@@ -98,69 +98,8 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
-            {/* Quick utility links */}
-            <div className="flex items-center gap-2 pl-2 border-l border-blue-400/30 text-[12px]">
-              {onOpenAttachments && (
-                <button
-                  type="button"
-                  onClick={onOpenAttachments}
-                  className="text-blue-100 hover:text-white flex items-center gap-1.5 cursor-pointer px-1.5 py-0.5 rounded hover:bg-white/10"
-                  title="Xem và tải các file/hồ sơ đính kèm"
-                >
-                  <Paperclip className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">File đính kèm</span>
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={onOpenNotice}
-                className="text-blue-100 hover:text-white flex items-center gap-1.5 cursor-pointer px-1.5 py-0.5 rounded hover:bg-white/10"
-                title="Xem văn bản kết luận giao ban"
-              >
-                <span className="hidden sm:inline">Văn bản kết luận</span>
-              </button>
-              <button
-                type="button"
-                onClick={onOpenDatabaseSchema}
-                className="text-blue-100 hover:text-white flex items-center gap-1.5 cursor-pointer px-1.5 py-0.5 rounded hover:bg-white/10"
-                title="Xem cấu trúc Database & Lược đồ DDL SQL"
-              >
-                <Database className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">CSDL</span>
-              </button>
-              {onOpenUserManagement && isLeader && (
-                <button
-                  type="button"
-                  onClick={onOpenUserManagement}
-                  className="text-blue-100 hover:text-white flex items-center gap-1.5 cursor-pointer px-1.5 py-0.5 rounded hover:bg-white/10"
-                  title="Quản lý người dùng & phân quyền hệ thống"
-                >
-                  <Users className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Quản lý người dùng</span>
-                </button>
-              )}
-              {onOpenDepartmentManagement && isLeader && (
-                <button
-                  type="button"
-                  onClick={onOpenDepartmentManagement}
-                  className="text-blue-100 hover:text-white flex items-center gap-1.5 cursor-pointer px-1.5 py-0.5 rounded hover:bg-white/10"
-                  title="Quản lý phòng ban, tổ chuyên môn & cơ cấu tổ chức"
-                >
-                  <Building2 className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Quản lý phòng ban</span>
-                </button>
-              )}
-              {onOpenBgSettings && (
-                <button
-                  type="button"
-                  onClick={onOpenBgSettings}
-                  className="text-blue-100 hover:text-white flex items-center gap-1.5 cursor-pointer px-1.5 py-0.5 rounded hover:bg-white/10"
-                  title="Cài đặt và thay đổi hình nền cho trang quản lý"
-                >
-                  <ImageIcon className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Hình nền</span>
-                </button>
-              )}
+            {/* Quick reset button */}
+            <div className="flex items-center pl-2 border-l border-blue-400/30 text-[12px]">
               <button
                 type="button"
                 onClick={onResetData}

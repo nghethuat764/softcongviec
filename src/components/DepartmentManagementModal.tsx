@@ -26,6 +26,7 @@ import {
 interface DepartmentManagementModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onRenameDepartment?: (oldName: string, newName: string) => void;
 }
 
 const BADGE_COLOR_MAP: Record<string, { bg: string; text: string; border: string; dot: string }> = {
@@ -40,8 +41,9 @@ const BADGE_COLOR_MAP: Record<string, { bg: string; text: string; border: string
 export const DepartmentManagementModal: React.FC<DepartmentManagementModalProps> = ({
   isOpen,
   onClose,
+  onRenameDepartment,
 }) => {
-  const { isLeader, users } = useAuth();
+  const { isLeader, users, updateUser } = useAuth();
   const {
     departments,
     addDepartment,
@@ -195,8 +197,25 @@ export const DepartmentManagementModal: React.FC<DepartmentManagementModalProps>
       };
 
       if (editingDeptId) {
+        const oldDept = departments.find((d) => d.id === editingDeptId);
         await updateDepartment(deptData);
-        showToast(`Đã cập nhật thông tin phòng ban "${cleanName}" vào Cơ sở dữ liệu.`);
+
+        // Tự động đồng bộ tên phòng ban mới sang tất cả tài khoản cán bộ và nhiệm vụ liên quan
+        if (oldDept && oldDept.name !== cleanName) {
+          const affectedUsers = users.filter(
+            (u) =>
+              u.unit === oldDept.name ||
+              u.unit === oldDept.shortName ||
+              u.unit.toLowerCase().trim() === oldDept.name.toLowerCase().trim()
+          );
+          for (const u of affectedUsers) {
+            await updateUser({ ...u, unit: cleanName });
+          }
+          if (onRenameDepartment) {
+            onRenameDepartment(oldDept.name, cleanName);
+          }
+        }
+        showToast(`Đã cập nhật phòng ban "${cleanName}" và đồng bộ tự động sang các hồ sơ cán bộ, form nhiệm vụ.`);
       } else {
         await addDepartment(deptData);
         showToast(`Đã thêm mới phòng ban "${cleanName}" vào Cơ sở dữ liệu.`);

@@ -22,6 +22,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   const [section, setSection] = useState<SectionType>('III. TỔ DỊCH VỤ CÔNG ÍCH - XÂY DỰNG');
   const [category, setCategory] = useState('Nhiệm vụ phát sinh');
   const [title, setTitle] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [assignee, setAssignee] = useState('');
   const [coAssigneesText, setCoAssigneesText] = useState('');
   const [requirement, setRequirement] = useState('');
@@ -33,20 +34,38 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   // Sync default assignee and section from live Firestore database
   useEffect(() => {
     if (isOpen) {
-      // If current assignee is empty or not in the updated users list, pick the first staff
-      const isValidAssignee = users.some((u) => u.shortName === assignee || u.fullName === assignee);
-      if (!isValidAssignee && users.length > 0) {
-        const firstStaff = users.find((u) => !u.isLeader) || users[0];
-        if (firstStaff) {
-          const defaultName = firstStaff.shortName || firstStaff.fullName;
-          setAssignee(defaultName);
-          // Auto-sync section with this staff's unit
-          if (firstStaff.unit) {
-            const matchedDept = departments.find((d) =>
-              d.name.toLowerCase() === firstStaff.unit.toLowerCase() ||
-              d.code.toLowerCase() === firstStaff.unit.toLowerCase() ||
-              d.name.toLowerCase().includes(firstStaff.unit.toLowerCase()) ||
-              firstStaff.unit.toLowerCase().includes(d.name.toLowerCase())
+      // Find matching user from users list
+      const matchedUser = users.find(
+        (u) => u.id === selectedUserId || u.shortName === assignee || u.fullName === assignee
+      );
+
+      if (matchedUser) {
+        setSelectedUserId(matchedUser.id);
+        setAssignee(matchedUser.shortName || matchedUser.fullName);
+        if (matchedUser.unit) {
+          const matchedDept = departments.find(
+            (d) =>
+              d.name.toLowerCase() === matchedUser.unit.toLowerCase() ||
+              d.code.toLowerCase() === matchedUser.unit.toLowerCase() ||
+              d.name.toLowerCase().includes(matchedUser.unit.toLowerCase()) ||
+              matchedUser.unit.toLowerCase().includes(d.name.toLowerCase())
+          );
+          if (matchedDept) {
+            setSection(matchedDept.name);
+          }
+        }
+      } else if (users.length > 0) {
+        const defaultStaff = users.find((u) => !u.isLeader) || users[0];
+        if (defaultStaff) {
+          setSelectedUserId(defaultStaff.id);
+          setAssignee(defaultStaff.shortName || defaultStaff.fullName);
+          if (defaultStaff.unit) {
+            const matchedDept = departments.find(
+              (d) =>
+                d.name.toLowerCase() === defaultStaff.unit.toLowerCase() ||
+                d.code.toLowerCase() === defaultStaff.unit.toLowerCase() ||
+                d.name.toLowerCase().includes(defaultStaff.unit.toLowerCase()) ||
+                defaultStaff.unit.toLowerCase().includes(d.name.toLowerCase())
             );
             if (matchedDept) {
               setSection(matchedDept.name);
@@ -57,7 +76,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
 
       // If current section is not in departments, default to first department
       if (departments.length > 0 && !departments.some((d) => d.name === section)) {
-        const defaultDept = departments.find(d => d.code === 'DVCI-XD') || departments[0];
+        const defaultDept = departments.find((d) => d.code === 'DVCI-XD') || departments[0];
         if (defaultDept) {
           setSection(defaultDept.name);
         }
@@ -198,7 +217,28 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
               </div>
               <select
                 value={section}
-                onChange={(e) => setSection(e.target.value as SectionType)}
+                onChange={(e) => {
+                  const newSec = e.target.value as SectionType;
+                  setSection(newSec);
+                  // Tự động kiểm tra: nếu cán bộ hiện tại không thuộc đơn vị này, gợi ý cán bộ thuộc đơn vị này
+                  const currentStaff = users.find(u => u.id === selectedUserId);
+                  const isBelong = currentStaff?.unit && (
+                    currentStaff.unit.toLowerCase() === newSec.toLowerCase() ||
+                    newSec.toLowerCase().includes(currentStaff.unit.toLowerCase()) ||
+                    currentStaff.unit.toLowerCase().includes(newSec.toLowerCase())
+                  );
+                  if (!isBelong) {
+                    const deptStaff = users.find(u => !u.isLeader && u.unit && (
+                      u.unit.toLowerCase() === newSec.toLowerCase() ||
+                      newSec.toLowerCase().includes(u.unit.toLowerCase()) ||
+                      u.unit.toLowerCase().includes(newSec.toLowerCase())
+                    ));
+                    if (deptStaff) {
+                      setSelectedUserId(deptStaff.id);
+                      setAssignee(deptStaff.shortName || deptStaff.fullName);
+                    }
+                  }
+                }}
                 className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer bg-white"
               >
                 {departments.map((dept) => (
@@ -234,53 +274,55 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
                   Cán bộ phụ trách chính (Người nhận việc): <span className="text-red-500">*</span>
                 </label>
                 <span className="text-[11px] text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded font-mono font-medium border border-emerald-200">
-                  CSDL người dùng ({users.length})
+                  CSDL ({users.length} cán bộ)
                 </span>
               </div>
               <select
-                value={assignee}
+                value={selectedUserId}
                 onChange={(e) => {
-                  const val = e.target.value;
-                  setAssignee(val);
-                  // Tự động gợi ý / đồng bộ phòng ban tương ứng của cán bộ
-                  const picked = users.find((u) => u.shortName === val || u.fullName === val);
-                  if (picked && picked.unit) {
-                    const matchedDept = departments.find((d) => 
-                      d.name.toLowerCase() === picked.unit.toLowerCase() ||
-                      d.name.toLowerCase().includes(picked.unit.toLowerCase()) ||
-                      picked.unit.toLowerCase().includes(d.name.toLowerCase())
-                    );
-                    if (matchedDept) {
-                      setSection(matchedDept.name);
+                  const uId = e.target.value;
+                  setSelectedUserId(uId);
+                  const picked = users.find((u) => u.id === uId);
+                  if (picked) {
+                    setAssignee(picked.shortName || picked.fullName);
+                    // Tự động gợi ý / đồng bộ phòng ban tương ứng của cán bộ
+                    if (picked.unit) {
+                      const matchedDept = departments.find((d) => 
+                        d.name.toLowerCase() === picked.unit.toLowerCase() ||
+                        d.code.toLowerCase() === picked.unit.toLowerCase() ||
+                        d.name.toLowerCase().includes(picked.unit.toLowerCase()) ||
+                        picked.unit.toLowerCase().includes(d.name.toLowerCase())
+                      );
+                      if (matchedDept) {
+                        setSection(matchedDept.name);
+                      }
                     }
                   }
                 }}
                 className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer bg-white font-medium"
               >
-                <optgroup label="── Cán bộ / Viên chức chuyên môn ──">
+                <optgroup label={`── Cán bộ / Viên chức chuyên môn (${users.filter(u => !u.isLeader).length}) ──`}>
                   {users.filter(u => !u.isLeader).map((u) => {
-                    const val = u.shortName || u.fullName;
-                    const text = `${u.shortName ? `${u.shortName} (${u.fullName})` : u.fullName} - ${u.unit || u.position || 'Viên chức'}`;
+                    const text = `${u.fullName} (${u.shortName || u.username}) - ${u.unit || u.position || 'Viên chức'}`;
                     return (
-                      <option key={u.id} value={val}>
+                      <option key={u.id} value={u.id}>
                         {text}
                       </option>
                     );
                   })}
                 </optgroup>
-                <optgroup label="── Ban Giám Đốc / Lãnh đạo ──">
+                <optgroup label={`── Ban Giám Đốc / Lãnh đạo (${users.filter(u => u.isLeader).length}) ──`}>
                   {users.filter(u => u.isLeader).map((u) => {
-                    const val = u.shortName || u.fullName;
-                    const text = `${u.shortName ? `${u.shortName} (${u.fullName})` : u.fullName} - ${u.position || 'Lãnh đạo'}`;
+                    const text = `${u.fullName} (${u.shortName || u.username}) - ${u.position || 'Lãnh đạo'}`;
                     return (
-                      <option key={u.id} value={val}>
+                      <option key={u.id} value={u.id}>
                         {text}
                       </option>
                     );
                   })}
                 </optgroup>
-                {assignee && !users.some((u) => u.shortName === assignee || u.fullName === assignee) && (
-                  <option value={assignee}>{assignee}</option>
+                {selectedUserId && !users.some((u) => u.id === selectedUserId) && (
+                  <option value={selectedUserId}>{assignee || selectedUserId}</option>
                 )}
               </select>
             </div>

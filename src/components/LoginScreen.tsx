@@ -206,13 +206,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
       </main>
 
-      {/* 3. Footer Cơ Quan Nhà Nước */}
-      <footer className="relative z-10 bg-[#002244]/90 backdrop-blur-md border-t border-white/10 py-3 px-4 text-center text-[12px] text-blue-200">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5">
-          <span className="font-medium text-white/90">Ủy Ban Nhân Dân Phường Hố Nai · Trung Tâm Dịch Vụ Tổng Hợp(©Copyright:Hoàng Văn Thiện-Sđt:0948820369)</span>
-          <span className="text-blue-200/80">Hệ thống chỉ đạo điều hành và quản lý tiến độ 40 nhiệm vụ giao ban</span>
-        </div>
-      </footer>
 
     </div>
   );

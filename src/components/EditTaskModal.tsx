@@ -35,6 +35,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
   const [section, setSection] = useState<SectionType>('III. TỔ DỊCH VỤ CÔNG ÍCH - XÂY DỰNG');
   const [category, setCategory] = useState('');
   const [title, setTitle] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [assignee, setAssignee] = useState('');
   const [coAssigneesText, setCoAssigneesText] = useState('');
   const [requirement, setRequirement] = useState('');
@@ -53,6 +54,10 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
       setCategory(task.category || '');
       setTitle(task.title || '');
       setAssignee(task.assignee || '');
+      const matched = users.find(
+        (u) => u.id === task.assigneeId || u.shortName === task.assignee || u.fullName === task.assignee
+      );
+      setSelectedUserId(matched?.id || '');
       setCoAssigneesText(task.coAssignees ? task.coAssignees.join(', ') : '');
       setRequirement(task.requirement || '');
       setDeadline(task.deadline || '');
@@ -63,7 +68,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
       setDifficulties(task.difficulties || '');
       setProposals(task.proposals || '');
     }
-  }, [task]);
+  }, [task, users]);
 
   if (!isOpen || !task) return null;
 
@@ -219,53 +224,55 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
                   Cán bộ chủ trì thực hiện:
                 </label>
                 <span className="text-[11px] text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded font-mono font-medium border border-emerald-200">
-                  CSDL người dùng ({users.length})
+                  CSDL ({users.length} cán bộ)
                 </span>
               </div>
               <select
-                value={assignee}
+                value={selectedUserId}
                 onChange={(e) => {
-                  const val = e.target.value;
-                  setAssignee(val);
-                  // Tự động gợi ý phòng ban tương ứng
-                  const picked = users.find((u) => u.shortName === val || u.fullName === val);
-                  if (picked && picked.unit) {
-                    const matchedDept = departments.find((d) => 
-                      d.name.toLowerCase() === picked.unit.toLowerCase() ||
-                      d.name.toLowerCase().includes(picked.unit.toLowerCase()) ||
-                      picked.unit.toLowerCase().includes(d.name.toLowerCase())
-                    );
-                    if (matchedDept) {
-                      setSection(matchedDept.name);
+                  const uId = e.target.value;
+                  setSelectedUserId(uId);
+                  const picked = users.find((u) => u.id === uId);
+                  if (picked) {
+                    setAssignee(picked.shortName || picked.fullName);
+                    // Tự động gợi ý phòng ban tương ứng
+                    if (picked.unit) {
+                      const matchedDept = departments.find((d) => 
+                        d.name.toLowerCase() === picked.unit.toLowerCase() ||
+                        d.code.toLowerCase() === picked.unit.toLowerCase() ||
+                        d.name.toLowerCase().includes(picked.unit.toLowerCase()) ||
+                        picked.unit.toLowerCase().includes(d.name.toLowerCase())
+                      );
+                      if (matchedDept) {
+                        setSection(matchedDept.name);
+                      }
                     }
                   }
                 }}
                 className="w-full p-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white font-medium cursor-pointer"
               >
-                <optgroup label="── Cán bộ / Viên chức chuyên môn ──">
+                <optgroup label={`── Cán bộ / Viên chức chuyên môn (${users.filter(u => !u.isLeader).length}) ──`}>
                   {users.filter(u => !u.isLeader).map((u) => {
-                    const val = u.shortName || u.fullName;
-                    const text = `${u.shortName ? `${u.shortName} (${u.fullName})` : u.fullName} - ${u.unit || u.position || 'Viên chức'}`;
+                    const text = `${u.fullName} (${u.shortName || u.username}) - ${u.unit || u.position || 'Viên chức'}`;
                     return (
-                      <option key={u.id} value={val}>
+                      <option key={u.id} value={u.id}>
                         {text}
                       </option>
                     );
                   })}
                 </optgroup>
-                <optgroup label="── Ban Giám Đốc / Lãnh đạo ──">
+                <optgroup label={`── Ban Giám Đốc / Lãnh đạo (${users.filter(u => u.isLeader).length}) ──`}>
                   {users.filter(u => u.isLeader).map((u) => {
-                    const val = u.shortName || u.fullName;
-                    const text = `${u.shortName ? `${u.shortName} (${u.fullName})` : u.fullName} - ${u.position || 'Lãnh đạo'}`;
+                    const text = `${u.fullName} (${u.shortName || u.username}) - ${u.position || 'Lãnh đạo'}`;
                     return (
-                      <option key={u.id} value={val}>
+                      <option key={u.id} value={u.id}>
                         {text}
                       </option>
                     );
                   })}
                 </optgroup>
-                {assignee && !users.some((u) => u.shortName === assignee || u.fullName === assignee) && (
-                  <option value={assignee}>{assignee}</option>
+                {selectedUserId && !users.some((u) => u.id === selectedUserId) && (
+                  <option value={selectedUserId}>{assignee || selectedUserId}</option>
                 )}
               </select>
             </div>
