@@ -1,4 +1,5 @@
 import { Task, TaskStatus, PriorityLevel, SectionType } from '../types';
+import { UserAccount, Department } from '../types/database';
 
 export function getStatusLabel(status: TaskStatus): string {
   switch (status) {
@@ -146,3 +147,141 @@ export function calculateSummary(tasks: Task[]) {
     avgProgress,
   };
 }
+
+export function isUserInDepartment(
+  user: UserAccount,
+  sectionOrDeptName: string,
+  departments: Department[] = []
+): boolean {
+  if (!user || !sectionOrDeptName) return false;
+
+  const userUnit = (user.unit || '').trim().toLowerCase();
+  const target = sectionOrDeptName.trim().toLowerCase();
+
+  if (!userUnit && !target) return false;
+
+  // 1. Direct equality or substring containment
+  if (userUnit && target && (userUnit === target || userUnit.includes(target) || target.includes(userUnit))) {
+    return true;
+  }
+
+  // 2. Lookup corresponding department from departments list
+  const deptObj = departments.find(
+    (d) =>
+      d.name.toLowerCase() === target ||
+      d.code.toLowerCase() === target ||
+      (d.shortName && d.shortName.toLowerCase() === target) ||
+      target.includes(d.name.toLowerCase()) ||
+      d.name.toLowerCase().includes(target)
+  );
+
+  if (deptObj) {
+    const dName = deptObj.name.toLowerCase();
+    const dCode = deptObj.code.toLowerCase();
+    const dShort = (deptObj.shortName || '').toLowerCase();
+
+    if (userUnit === dName || userUnit.includes(dName) || dName.includes(userUnit)) {
+      return true;
+    }
+    if (dCode && (userUnit.includes(dCode) || userUnit === dCode)) {
+      return true;
+    }
+    if (dShort && (userUnit.includes(dShort) || dShort.includes(userUnit))) {
+      return true;
+    }
+    if (deptObj.leaderId && (user.id === deptObj.leaderId || user.id.replace('usr-', '') === deptObj.leaderId)) {
+      return true;
+    }
+  }
+
+  // 3. Domain semantic matching for standard administrative sections
+  // Dịch vụ công ích - Xây dựng (DVCI - XD)
+  const isTargetDvci =
+    target.includes('công ích') ||
+    target.includes('dịch vụ công ích') ||
+    target.includes('xây dựng') ||
+    target.includes('dvci') ||
+    target.includes('đầu tư') ||
+    target.includes('thường xuyên') ||
+    target.startsWith('iii.') ||
+    target.startsWith('iv.') ||
+    target.startsWith('v.');
+
+  if (isTargetDvci) {
+    return (
+      userUnit.includes('công ích') ||
+      userUnit.includes('xây dựng') ||
+      userUnit.includes('dvci') ||
+      userUnit.includes('ccn') ||
+      userUnit.includes('môi trường') ||
+      userUnit.includes('dự án')
+    );
+  }
+
+  // Văn hóa - Thể thao - Thông tin - Tuyên truyền (VH - TT)
+  const isTargetVhtt =
+    target.includes('văn hóa') ||
+    target.includes('thể thao') ||
+    target.includes('thông tin') ||
+    target.includes('tuyên truyền') ||
+    target.includes('truyền thanh') ||
+    target.includes('vh-tt') ||
+    target.includes('vhtt') ||
+    target.startsWith('vi.');
+
+  if (isTargetVhtt) {
+    return (
+      userUnit.includes('văn hóa') ||
+      userUnit.includes('thể thao') ||
+      userUnit.includes('thông tin') ||
+      userUnit.includes('tuyên truyền') ||
+      userUnit.includes('truyền thanh') ||
+      userUnit.includes('cntt') ||
+      userUnit.includes('vh-tt') ||
+      userUnit.includes('vhtt')
+    );
+  }
+
+  // Hành chính - Kế toán (HC - KT)
+  const isTargetHckt =
+    target.includes('hành chính') ||
+    target.includes('kế toán') ||
+    target.includes('hc-kt') ||
+    target.includes('hckt') ||
+    target.startsWith('ii.');
+
+  if (isTargetHckt) {
+    return (
+      userUnit.includes('hành chính') ||
+      userUnit.includes('kế toán') ||
+      userUnit.includes('hc-kt') ||
+      userUnit.includes('hckt')
+    );
+  }
+
+  // Ban Giám Đốc
+  const isTargetBgd =
+    target.includes('giám đốc') ||
+    target.includes('ban giám đốc') ||
+    target.includes('bgd');
+
+  if (isTargetBgd) {
+    return (
+      userUnit.includes('giám đốc') ||
+      userUnit.includes('bgd') ||
+      user.isLeader ||
+      user.role === 'LEADER'
+    );
+  }
+
+  return false;
+}
+
+export function getUsersForDepartment(
+  users: UserAccount[],
+  sectionOrDeptName: string,
+  departments: Department[] = []
+): UserAccount[] {
+  return users.filter((u) => isUserInDepartment(u, sectionOrDeptName, departments));
+}
+

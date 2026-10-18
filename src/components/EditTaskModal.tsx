@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Task, SectionType, PriorityLevel, TaskStatus } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useDepartments } from '../context/DepartmentContext';
+import { getUsersForDepartment } from '../utils/helpers';
 import { 
   X, 
   Edit3, 
@@ -46,6 +47,11 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
   const [progress, setProgress] = useState(0);
   const [difficulties, setDifficulties] = useState('');
   const [proposals, setProposals] = useState('');
+
+  // Only employees belonging to the selected department
+  const departmentUsers = useMemo(() => {
+    return getUsersForDepartment(users, section, departments);
+  }, [users, section, departments]);
 
   useEffect(() => {
     if (task) {
@@ -174,7 +180,18 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
               </div>
               <select
                 value={section}
-                onChange={(e) => setSection(e.target.value as SectionType)}
+                onChange={(e) => {
+                  const newSec = e.target.value as SectionType;
+                  setSection(newSec);
+                  const matchedStaff = getUsersForDepartment(users, newSec, departments);
+                  if (matchedStaff.length > 0) {
+                    if (!matchedStaff.some((u) => u.id === selectedUserId)) {
+                      const firstStaff = matchedStaff.find((u) => !u.isLeader) || matchedStaff[0];
+                      setSelectedUserId(firstStaff.id);
+                      setAssignee(firstStaff.shortName || firstStaff.fullName);
+                    }
+                  }
+                }}
                 className="w-full p-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white font-medium cursor-pointer"
               >
                 {departments.map((dept) => (
@@ -223,58 +240,50 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
                   <User className="w-3.5 h-3.5 text-blue-600" />
                   Cán bộ chủ trì thực hiện:
                 </label>
-                <span className="text-[11px] text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded font-mono font-medium border border-emerald-200">
-                  CSDL ({users.length} cán bộ)
+                <span className="text-[11px] text-[#003366] bg-blue-50 px-2 py-0.5 rounded font-mono font-medium border border-blue-200">
+                  {departmentUsers.length > 0
+                    ? `${departmentUsers.length} nhân sự phòng ban`
+                    : '0 nhân sự'}
                 </span>
               </div>
               <select
                 value={selectedUserId}
+                required
                 onChange={(e) => {
                   const uId = e.target.value;
                   setSelectedUserId(uId);
                   const picked = users.find((u) => u.id === uId);
                   if (picked) {
                     setAssignee(picked.shortName || picked.fullName);
-                    // Tự động gợi ý phòng ban tương ứng
-                    if (picked.unit) {
-                      const matchedDept = departments.find((d) => 
-                        d.name.toLowerCase() === picked.unit.toLowerCase() ||
-                        d.code.toLowerCase() === picked.unit.toLowerCase() ||
-                        d.name.toLowerCase().includes(picked.unit.toLowerCase()) ||
-                        picked.unit.toLowerCase().includes(d.name.toLowerCase())
-                      );
-                      if (matchedDept) {
-                        setSection(matchedDept.name);
-                      }
-                    }
                   }
                 }}
                 className="w-full p-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white font-medium cursor-pointer"
               >
-                <optgroup label={`── Cán bộ / Viên chức chuyên môn (${users.filter(u => !u.isLeader).length}) ──`}>
-                  {users.filter(u => !u.isLeader).map((u) => {
-                    const text = `${u.fullName} (${u.shortName || u.username}) - ${u.unit || u.position || 'Viên chức'}`;
-                    return (
+                {departmentUsers.length > 0 ? (
+                  departmentUsers.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.fullName} ({u.shortName || u.username}) - {u.position || u.unit || 'Viên chức'}
+                    </option>
+                  ))
+                ) : (
+                  <>
+                    <option value="" disabled>Chưa có nhân sự nào thuộc phòng ban này trong CSDL</option>
+                    {users.map((u) => (
                       <option key={u.id} value={u.id}>
-                        {text}
+                        [Tất cả] {u.fullName} ({u.shortName || u.username}) - {u.unit || u.position}
                       </option>
-                    );
-                  })}
-                </optgroup>
-                <optgroup label={`── Ban Giám Đốc / Lãnh đạo (${users.filter(u => u.isLeader).length}) ──`}>
-                  {users.filter(u => u.isLeader).map((u) => {
-                    const text = `${u.fullName} (${u.shortName || u.username}) - ${u.position || 'Lãnh đạo'}`;
-                    return (
-                      <option key={u.id} value={u.id}>
-                        {text}
-                      </option>
-                    );
-                  })}
-                </optgroup>
-                {selectedUserId && !users.some((u) => u.id === selectedUserId) && (
-                  <option value={selectedUserId}>{assignee || selectedUserId}</option>
+                    ))}
+                  </>
+                )}
+                {selectedUserId && !departmentUsers.some((u) => u.id === selectedUserId) && (
+                  <option value={selectedUserId}>{assignee || selectedUserId} (Hiện tại)</option>
                 )}
               </select>
+              {departmentUsers.length > 0 && (
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Đang lọc hiển thị cán bộ trực thuộc đơn vị: <span className="font-semibold text-slate-700">{section}</span>
+                </p>
+              )}
             </div>
 
             <div>
@@ -295,8 +304,9 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
                 className="w-full p-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none"
               />
               {/* Quick User Chips */}
-              <div className="flex flex-wrap gap-1 mt-1.5 max-h-16 overflow-y-auto pt-0.5">
-                {users.filter(u => (u.shortName || u.fullName) !== assignee).map((u) => {
+              <div className="flex flex-wrap gap-1 mt-1.5 max-h-20 overflow-y-auto pt-0.5">
+                {/* Department colleagues first */}
+                {departmentUsers.filter(u => (u.shortName || u.fullName) !== assignee && u.id !== selectedUserId).map((u) => {
                   const name = u.shortName || u.fullName;
                   const isPicked = (coAssigneesText || '')
                     .split(',')
@@ -321,8 +331,43 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
                       className={`px-1.5 py-0.5 rounded text-[10px] font-medium border transition-colors cursor-pointer ${
                         isPicked
                           ? 'bg-amber-600 text-white border-amber-600'
-                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 hover:text-slate-900'
+                          : 'bg-amber-50 text-amber-900 border-amber-200 hover:bg-amber-100'
                       }`}
+                      title={`Cán bộ cùng tổ: ${name}`}
+                    >
+                      {isPicked ? '✓ ' : '+ '}{name}
+                    </button>
+                  );
+                })}
+                {/* Other comrades if needed */}
+                {users.filter(u => !departmentUsers.some(du => du.id === u.id) && (u.shortName || u.fullName) !== assignee && u.id !== selectedUserId).map((u) => {
+                  const name = u.shortName || u.fullName;
+                  const isPicked = (coAssigneesText || '')
+                    .split(',')
+                    .map((s) => s.trim().toLowerCase())
+                    .includes(name.toLowerCase());
+                  return (
+                    <button
+                      key={u.id}
+                      type="button"
+                      onClick={() => {
+                        const currentList = coAssigneesText
+                          ? coAssigneesText.split(',').map((s) => s.trim()).filter(Boolean)
+                          : [];
+                        if (isPicked) {
+                          setCoAssigneesText(
+                            currentList.filter((s) => s.toLowerCase() !== name.toLowerCase()).join(', ')
+                          );
+                        } else {
+                          setCoAssigneesText([...currentList, name].join(', '));
+                        }
+                      }}
+                      className={`px-1.5 py-0.5 rounded text-[10px] font-medium border transition-colors cursor-pointer ${
+                        isPicked
+                          ? 'bg-amber-600 text-white border-amber-600'
+                          : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100 hover:text-slate-900'
+                      }`}
+                      title={`Cán bộ phối hợp: ${name} (${u.unit || u.position})`}
                     >
                       {isPicked ? '✓ ' : '+ '}{name}
                     </button>
