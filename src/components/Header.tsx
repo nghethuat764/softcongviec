@@ -126,7 +126,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
                 <h1 className="text-[17px] sm:text-[19px] font-bold tracking-tight text-white leading-tight">
-                  HỆ THỐNG PHÂN CÔNG NHIỆM VỤ & THEO DÕI GIAO BAN
+                  HỆ THỐNG PHÂN CÔNG NHIỆM VỤ & VÀ BÁO CÁO TIẾN ĐỘ
                 </h1>
                 <span className="bg-white/15 text-white text-[12px] px-2 py-0.5 rounded-[4px] font-mono font-bold border border-white/20">
                   {taskCount} việc

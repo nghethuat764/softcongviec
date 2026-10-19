@@ -183,7 +183,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                 <span>Phó Giám đốc: <strong className="text-[#111827]">Đ/c Tuyến</strong></span>
               </div>
               <h2 className="text-[18px] sm:text-[20px] font-bold tracking-tight text-[#111827]">
-                Trung Tâm Chỉ Đạo & Giám Sát Nhiệm Vụ Giao Ban
+                Trung Tâm Chỉ Đạo & Giám Sát Nhiệm Vụ
               </h2>
               <p className="text-[14px] text-[#4B5563] mt-1 max-w-2xl leading-relaxed">
                 Theo dõi và kiểm soát toàn diện các nhiệm vụ giao ban. Phân công giao việc cho từng nhân viên, phát lệnh chỉ đạo đôn đốc và tháo gỡ vướng mắc.
