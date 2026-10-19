@@ -257,7 +257,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 if (onCloseMobile) onCloseMobile();
               }}
               className="w-full px-3 py-2.5 rounded-[8px] text-left text-[13px] text-[#4B5563] hover:text-[#111827] hover:bg-[#F4F6F9] flex items-center gap-2.5 transition-colors cursor-pointer"
-              title="Khôi phục lại dữ liệu ban đầu"
+              title="Khôi phục dữ liệu gốc (Xóa toàn bộ dữ liệu mẫu)"
             >
               <RotateCcw className="w-4 h-4 text-[#4B5563] shrink-0" />
               <span className="truncate">Khôi phục dữ liệu gốc</span>

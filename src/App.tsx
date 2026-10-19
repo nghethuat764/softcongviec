@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Task, StaffMember, Directive } from './types';
-import { getStoredTasks, saveTasks, resetToInitialTasks } from './utils/storage';
+import { getStoredTasks, saveTasks, resetToInitialTasks, clearStoredTasks } from './utils/storage';
 import { STAFF_MEMBERS } from './data/staffMembers';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
@@ -29,7 +29,7 @@ import {
   deleteTaskFromDb, 
   resetDatabaseToOriginal 
 } from './services/firebaseDbService';
-import { ShieldCheck, UserCheck, Cloud, LogOut } from 'lucide-react';
+import { ShieldCheck, UserCheck, Cloud, LogOut, AlertTriangle, Trash2, CheckCircle2, RotateCcw, X, Loader2 } from 'lucide-react';
 
 function AppContent() {
   const { currentUser, isLeader, switchUser, logout } = useAuth();
@@ -144,6 +144,9 @@ function AppContent() {
   const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
   const [isDepartmentManagementOpen, setIsDepartmentManagementOpen] = useState(false);
   const [isBgSettingsOpen, setIsBgSettingsOpen] = useState(false);
+  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [toastNotification, setToastNotification] = useState<string | null>(null);
 
   // Background Management Page Settings
   const [bgImage, setBgImage] = useState<string>(() => {
@@ -262,16 +265,33 @@ function AppContent() {
     saveTaskToDb(newTask);
   };
 
-  // Reset to original PDF data
-  const handleResetData = () => {
-    if (
-      window.confirm(
-        'Bạn có chắc chắn muốn khôi phục lại dữ liệu nguyên bản từ Thông báo kết luận giao ban tuần ngày 28/9/2026 không?'
-      )
-    ) {
-      resetDatabaseToOriginal().then((initial) => {
-        setTasks(initial);
-      });
+  // Open confirm modal to clear all sample data
+  const handleRequestReset = () => {
+    if (!isLeader) {
+      setToastNotification('Chỉ có Ban Giám Đốc mới có quyền xóa dữ liệu mẫu và khôi phục CSDL.');
+      setTimeout(() => setToastNotification(null), 4000);
+      return;
+    }
+    setIsResetConfirmOpen(true);
+  };
+
+  // Perform deletion of all sample data
+  const handleConfirmReset = async () => {
+    setIsResetting(true);
+    try {
+      await resetDatabaseToOriginal();
+      clearStoredTasks();
+      setTasks([]);
+      setIsResetConfirmOpen(false);
+      setToastNotification('Đã xóa toàn bộ dữ liệu mẫu thành công. Cơ sở dữ liệu đã sạch và sẵn sàng để phân công nhiệm vụ mới!');
+      setTimeout(() => setToastNotification(null), 5000);
+    } catch (error) {
+      console.error('Error clearing sample data:', error);
+      setIsResetConfirmOpen(false);
+      setToastNotification('Có lỗi xảy ra khi xóa dữ liệu. Vui lòng thử lại.');
+      setTimeout(() => setToastNotification(null), 5000);
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -342,7 +362,7 @@ function AppContent() {
           onOpenUserManagement={isLeader ? () => setIsUserManagementOpen(true) : undefined}
           onOpenDepartmentManagement={isLeader ? () => setIsDepartmentManagementOpen(true) : undefined}
           onOpenBgSettings={() => setIsBgSettingsOpen(true)}
-          onResetData={isLeader ? handleResetData : () => alert('Chỉ có Ban Giám Đốc mới có quyền khôi phục CSDL.')}
+          onResetData={handleRequestReset}
           taskCount={isLeader ? tasks.length : myAssignedTasks.length}
           onToggleMobileMenu={() => setIsMobileSidebarOpen((prev) => !prev)}
         />
@@ -369,7 +389,7 @@ function AppContent() {
             onOpenUserManagement={isLeader ? () => setIsUserManagementOpen(true) : undefined}
             onOpenDepartmentManagement={isLeader ? () => setIsDepartmentManagementOpen(true) : undefined}
             onOpenBgSettings={() => setIsBgSettingsOpen(true)}
-            onResetData={isLeader ? handleResetData : () => alert('Chỉ có Ban Giám Đốc mới có quyền khôi phục CSDL.')}
+            onResetData={handleRequestReset}
             taskCount={isLeader ? tasks.length : myAssignedTasks.length}
             isOpenMobile={isMobileSidebarOpen}
             onCloseMobile={() => setIsMobileSidebarOpen(false)}
@@ -504,6 +524,99 @@ function AppContent() {
         bgBlur={bgBlur}
         onUpdateBgBlur={handleUpdateBgBlur}
       />
+
+      {/* Toast Notification Alert */}
+      {toastNotification && (
+        <div className="fixed top-5 right-5 z-50 bg-[#003366] text-white px-4 py-3 rounded-[8px] shadow-lg border border-white/20 flex items-center gap-3 animate-in fade-in slide-in-from-top-3 max-w-md">
+          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+          <span className="text-[13px] leading-snug flex-1 font-medium">{toastNotification}</span>
+          <button
+            type="button"
+            onClick={() => setToastNotification(null)}
+            className="text-white/70 hover:text-white p-1 cursor-pointer transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Modal: Xác Nhận Khôi Phục & Xóa Toàn Bộ Dữ Liệu Mẫu */}
+      {isResetConfirmOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[10px] shadow-2xl border border-red-200 max-w-lg w-full overflow-hidden animate-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="bg-red-50 border-b border-red-100 p-4 sm:p-5 flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-[16px] sm:text-[17px] font-bold text-red-950">
+                  Xác nhận khôi phục & xóa dữ liệu mẫu
+                </h3>
+                <p className="text-[12px] text-red-700 mt-0.5">
+                  Đặt lại hệ thống về trạng thái sạch để bắt đầu giao việc thực tế
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => !isResetting && setIsResetConfirmOpen(false)}
+                disabled={isResetting}
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-md transition-colors cursor-pointer disabled:opacity-50"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-5 space-y-3.5 text-[14px] text-slate-700 font-sans">
+              <div className="bg-slate-50 border border-slate-200 rounded-[8px] p-3.5 space-y-2 text-[13px]">
+                <div className="flex items-start gap-2">
+                  <span className="text-red-600 font-bold">•</span>
+                  <span><strong>Xóa toàn bộ nhiệm vụ mẫu:</strong> Tất cả các nhiệm vụ mẫu hiện có trong hệ thống và cơ sở dữ liệu Firestore sẽ được xóa sạch (danh sách nhiệm vụ sẽ về 0 việc).</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-emerald-600 font-bold">•</span>
+                  <span><strong>Bảo lưu danh mục nhân sự & phòng ban:</strong> Dữ liệu người dùng, tài khoản cán bộ và danh sách phòng ban vẫn được bảo lưu nguyên vẹn để Lãnh đạo giao việc trực tiếp cho cán bộ.</span>
+                </div>
+              </div>
+
+              <p className="text-[13px] text-slate-600">
+                Bạn có chắc chắn muốn xóa toàn bộ dữ liệu mẫu không? Thao tác này sẽ làm sạch cơ sở dữ liệu để đơn vị bắt đầu vận hành chính thức.
+              </p>
+            </div>
+
+            {/* Footer */}
+            <div className="bg-slate-50 border-t border-slate-200 px-5 py-3.5 flex items-center justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => setIsResetConfirmOpen(false)}
+                disabled={isResetting}
+                className="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 font-medium text-[13px] rounded-[6px] border border-slate-300 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmReset}
+                disabled={isResetting}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-bold text-[13px] rounded-[6px] shadow-xs flex items-center gap-2 transition-colors cursor-pointer disabled:cursor-not-allowed"
+              >
+                {isResetting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Đang xóa dữ liệu mẫu...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    <span>Xóa toàn bộ dữ liệu mẫu</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Quiet Professional Governmental Footer */}
       <footer className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 py-2 px-4 sm:px-6 z-30 shadow-xs">

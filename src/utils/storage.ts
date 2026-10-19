@@ -7,17 +7,23 @@ export function getStoredTasks(): Task[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
+      if (localStorage.getItem('sample_data_cleared') === 'true') {
+        return [];
+      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_TASKS));
       return INITIAL_TASKS;
     }
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.length > 0) {
+    if (Array.isArray(parsed)) {
+      if (parsed.length === 0 && localStorage.getItem('sample_data_cleared') !== 'true') {
+        return INITIAL_TASKS;
+      }
       return parsed;
     }
-    return INITIAL_TASKS;
+    return [];
   } catch (error) {
     console.error('Error reading tasks from localStorage:', error);
-    return INITIAL_TASKS;
+    return [];
   }
 }
 
@@ -29,8 +35,20 @@ export function saveTasks(tasks: Task[]): void {
   }
 }
 
+export function clearStoredTasks(): Task[] {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+    localStorage.setItem('sample_data_cleared', 'true');
+    return [];
+  } catch (error) {
+    console.error('Error clearing tasks from localStorage:', error);
+    return [];
+  }
+}
+
 export function resetToInitialTasks(): Task[] {
   try {
+    localStorage.removeItem('sample_data_cleared');
     localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_TASKS));
     return INITIAL_TASKS;
   } catch (error) {

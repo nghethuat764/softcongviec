@@ -67,9 +67,30 @@ const DEPARTMENTS_COLLECTION = 'departments';
 // Initialize and seed collections
 export async function initializeDatabase(): Promise<Task[]> {
   const tasksRef = collection(db, TASKS_COLLECTION);
+  const usersRef = collection(db, USERS_COLLECTION);
   try {
+    const isCleared = localStorage.getItem('sample_data_cleared') === 'true';
     const snapshot = await getDocs(tasksRef);
+
+    if (isCleared) {
+      if (snapshot.empty) {
+        return [];
+      }
+      const tasks: Task[] = [];
+      snapshot.forEach((docSnap) => {
+        tasks.push(docSnap.data() as Task);
+      });
+      return tasks;
+    }
+
     if (snapshot.empty) {
+      // Check if users collection already exists (meaning database was already seeded before)
+      const userSnap = await getDocs(usersRef);
+      if (!userSnap.empty) {
+        // Users already exist, so empty tasks collection is intentional (sample data was deleted)
+        return [];
+      }
+
       console.log('Database is empty. Seeding initial tasks from 28/9/2026 notice...');
       // Seed initial tasks
       for (const t of INITIAL_TASKS) {
@@ -95,9 +116,9 @@ export async function initializeDatabase(): Promise<Task[]> {
     try {
       handleFirestoreError(error, OperationType.LIST, TASKS_COLLECTION);
     } catch {
-      // Fallback to initial tasks if error occurs
+      // Fallback
     }
-    return INITIAL_TASKS;
+    return [];
   }
 }
 
@@ -172,25 +193,24 @@ export async function deleteTaskFromDb(taskId: string): Promise<void> {
   }
 }
 
-// Reset database to initial meeting tasks
+// Reset database by clearing all existing sample tasks (leaving system ready for real assignments)
 export async function resetDatabaseToOriginal(): Promise<Task[]> {
   try {
     const tasksRef = collection(db, TASKS_COLLECTION);
     const snapshot = await getDocs(tasksRef);
-    for (const d of snapshot.docs) {
-      await deleteDoc(doc(db, TASKS_COLLECTION, d.id));
-    }
-    for (const t of INITIAL_TASKS) {
-      await setDoc(doc(db, TASKS_COLLECTION, t.id), t);
-    }
-    return INITIAL_TASKS;
+    const deletePromises = snapshot.docs.map((d) => deleteDoc(doc(db, TASKS_COLLECTION, d.id)));
+    await Promise.all(deletePromises);
+    console.log(`Đã xóa sạch ${snapshot.docs.length} nhiệm vụ mẫu trong Firestore.`);
+    localStorage.setItem('sample_data_cleared', 'true');
+    return [];
   } catch (error) {
     try {
       handleFirestoreError(error, OperationType.WRITE, TASKS_COLLECTION);
-    } catch {
-      // Allow fallback
+    } catch (e) {
+      console.warn('Lỗi khi xóa nhiệm vụ Firestore:', e);
     }
-    return INITIAL_TASKS;
+    localStorage.setItem('sample_data_cleared', 'true');
+    return [];
   }
 }
 

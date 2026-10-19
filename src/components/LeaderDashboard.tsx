@@ -226,7 +226,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
               {activeLeaderMenu === 'overview' && '1.1 Tổng Quan KPI & Tiến Độ'}
               {activeLeaderMenu === 'bottlenecks' && `1.2 Radar Đôn Đốc (${urgentTasks.length} Vướng Mắc)`}
               {activeLeaderMenu === 'sections' && '1.3 Giám Sát 5 Tổ Chuyên Môn'}
-              {activeLeaderMenu === 'master' && `2.1 Bảng Phân Công 40 Nhiệm Vụ`}
+              {activeLeaderMenu === 'master' && `2.1 Bảng Phân Công (${tasks.length} Nhiệm Vụ)`}
               {activeLeaderMenu === 'kanban' && '2.2 Bảng Kanban Trực Quan'}
               {activeLeaderMenu === 'timeline' && '2.3 Lộ Trình & Dòng Thời Gian'}
             </span>
@@ -483,7 +483,9 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
               </div>
               <div className="flex items-baseline gap-2">
                 <span className="text-[26px] sm:text-[28px] font-bold text-emerald-700 font-mono tabular-nums">{summary.completed}</span>
-                <span className="text-[12px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-[4px] border border-emerald-200">({Math.round((summary.completed / summary.total) * 100)}%)</span>
+                <span className="text-[12px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-[4px] border border-emerald-200">
+                  ({summary.total > 0 ? Math.round((summary.completed / summary.total) * 100) : 0}%)
+                </span>
               </div>
               <div className="mt-2 text-[12px] text-[#4B5563]">Đã nghiệm thu / kết thúc hồ sơ</div>
             </div>
@@ -495,7 +497,9 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
               </div>
               <div className="flex items-baseline gap-2">
                 <span className="text-[26px] sm:text-[28px] font-bold text-[#1D4ED8] font-mono tabular-nums">{summary.inProgress}</span>
-                <span className="text-[12px] font-semibold text-blue-800 bg-blue-50 px-2 py-0.5 rounded-[4px] border border-blue-200">({Math.round((summary.inProgress / summary.total) * 100)}%)</span>
+                <span className="text-[12px] font-semibold text-blue-800 bg-blue-50 px-2 py-0.5 rounded-[4px] border border-blue-200">
+                  ({summary.total > 0 ? Math.round((summary.inProgress / summary.total) * 100) : 0}%)
+                </span>
               </div>
               <div className="mt-2 text-[12px] text-[#4B5563]">Đang thực hiện theo tiến độ</div>
             </div>
@@ -735,7 +739,23 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                   {filteredTasks.length === 0 ? (
                     <tr>
                       <td colSpan={8} className="py-12 text-center text-[#4B5563] text-[14px]">
-                        Không tìm thấy nhiệm vụ nào phù hợp với bộ lọc tìm kiếm.
+                        {tasks.length === 0 ? (
+                          <div className="flex flex-col items-center justify-center gap-2">
+                            <span className="font-semibold text-[#111827]">Hệ thống chưa có nhiệm vụ nào.</span>
+                            <span className="text-[13px] text-[#4B5563]">Dữ liệu mẫu đã được xóa sạch. Lãnh đạo có thể bắt đầu giao nhiệm vụ mới ngay bây giờ.</span>
+                            {onOpenNewTask && (
+                              <button
+                                type="button"
+                                onClick={onOpenNewTask}
+                                className="mt-2 px-4 py-2 bg-[#003366] hover:bg-[#002244] text-white rounded-[6px] text-[13px] font-bold cursor-pointer transition-colors"
+                              >
+                                + Giao Nhiệm Vụ Mới
+                              </button>
+                            )}
+                          </div>
+                        ) : (
+                          'Không tìm thấy nhiệm vụ nào phù hợp với bộ lọc tìm kiếm.'
+                        )}
                       </td>
                     </tr>
                   ) : (
