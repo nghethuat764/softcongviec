@@ -19,6 +19,7 @@ import { DocumentViewerModal } from './components/DocumentViewerModal';
 import { UserManagementModal } from './components/UserManagementModal';
 import { DepartmentManagementModal } from './components/DepartmentManagementModal';
 import { BackgroundSettingsModal } from './components/BackgroundSettingsModal';
+import { DailyReportModal } from './components/DailyReportModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DepartmentProvider } from './context/DepartmentContext';
 import { isTaskRelatedToStaff } from './utils/helpers';
@@ -142,6 +143,7 @@ function AppContent() {
   const [isAttachmentCenterOpen, setIsAttachmentCenterOpen] = useState(false);
   const [viewingDocData, setViewingDocData] = useState<{ docName: string; task?: Task } | null>(null);
   const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
+  const [isDailyReportOpen, setIsDailyReportOpen] = useState(false);
   const [isDepartmentManagementOpen, setIsDepartmentManagementOpen] = useState(false);
   const [isBgSettingsOpen, setIsBgSettingsOpen] = useState(false);
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
@@ -387,6 +389,7 @@ function AppContent() {
             onOpenLoginModal={() => setIsLoginModalOpen(true)}
             onOpenAttachments={() => setIsAttachmentCenterOpen(true)}
             onOpenUserManagement={isLeader ? () => setIsUserManagementOpen(true) : undefined}
+            onOpenDailyReport={isLeader ? () => setIsDailyReportOpen(true) : undefined}
             onOpenDepartmentManagement={isLeader ? () => setIsDepartmentManagementOpen(true) : undefined}
             onOpenBgSettings={() => setIsBgSettingsOpen(true)}
             onResetData={handleRequestReset}
@@ -504,6 +507,17 @@ function AppContent() {
       <UserManagementModal
         isOpen={isUserManagementOpen}
         onClose={() => setIsUserManagementOpen(false)}
+      />
+
+      {/* Modal: Báo Cáo Thống Kê Theo Ngày & Đánh Giá Viên Chức */}
+      <DailyReportModal
+        isOpen={isDailyReportOpen}
+        onClose={() => setIsDailyReportOpen(false)}
+        tasks={tasks}
+        onSelectTask={(task) => {
+          setIsDailyReportOpen(false);
+          setDetailTask(task);
+        }}
       />
 
       {/* Modal: Department Management & Organizational Structure */}

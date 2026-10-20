@@ -14,7 +14,8 @@ import {
   Paperclip,
   Users,
   Building2,
-  Image as ImageIcon
+  Image as ImageIcon,
+  FileSpreadsheet
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -27,6 +28,7 @@ interface SidebarProps {
   onOpenLoginModal: () => void;
   onOpenAttachments?: () => void;
   onOpenUserManagement?: () => void;
+  onOpenDailyReport?: () => void;
   onOpenDepartmentManagement?: () => void;
   onOpenBgSettings?: () => void;
   onResetData: () => void;
@@ -44,6 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenLoginModal,
   onOpenAttachments,
   onOpenUserManagement,
+  onOpenDailyReport,
   onOpenDepartmentManagement,
   onOpenBgSettings,
   onResetData,
@@ -313,6 +316,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </div>
                   <span className="text-[11px] bg-[#003366] text-white px-2 py-0.5 rounded font-mono font-bold">
                     CSDL
+                  </span>
+                </button>
+              )}
+
+              {/* Menu 3: Báo cáo thống kê theo ngày (Đứng sau Quản lý phòng ban) */}
+              {onOpenDailyReport && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenDailyReport();
+                    if (onCloseMobile) onCloseMobile();
+                  }}
+                  title="Báo cáo thống kê tiến độ theo ngày, nhiệm vụ hoàn thành, trễ hạn, chi tiết từng viên chức và xuất file Excel"
+                  className="w-full p-3 sm:p-3.5 rounded-[8px] text-left bg-emerald-50/80 hover:bg-emerald-100/90 text-emerald-950 border border-emerald-200 flex items-center justify-between text-[14px] font-semibold transition-colors cursor-pointer shadow-xs group"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <FileSpreadsheet className="w-5 h-5 text-emerald-700 shrink-0 group-hover:scale-105 transition-transform" />
+                    <span className="truncate">Báo cáo thống kê</span>
+                  </div>
+                  <span className="text-[11px] bg-emerald-700 text-white px-2 py-0.5 rounded font-mono font-bold">
+                    EXCEL
                   </span>
                 </button>
               )}
