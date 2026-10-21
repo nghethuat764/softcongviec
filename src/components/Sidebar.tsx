@@ -133,34 +133,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </button>
             )}
 
-            {/* 2. Nút Phân Hệ Nhân Viên - padding 16px (p-4) chuẩn cơ quan */}
-            <button
-              type="button"
-              onClick={handleStaffClick}
-              className={`w-full p-4 rounded-[8px] text-left transition-colors flex items-center justify-between cursor-pointer border ${
-                currentRole === 'staff'
-                  ? 'bg-[#003366] text-white border-[#003366] font-semibold shadow-xs'
-                  : 'bg-white hover:bg-[#F4F6F9] text-[#111827] border-[#E5E7EB]'
-              }`}
-              title="Mở phân hệ Viên chức báo cáo tiến độ"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className={`w-8 h-8 rounded-[6px] flex items-center justify-center shrink-0 ${
-                  currentRole === 'staff' ? 'bg-white/20 text-white' : 'bg-[#F4F6F9] text-[#003366]'
-                }`}>
-                  <UserCheck className="w-5 h-5" />
-                </div>
-                <div className="truncate">
-                  <div className="text-[14px] font-bold leading-tight truncate">
-                    Phân Hệ Viên Chức
+            {/* 2. Nút Phân Hệ Viên Chức - Ẩn khi đăng nhập bằng quyền Lãnh đạo, chỉ hiển thị cho Viên chức */}
+            {!isLeader && (
+              <button
+                type="button"
+                onClick={handleStaffClick}
+                className={`w-full p-4 rounded-[8px] text-left transition-colors flex items-center justify-between cursor-pointer border ${
+                  currentRole === 'staff'
+                    ? 'bg-[#003366] text-white border-[#003366] font-semibold shadow-xs'
+                    : 'bg-white hover:bg-[#F4F6F9] text-[#111827] border-[#E5E7EB]'
+                }`}
+                title="Mở phân hệ Viên chức báo cáo tiến độ"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-8 h-8 rounded-[6px] flex items-center justify-center shrink-0 ${
+                    currentRole === 'staff' ? 'bg-white/20 text-white' : 'bg-[#F4F6F9] text-[#003366]'
+                  }`}>
+                    <UserCheck className="w-5 h-5" />
                   </div>
-                  <div className={`text-[12px] mt-0.5 truncate ${currentRole === 'staff' ? 'text-blue-100' : 'text-[#4B5563]'}`}>
-                    Báo cáo tiến độ nhiệm vụ
+                  <div className="truncate">
+                    <div className="text-[14px] font-bold leading-tight truncate">
+                      Phân Hệ Viên Chức
+                    </div>
+                    <div className={`text-[12px] mt-0.5 truncate ${currentRole === 'staff' ? 'text-blue-100' : 'text-[#4B5563]'}`}>
+                      Báo cáo tiến độ nhiệm vụ
+                    </div>
                   </div>
                 </div>
-              </div>
-              <ChevronRight className={`w-4 h-4 shrink-0 ${currentRole === 'staff' ? 'text-blue-200' : 'text-[#9CA3AF]'}`} />
-            </button>
+                <ChevronRight className={`w-4 h-4 shrink-0 ${currentRole === 'staff' ? 'text-blue-200' : 'text-[#9CA3AF]'}`} />
+              </button>
+            )}
           </div>
         </div>
 
@@ -368,36 +370,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Bottom Section: Current Account Info & Status */}
-      <div className="pt-3 border-t border-[#E5E7EB] space-y-2.5">
+      <div className="pt-3 border-t border-[#E5E7EB] dark:border-[#1e293b] space-y-2.5">
+
         {/* Firestore Status */}
-        <div className="bg-[#F4F6F9] border border-[#E5E7EB] rounded-[8px] p-2.5 text-[12px] text-[#4B5563]">
+        <div className="bg-[#F4F6F9] dark:bg-[#131c31] border border-[#E5E7EB] dark:border-[#1e293b] rounded-[8px] p-2.5 text-[12px] text-[#4B5563] dark:text-slate-300 transition-colors">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="flex items-center gap-1.5 font-medium text-[#111827]">
-              <Cloud className="w-4 h-4 text-[#003366]" />
+            <span className="flex items-center gap-1.5 font-medium text-[#111827] dark:text-slate-200">
+              <Cloud className="w-4 h-4 text-[#003366] dark:text-sky-400" />
               Cơ sở dữ liệu:
             </span>
-            <span className="text-emerald-700 font-semibold font-mono text-[11px] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+            <span className="text-emerald-700 dark:text-emerald-300 font-semibold font-mono text-[11px] bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
               Đồng bộ trực tuyến
             </span>
           </div>
-          <div className="flex items-center justify-between text-[12px] text-[#4B5563]">
+          <div className="flex items-center justify-between text-[12px] text-[#4B5563] dark:text-slate-400">
             <span>Tổng số nhiệm vụ:</span>
-            <span className="font-bold font-mono text-[#111827]">{taskCount} việc</span>
+            <span className="font-bold font-mono text-[#111827] dark:text-slate-100">{taskCount} việc</span>
           </div>
         </div>
 
         {/* Current User Card */}
         {currentUser && (
-          <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-[8px] p-3">
+          <div className="bg-[#FFFFFF] dark:bg-[#131c31] border border-[#E5E7EB] dark:border-[#1e293b] rounded-[8px] p-3 transition-colors">
             <div className="flex items-center gap-2.5 mb-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-[6px] bg-[#003366] text-white flex items-center justify-center font-bold text-[13px] shrink-0">
+              <div className="w-8 h-8 rounded-[6px] bg-[#003366] dark:bg-sky-600 text-white flex items-center justify-center font-bold text-[13px] shrink-0">
                 {currentUser.fullName.charAt(0)}
               </div>
               <div className="min-w-0 flex-1 truncate">
-                <div className="text-[13px] font-bold text-[#111827] truncate leading-tight">
+                <div className="text-[13px] font-bold text-[#111827] dark:text-slate-100 truncate leading-tight">
                   {currentUser.fullName}
                 </div>
-                <div className="text-[12px] text-[#4B5563] truncate">
+                <div className="text-[12px] text-[#4B5563] dark:text-slate-400 truncate">
                   {currentUser.position}
                 </div>
               </div>
@@ -409,9 +412,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onOpenLoginModal();
                 if (onCloseMobile) onCloseMobile();
               }}
-              className="w-full py-2 px-2.5 bg-[#F4F6F9] hover:bg-[#E5E7EB] text-[#111827] rounded-[6px] text-[12px] font-semibold flex items-center justify-center gap-1.5 border border-[#E5E7EB] transition-colors cursor-pointer"
+              className="w-full py-2 px-2.5 bg-[#F4F6F9] dark:bg-[#1e293b] hover:bg-[#E5E7EB] dark:hover:bg-[#334155] text-[#111827] dark:text-slate-200 rounded-[6px] text-[12px] font-semibold flex items-center justify-center gap-1.5 border border-[#E5E7EB] dark:border-[#334155] transition-colors cursor-pointer"
             >
-              <KeyRound className="w-3.5 h-3.5 text-[#4B5563]" />
+              <KeyRound className="w-3.5 h-3.5 text-[#4B5563] dark:text-slate-400" />
               <span>Đổi tài khoản cán bộ</span>
             </button>
           </div>
@@ -425,7 +428,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <>
       {/* Desktop Persistent Left Sidebar */}
-      <aside className="hidden lg:flex w-68 shrink-0 bg-white border-r border-[#E5E7EB] flex-col sticky top-[102px] h-[calc(100vh-102px)] overflow-y-auto">
+      <aside className="hidden lg:flex w-68 shrink-0 bg-white dark:bg-[#0f172a] border-r border-[#E5E7EB] dark:border-[#1e293b] flex-col sticky top-[102px] h-[calc(100vh-102px)] overflow-y-auto transition-colors">
         {content}
       </aside>
 
@@ -433,10 +436,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {isOpenMobile && (
         <div className="fixed inset-0 z-50 lg:hidden flex justify-start">
           <div 
-            className="fixed inset-0 bg-black/40 transition-opacity"
+            className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
             onClick={onCloseMobile}
           />
-          <div className="relative w-76 max-w-[85vw] bg-white border-r border-[#E5E7EB] h-full overflow-y-auto z-10 shadow-xl flex flex-col">
+          <div className="relative w-76 max-w-[85vw] bg-white dark:bg-[#0f172a] border-r border-[#E5E7EB] dark:border-[#1e293b] h-full overflow-y-auto z-10 shadow-xl flex flex-col transition-colors">
             {content}
           </div>
         </div>

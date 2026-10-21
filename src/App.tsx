@@ -22,6 +22,7 @@ import { BackgroundSettingsModal } from './components/BackgroundSettingsModal';
 import { DailyReportModal } from './components/DailyReportModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DepartmentProvider } from './context/DepartmentContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { isTaskRelatedToStaff } from './utils/helpers';
 import { 
   initializeDatabase, 
@@ -34,6 +35,7 @@ import { ShieldCheck, UserCheck, Cloud, LogOut, AlertTriangle, Trash2, CheckCirc
 
 function AppContent() {
   const { currentUser, isLeader, switchUser, logout } = useAuth();
+  const { isDark } = useTheme();
   const [tasks, setTasks] = useState<Task[]>(() => getStoredTasks());
   const [dbConnected, setDbConnected] = useState<boolean>(true);
   
@@ -321,7 +323,7 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen text-[#111827] flex flex-col font-sans relative">
+    <div className={`min-h-screen text-[#111827] dark:text-slate-100 flex flex-col font-sans relative transition-colors duration-200 ${isDark ? 'dark bg-[#0b1120]' : 'bg-[#F8FAFC]'}`}>
       
       {/* Background Image Layer for Management Page */}
       {bgImage && (
@@ -338,7 +340,9 @@ function AppContent() {
       <div 
         className="fixed inset-0 pointer-events-none z-0 transition-colors duration-300"
         style={{
-          backgroundColor: bgImage ? `rgba(244, 246, 249, ${bgOpacity})` : '#F4F6F9',
+          backgroundColor: isDark
+            ? (bgImage ? `rgba(11, 17, 32, ${bgOpacity})` : '#0b1120')
+            : (bgImage ? `rgba(248, 250, 252, ${bgOpacity})` : '#F8FAFC'),
         }}
       />
 
@@ -482,6 +486,7 @@ function AppContent() {
       <DatabaseSchemaModal
         isOpen={isDatabaseSchemaOpen}
         onClose={() => setIsDatabaseSchemaOpen(false)}
+        tasks={tasks}
       />
 
       {/* Modal: Centralized Attachment Center */}
@@ -647,16 +652,11 @@ function AppContent() {
 
           <div className="flex items-center gap-3">
             {currentUser?.isLeader ? (
-              <button
-                type="button"
-                onClick={() => setCurrentRole(currentRole === 'leader' ? 'staff' : 'leader')}
-                className="text-[12px] font-semibold text-[#003366] hover:text-[#002244] hover:underline cursor-pointer transition-colors flex items-center gap-1"
-              >
-                <span>Chuyển sang: {currentRole === 'leader' ? 'Phân hệ Viên chức' : 'Màn hình Lãnh đạo'}</span>
-                <span aria-hidden="true">→</span>
-              </button>
+              <span className="text-[12px] font-semibold text-[#003366] dark:text-sky-300">
+                Phân hệ Lãnh đạo điều hành & chỉ đạo nhiệm vụ
+              </span>
             ) : (
-              <span className="text-[12px] text-slate-500">
+              <span className="text-[12px] text-slate-500 dark:text-slate-400">
                 Phân hệ Viên chức thực hiện nhiệm vụ
               </span>
             )}
@@ -671,10 +671,12 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <DepartmentProvider>
-        <AppContent />
-      </DepartmentProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <DepartmentProvider>
+          <AppContent />
+        </DepartmentProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

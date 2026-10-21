@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { LogoTTDVTH } from './LogoTTDVTH';
 import { DynamicGovCanvas } from './DynamicGovCanvas';
 import {
@@ -24,6 +25,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   dbConnected = true,
 }) => {
   const { login } = useAuth();
+  const { isDark } = useTheme();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -59,18 +61,18 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   };
 
   return (
-    <div className="relative min-h-screen text-[#111827] flex flex-col justify-between font-sans overflow-hidden select-none">
+    <div className={`relative min-h-screen text-[#111827] dark:text-slate-100 flex flex-col justify-between font-sans overflow-hidden select-none transition-colors duration-200 ${isDark ? 'dark bg-[#081021]' : 'bg-slate-50'}`}>
       
       {/* Dynamic Animated Canvas Background */}
       <DynamicGovCanvas />
 
       {/* 1. Header Cơ Quan Nhà Nước */}
-      <header className="relative z-10 bg-[#003366]/95 backdrop-blur-md text-white border-b border-white/10 shadow-sm">
+      <header className="relative z-10 bg-[#003366]/95 dark:bg-[#061122]/95 backdrop-blur-md text-white border-b border-white/10 dark:border-white/5 shadow-sm transition-colors duration-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <LogoTTDVTH className="w-10 h-10 shrink-0" />
             <div>
-              <div className="text-[12px] uppercase font-semibold text-blue-200 tracking-wider">
+              <div className="text-[12px] uppercase font-semibold text-blue-200 dark:text-sky-300 tracking-wider">
                 UBND PHƯỜNG HỐ NAI · TRUNG TÂM DỊCH VỤ TỔNG HỢP
               </div>
               <h1 className="text-[16px] sm:text-[18px] font-bold text-white tracking-wide uppercase">
@@ -79,7 +81,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2 text-[12px] text-blue-100">
+          <div className="flex items-center gap-2 text-[12px] text-blue-100 dark:text-sky-200">
             <span className="bg-white/15 px-2.5 py-1 rounded-[4px] border border-white/20 font-medium">
               {tasksCount} nhiệm vụ giao ban
             </span>
@@ -93,22 +95,22 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       {/* 2. Khung Đăng Nhập Trang Trọng Đặt Giữa Canvas */}
       <main className="relative z-10 flex-1 max-w-5xl w-full mx-auto px-4 py-8 sm:py-12 flex flex-col items-center justify-center">
         
-        <div className="w-full max-w-md bg-white text-[#111827] rounded-[8px] shadow-2xl border border-white/40 overflow-hidden ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-200">
+        <div className="w-full max-w-md bg-white dark:bg-[#131c31] text-[#111827] dark:text-slate-100 rounded-[8px] shadow-2xl border border-white/40 dark:border-slate-700/60 overflow-hidden ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-200 transition-colors">
           
           {/* Card Title Header */}
-          <div className="bg-[#F4F6F9] border-b border-[#E5E7EB] px-6 py-4 flex items-center justify-between">
+          <div className="bg-[#F4F6F9] dark:bg-[#0d1527] border-b border-[#E5E7EB] dark:border-[#1e293b] px-6 py-4 flex items-center justify-between transition-colors">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-[6px] bg-[#003366] text-white flex items-center justify-center font-bold text-[14px] shrink-0">
+              <div className="w-9 h-9 rounded-[6px] bg-[#003366] dark:bg-sky-600 text-white flex items-center justify-center font-bold text-[14px] shrink-0">
                 <KeyRound className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h2 className="text-[16px] font-bold text-[#111827] uppercase tracking-tight">
+                <h2 className="text-[16px] font-bold text-[#111827] dark:text-slate-100 uppercase tracking-tight">
                   Đăng Nhập Cán Bộ
                 </h2>
-                <span className="text-[12px] text-[#4B5563] block">Xác thực danh tính thực thi công vụ</span>
+                <span className="text-[12px] text-[#4B5563] dark:text-slate-400 block">Xác thực danh tính thực thi công vụ</span>
               </div>
             </div>
-            <span className="text-[12px] font-semibold px-2.5 py-1 rounded-[4px] bg-[#003366]/10 text-[#003366] border border-[#003366]/20">
+            <span className="text-[12px] font-semibold px-2.5 py-1 rounded-[4px] bg-[#003366]/10 dark:bg-sky-400/10 text-[#003366] dark:text-sky-300 border border-[#003366]/20 dark:border-sky-400/20">
               Cổng Nội Bộ
             </span>
           </div>

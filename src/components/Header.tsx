@@ -8,10 +8,13 @@ import {
   Paperclip,
   CheckCircle2,
   Users,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { StaffMember } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { LogoTTDVTH } from './LogoTTDVTH';
 
 interface HeaderProps {
@@ -47,27 +50,28 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleMobileMenu,
 }) => {
   const { currentUser, isLeader, logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
 
   return (
-    <header className="bg-[#003366] text-white border-b border-[#002244] sticky top-0 z-40 shadow-xs font-sans">
+    <header className="bg-[#003366] dark:bg-[#071324] text-white border-b border-[#002244] dark:border-[#1e293b] sticky top-0 z-40 shadow-xs font-sans transition-colors duration-200">
       {/* 1. Dải Băng Thể Thức Quốc Hiệu / Cơ Quan Nhà Nước */}
-      <div className="bg-[#003366] text-[#f8f8f8] px-4 sm:px-6 py-1.5 text-[12px] border-b border-[#bcb7b7]">
+      <div className="bg-[#003366] dark:bg-[#050e1a] text-[#f8f8f8] px-4 sm:px-6 py-1.5 text-[12px] border-b border-[#bcb7b7]/40 dark:border-[#1e293b] transition-colors duration-200">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-[12px]">
             <span className="font-bold tracking-wide uppercase">UBND PHƯỜNG HỐ NAI</span>
-            <span className="text-blue-200">/</span>
-            <span className="uppercase text-blue-100 font-semibold">TRUNG TÂM DỊCH VỤ TỔNG HỢP</span>
+            <span className="text-blue-200 dark:text-sky-400">/</span>
+            <span className="uppercase text-blue-100 dark:text-sky-200 font-semibold">TRUNG TÂM DỊCH VỤ TỔNG HỢP</span>
           </div>
 
-          {/* User Account Bar */}
+          {/* User Account Bar & Quick Actions */}
           <div className="flex items-center gap-2 text-[12px]">
             {currentUser ? (
-              <div className="flex items-center gap-2 bg-black/25 px-2.5 py-1 rounded-[6px] border border-white/20">
-                <div className="w-5 h-5 rounded-full bg-blue-400 text-[#003366] text-[10px] font-black flex items-center justify-center shrink-0">
+              <div className="flex items-center gap-2 bg-black/25 dark:bg-white/10 px-2.5 py-1 rounded-[6px] border border-white/20">
+                <div className="w-5 h-5 rounded-full bg-blue-400 dark:bg-sky-400 text-[#003366] text-[10px] font-black flex items-center justify-center shrink-0">
                   {currentUser.fullName.split(' ').slice(-1)[0][0] || 'CB'}
                 </div>
                 <span className="font-semibold text-white truncate max-w-[140px] sm:max-w-none">{currentUser.fullName}</span>
-                <span className="text-blue-200 hidden md:inline text-[11px]">({currentUser.position})</span>
+                <span className="text-blue-200 dark:text-sky-200 hidden md:inline text-[11px]">({currentUser.position})</span>
                 <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold uppercase tracking-wider ${
                   currentUser.role === 'LEADER' ? 'bg-red-500/30 text-red-200 border border-red-400/30' : 'bg-blue-400/25 text-blue-200 border border-blue-300/30'
                 }`}>
@@ -85,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({
                   type="button"
                   onClick={logout}
                   title="Đăng xuất khỏi hệ thống"
-                  className="text-blue-200 hover:text-white hover:bg-white/10 px-1.5 py-0.5 rounded flex items-center gap-1 ml-0.5 cursor-pointer transition-colors text-[11px]"
+                  className="text-blue-200 dark:text-sky-200 hover:text-white hover:bg-white/10 px-1.5 py-0.5 rounded flex items-center gap-1 ml-0.5 cursor-pointer transition-colors text-[11px]"
                 >
                   <LogOut className="w-3 h-3 text-red-300" />
                   <span className="hidden sm:inline">Thoát</span>
@@ -102,11 +106,11 @@ export const Header: React.FC<HeaderProps> = ({
             )}
 
             {/* Quick reset button */}
-            <div className="flex items-center pl-1.5 border-l border-blue-400/30">
+            <div className="flex items-center pl-1.5 border-l border-blue-400/30 dark:border-sky-400/20">
               <button
                 type="button"
                 onClick={onResetData}
-                className="text-blue-200 hover:text-white cursor-pointer p-1 rounded hover:bg-white/10 transition-colors"
+                className="text-blue-200 dark:text-sky-200 hover:text-white cursor-pointer p-1 rounded hover:bg-white/10 transition-colors"
                 title="Khôi phục dữ liệu gốc từ thông báo giao ban"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -132,20 +136,45 @@ export const Header: React.FC<HeaderProps> = ({
                   {taskCount} việc
                 </span>
               </div>
-              <p className="text-[12px] sm:text-[13px] text-blue-100 mt-0.5 leading-snug">
+              <p className="text-[12px] sm:text-[13px] text-blue-100 dark:text-sky-200 mt-0.5 leading-snug">
                 Ủy ban nhân dân phường Hố Nai · Trung tâm Dịch vụ Tổng hợp
               </p>
             </div>
           </div>
 
-          {/* Phía Phải Header: Chỉ báo phân hệ hiện tại & Nút mở menu trên Mobile */}
+          {/* Phía Phải Header: Chế độ Sáng/Tối, Chỉ báo phân hệ hiện tại & Nút mở menu trên Mobile */}
           <div className="flex items-center gap-2">
-            <div className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-[6px] border text-[13px] ${
+            
+            {/* Dedicated Theme Toggle Button (Light / Dark) */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              title={isDark ? "Đang bật Chế độ Tối. Nhấp để chuyển sang Chế độ Sáng" : "Đang bật Chế độ Sáng. Nhấp để chuyển sang Chế độ Tối"}
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-[6px] border text-[12px] font-bold transition-all cursor-pointer shadow-2xs ${
+                isDark 
+                  ? 'bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 border-amber-300/40' 
+                  : 'bg-white/15 hover:bg-white/25 text-white border-white/25'
+              }`}
+            >
+              {isDark ? (
+                <>
+                  <Sun className="w-4 h-4 text-amber-300" />
+                  <span className="hidden sm:inline">Chế độ Sáng</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="w-4 h-4 text-sky-200" />
+                  <span className="hidden sm:inline">Chế độ Tối</span>
+                </>
+              )}
+            </button>
+
+            <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-[6px] border text-[13px] ${
               currentRole === 'leader'
                 ? 'bg-amber-400/15 border-amber-300/30 text-amber-200'
                 : 'bg-white/10 border-white/20 text-white'
             }`}>
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-blue-200" />
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-blue-200 dark:text-sky-300" />
               <span className="font-semibold text-white">
                 {currentRole === 'leader' ? 'Phân hệ: Ban Giám Đốc' : `Phân hệ: Viên Chức (${selectedStaff.name})`}
               </span>
