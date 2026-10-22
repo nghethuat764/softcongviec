@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import * as XLSX from 'xlsx';
+import XLSX from 'xlsx-js-style';
 import { 
   X, 
   FileSpreadsheet, 
@@ -288,7 +288,7 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
     }).sort((a, b) => b.total - a.total);
   }, [filteredTasks, users]);
 
-  // Handle Export Excel (.xlsx)
+  // Handle Export Excel (.xlsx) with standard Government Statistical Form
   const handleExportExcel = () => {
     try {
       const wb = XLSX.utils.book_new();
@@ -297,146 +297,668 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
         ? 'Toàn bộ thời gian' 
         : `Từ ngày ${formatDateDisplay(fromDate)} đến ngày ${formatDateDisplay(toDate)}`;
 
-      // 1. Sheet 1: Tổng hợp chung & Thống kê theo Viên chức
-      const summaryHeader = [
-        ['ỦY BAN NHÂN DÂN PHƯỜNG HỐ NAI', '', '', '', 'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM'],
-        ['TRUNG TÂM DỊCH VỤ TỔNG HỢP', '', '', '', 'Độc lập - Tự do - Hạnh phúc'],
+      const criterionText = dateFieldFilter === 'deadline'
+        ? 'Hạn hoàn thành (Deadline)'
+        : dateFieldFilter === 'startDate'
+          ? 'Ngày bắt đầu / Giao việc'
+          : dateFieldFilter === 'updatedAt'
+            ? 'Ngày cập nhật tiến độ'
+            : 'Mọi mốc thời gian';
+
+      const departmentText = selectedDepartment === 'all' ? 'Tất cả các tổ chuyên môn' : selectedDepartment;
+      const staffText = selectedStaffId === 'all' 
+        ? 'Tất cả cán bộ, viên chức' 
+        : (users.find((u) => u.id === selectedStaffId)?.fullName || selectedStaffId);
+      const statusText = statusFilter === 'all' 
+        ? 'Tất cả tình trạng' 
+        : statusFilter === 'completed' 
+          ? 'Đã hoàn thành' 
+          : statusFilter === 'delayed' 
+            ? 'Trễ hạn / Quá hạn' 
+            : 'Đang thực hiện đúng hạn';
+
+      // ==========================================
+      // SHEET 1: FORM BÁO CÁO THỐNG KÊ TIẾN ĐỘ & VIÊN CHỨC
+      // ==========================================
+      const wsSummaryData: any[][] = [
+        // Rows 0-2: National Motto & Agency
+        ['ỦY BAN NHÂN DÂN PHƯỜNG HỐ NAI', '', '', '', 'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', '', '', '', '', '', ''],
+        ['TRUNG TÂM DỊCH VỤ TỔNG HỢP', '', '', '', 'Độc lập - Tự do - Hạnh phúc', '', '', '', '', '', ''],
+        ['Số: ....../BC-TTDVTH', '', '', '', '--------------------------------', '', '', '', '', '', ''],
         [''],
-        ['BÁO CÁO THỐNG KÊ NHIỆM VỤ THEO NGÀY & TIẾN ĐỘ VIÊN CHỨC'],
-        [`Thời gian thống kê: ${timeRangeText}`],
-        [`Thời điểm lập báo cáo: ${new Date().toLocaleString('vi-VN')}`],
+        
+        // Row 4-7: Report Title & Parameters
+        ['BÁO CÁO THỐNG KÊ TIẾN ĐỘ NHIỆM VỤ VÀ ĐÁNH GIÁ VIÊN CHỨC', '', '', '', '', '', '', '', '', '', ''],
+        [`Thời gian thống kê: ${timeRangeText}`, '', '', '', '', '', '', '', '', '', ''],
+        [`Căn cứ: ${criterionText} | Phạm vi: ${departmentText} | Viên chức: ${staffText} | Tình trạng: ${statusText}`, '', '', '', '', '', '', '', '', '', ''],
+        [`Thời điểm xuất dữ liệu: ${new Date().toLocaleString('vi-VN')}`, '', '', '', '', '', '', '', '', '', ''],
         [''],
-        ['I. TỔNG HỢP CHỈ SỐ TOÀN HỆ THỐNG'],
-        ['Chỉ tiêu', 'Số lượng', 'Tỷ lệ (%)', 'Ghi chú'],
-        ['Tổng số nhiệm vụ:', totalCount, '100%', 'Số việc trong kỳ báo cáo'],
-        ['Nhiệm vụ đã hoàn thành:', completedCount, `${completedRate}%`, 'Đạt yêu cầu'],
-        ['Nhiệm vụ trễ hạn / quá hạn:', delayedCount, `${delayedRate}%`, 'Cần lãnh đạo đôn đốc'],
-        ['Nhiệm vụ đang triển khai:', inProgressCount, `${inProgressRate}%`, 'Trong tiến độ kiểm soát'],
-        ['Tiến độ trung bình toàn hệ thống:', `${avgProgress}%`, '—', 'Điểm tiến độ bình quân'],
+
+        // Row 9: Section I Title (Form Thống Kê Tiến Độ)
+        ['I. BẢNG TỔNG HỢP CHỈ SỐ TIẾN ĐỘ TOÀN HỆ THỐNG (FORM THỐNG KÊ TIẾN ĐỘ)', '', '', '', '', '', '', '', '', '', ''],
+        
+        // Row 10: KPI Table Header
+        ['STT', 'Chỉ tiêu thống kê nhiệm vụ', '', '', 'Số lượng', '', 'Tỷ lệ (%)', '', 'Trạng thái / Đánh giá kiểm soát', '', ''],
+        
+        // Row 11-15: 5 Core Statistical Metrics
+        [1, '1. Tổng số nhiệm vụ', '', '', totalCount, '', '100.0%', '', 'Toàn bộ nhiệm vụ trong kỳ báo cáo', '', ''],
+        [2, '2. Đã hoàn thành', '', '', completedCount, '', `${completedRate}%`, '', 'Nhiệm vụ đã hoàn thành đạt yêu cầu', '', ''],
+        [3, '3. Trễ hạn / Quá hạn', '', '', delayedCount, '', `${delayedRate}%`, '', 'Nhiệm vụ quá hạn cần lãnh đạo đôn đốc xử lý gấp', '', ''],
+        [4, '4. Đang thực hiện', '', '', inProgressCount, '', `${inProgressRate}%`, '', 'Nhiệm vụ đang triển khai trong hạn kiểm soát', '', ''],
+        [5, '5. Tiến độ bình quân toàn hệ thống', '', '', `${avgProgress}%`, '', '—', '', 'Điểm tiến độ bình quân toàn bộ công việc', '', ''],
         [''],
-        ['II. BẢNG THỐNG KÊ CHI TIẾT TỪNG VIÊN CHỨC'],
+
+        // Row 17: Section II Title
+        ['II. BẢNG THỐNG KÊ TIẾN ĐỘ CHI TIẾT TỪNG CÁN BỘ, VIÊN CHỨC', '', '', '', '', '', '', '', '', '', ''],
+        
+        // Row 18: Staff Table Header
         [
           'STT', 
           'Họ và tên viên chức', 
           'Chức danh / Vị trí', 
           'Phòng ban / Tổ chuyên môn', 
-          'Tổng số việc', 
+          'Tổng số nhiệm vụ', 
           'Đã hoàn thành', 
           'Trễ hạn', 
           'Đang thực hiện', 
+          'Tiến độ bình quân (%)', 
           'Tỷ lệ hoàn thành (%)', 
-          'Tiến độ TB (%)', 
-          'Đánh giá hiệu suất'
+          'Xếp loại hiệu suất'
         ],
       ];
 
-      const staffRows = staffStats.map((s, idx) => [
-        idx + 1,
-        s.user.fullName,
-        s.user.position,
-        s.user.unit,
-        s.total,
-        s.completed,
-        s.delayed,
-        s.inProg,
-        `${s.rate}%`,
-        `${s.prog}%`,
-        s.rating
+      // Staff Data Rows
+      staffStats.forEach((s, idx) => {
+        wsSummaryData.push([
+          idx + 1,
+          s.user.fullName,
+          s.user.position || 'Viên chức chuyên môn',
+          s.user.unit || 'Tổ chuyên môn',
+          s.total,
+          s.completed,
+          s.delayed,
+          s.inProg,
+          `${s.prog}%`,
+          `${s.rate}%`,
+          s.rating
+        ]);
+      });
+
+      // Total Row for Staff Table
+      const overallRating = completedRate >= 80 ? 'Hoàn thành xuất sắc' : completedRate >= 60 ? 'Hoàn thành tốt' : completedRate >= 40 ? 'Đạt yêu cầu' : 'Cần đôn đốc quyết liệt';
+      wsSummaryData.push([
+        'TỔNG CỘNG TOÀN HỆ THỐNG', '', '', '',
+        totalCount,
+        completedCount,
+        delayedCount,
+        inProgressCount,
+        `${avgProgress}%`,
+        `${completedRate}%`,
+        overallRating
       ]);
 
-      const footerRows = [
-        [''],
-        ['', '', '', '', '', '..., ngày ... tháng ... năm 2026'],
-        ['', 'NGƯỜI LẬP BIỂU', '', '', '', 'BAN GIÁM ĐỐC'],
-        ['', '(Ký, ghi rõ họ tên)', '', '', '', '(Ký, đóng dấu)']
-      ];
+      // Signatures
+      const now = new Date();
+      wsSummaryData.push(['']);
+      wsSummaryData.push(['', '', '', '', '', '', '', `Hố Nai, ngày ${String(now.getDate()).padStart(2, '0')} tháng ${String(now.getMonth() + 1).padStart(2, '0')} năm ${now.getFullYear()}`, '', '', '']);
+      wsSummaryData.push(['NGƯỜI LẬP BIỂU', '', '', '', 'PHỤ TRÁCH TỔ CHUYÊN MÔN', '', '', 'BAN GIÁM ĐỐC', '', '', '']);
+      wsSummaryData.push(['(Ký, ghi rõ họ tên)', '', '', '', '(Ký, ghi rõ họ tên)', '', '', '(Ký, đóng dấu)', '', '', '']);
+      wsSummaryData.push(['']);
+      wsSummaryData.push(['']);
+      wsSummaryData.push(['']);
+      wsSummaryData.push(['', '', '', '', '', '', '', 'Phạm Thanh Phong', '', '', '']);
 
-      const wsSummaryData = [...summaryHeader, ...staffRows, ...footerRows];
       const wsSummary = XLSX.utils.aoa_to_sheet(wsSummaryData);
 
-      wsSummary['!cols'] = [
-        { wch: 6 },
-        { wch: 28 },
-        { wch: 26 },
-        { wch: 32 },
-        { wch: 14 },
-        { wch: 15 },
-        { wch: 14 },
-        { wch: 16 },
-        { wch: 20 },
-        { wch: 15 },
-        { wch: 26 },
+      // Sheet 1 Merges
+      const staffRowCount = staffStats.length;
+      const totalRowIndex = 19 + staffRowCount;
+      const signDateIndex = totalRowIndex + 2;
+      const signTitleIndex = signDateIndex + 1;
+      const signNoteIndex = signTitleIndex + 1;
+      const signNameIndex = signNoteIndex + 4;
+
+      const summaryMerges: XLSX.Range[] = [
+        // Header
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } },
+        { s: { r: 0, c: 4 }, e: { r: 0, c: 10 } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 3 } },
+        { s: { r: 1, c: 4 }, e: { r: 1, c: 10 } },
+        { s: { r: 2, c: 0 }, e: { r: 2, c: 3 } },
+        { s: { r: 2, c: 4 }, e: { r: 2, c: 10 } },
+
+        // Title
+        { s: { r: 4, c: 0 }, e: { r: 4, c: 10 } },
+        { s: { r: 5, c: 0 }, e: { r: 5, c: 10 } },
+        { s: { r: 6, c: 0 }, e: { r: 6, c: 10 } },
+        { s: { r: 7, c: 0 }, e: { r: 7, c: 10 } },
+
+        // Section I Title
+        { s: { r: 9, c: 0 }, e: { r: 9, c: 10 } },
+
+        // Section I KPI Table
+        { s: { r: 10, c: 1 }, e: { r: 10, c: 3 } },
+        { s: { r: 10, c: 4 }, e: { r: 10, c: 5 } },
+        { s: { r: 10, c: 6 }, e: { r: 10, c: 7 } },
+        { s: { r: 10, c: 8 }, e: { r: 10, c: 10 } },
+
+        // Metric 1: Tổng số nhiệm vụ
+        { s: { r: 11, c: 1 }, e: { r: 11, c: 3 } },
+        { s: { r: 11, c: 4 }, e: { r: 11, c: 5 } },
+        { s: { r: 11, c: 6 }, e: { r: 11, c: 7 } },
+        { s: { r: 11, c: 8 }, e: { r: 11, c: 10 } },
+
+        // Metric 2: Đã hoàn thành
+        { s: { r: 12, c: 1 }, e: { r: 12, c: 3 } },
+        { s: { r: 12, c: 4 }, e: { r: 12, c: 5 } },
+        { s: { r: 12, c: 6 }, e: { r: 12, c: 7 } },
+        { s: { r: 12, c: 8 }, e: { r: 12, c: 10 } },
+
+        // Metric 3: Trễ hạn
+        { s: { r: 13, c: 1 }, e: { r: 13, c: 3 } },
+        { s: { r: 13, c: 4 }, e: { r: 13, c: 5 } },
+        { s: { r: 13, c: 6 }, e: { r: 13, c: 7 } },
+        { s: { r: 13, c: 8 }, e: { r: 13, c: 10 } },
+
+        // Metric 4: Đang thực hiện
+        { s: { r: 14, c: 1 }, e: { r: 14, c: 3 } },
+        { s: { r: 14, c: 4 }, e: { r: 14, c: 5 } },
+        { s: { r: 14, c: 6 }, e: { r: 14, c: 7 } },
+        { s: { r: 14, c: 8 }, e: { r: 14, c: 10 } },
+
+        // Metric 5: Tiến độ bình quân
+        { s: { r: 15, c: 1 }, e: { r: 15, c: 3 } },
+        { s: { r: 15, c: 4 }, e: { r: 15, c: 5 } },
+        { s: { r: 15, c: 6 }, e: { r: 15, c: 7 } },
+        { s: { r: 15, c: 8 }, e: { r: 15, c: 10 } },
+
+        // Section II Title
+        { s: { r: 17, c: 0 }, e: { r: 17, c: 10 } },
+
+        // Staff Total Row Merged Label (Cols 0-3)
+        { s: { r: totalRowIndex, c: 0 }, e: { r: totalRowIndex, c: 3 } },
+
+        // Signatures
+        { s: { r: signDateIndex, c: 7 }, e: { r: signDateIndex, c: 10 } },
+        { s: { r: signTitleIndex, c: 0 }, e: { r: signTitleIndex, c: 3 } },
+        { s: { r: signTitleIndex, c: 4 }, e: { r: signTitleIndex, c: 6 } },
+        { s: { r: signTitleIndex, c: 7 }, e: { r: signTitleIndex, c: 10 } },
+        { s: { r: signNoteIndex, c: 0 }, e: { r: signNoteIndex, c: 3 } },
+        { s: { r: signNoteIndex, c: 4 }, e: { r: signNoteIndex, c: 6 } },
+        { s: { r: signNoteIndex, c: 7 }, e: { r: signNoteIndex, c: 10 } },
+        { s: { r: signNameIndex, c: 7 }, e: { r: signNameIndex, c: 10 } },
       ];
 
-      // 2. Sheet 2: Danh sách chi tiết từng nhiệm vụ
-      const detailHeader = [
-        ['DANH SÁCH CHI TIẾT CÁC NHIỆM VỤ THEO KỲ BÁO CÁO'],
-        [`Thời gian: ${timeRangeText}`],
+      wsSummary['!merges'] = summaryMerges;
+
+      wsSummary['!cols'] = [
+        { wch: 6 },   // A: STT
+        { wch: 30 },  // B: Họ và tên viên chức / Chỉ tiêu
+        { wch: 25 },  // C: Chức danh / Vị trí
+        { wch: 32 },  // D: Phòng ban / Tổ chuyên môn
+        { wch: 18 },  // E: Tổng số nhiệm vụ
+        { wch: 16 },  // F: Đã hoàn thành
+        { wch: 15 },  // G: Trễ hạn
+        { wch: 16 },  // H: Đang thực hiện
+        { wch: 22 },  // I: Tiến độ bình quân (%)
+        { wch: 22 },  // J: Tỷ lệ hoàn thành (%)
+        { wch: 25 },  // K: Xếp loại hiệu suất
+      ];
+
+      // Row heights for crisp presentation
+      const summaryRowHeights: { hpt: number }[] = [];
+      summaryRowHeights[0] = { hpt: 22 };
+      summaryRowHeights[1] = { hpt: 20 };
+      summaryRowHeights[2] = { hpt: 18 };
+      summaryRowHeights[3] = { hpt: 12 };
+      summaryRowHeights[4] = { hpt: 28 }; // Main Title
+      summaryRowHeights[5] = { hpt: 20 };
+      summaryRowHeights[6] = { hpt: 18 };
+      summaryRowHeights[7] = { hpt: 18 };
+      summaryRowHeights[8] = { hpt: 14 };
+      summaryRowHeights[9] = { hpt: 24 }; // Section I Title
+      summaryRowHeights[10] = { hpt: 26 }; // KPI Table Header
+      summaryRowHeights[11] = { hpt: 22 };
+      summaryRowHeights[12] = { hpt: 22 };
+      summaryRowHeights[13] = { hpt: 22 };
+      summaryRowHeights[14] = { hpt: 22 };
+      summaryRowHeights[15] = { hpt: 22 };
+      summaryRowHeights[16] = { hpt: 14 };
+      summaryRowHeights[17] = { hpt: 24 }; // Section II Title
+      summaryRowHeights[18] = { hpt: 28 }; // Staff Table Header
+      summaryRowHeights[totalRowIndex] = { hpt: 25 }; // Total Row
+      summaryRowHeights[signTitleIndex] = { hpt: 24 };
+      summaryRowHeights[signNoteIndex] = { hpt: 20 };
+      summaryRowHeights[signNameIndex] = { hpt: 26 };
+
+      wsSummary['!rows'] = summaryRowHeights;
+
+      // ==========================================
+      // APPLY BORDERS & STYLING FOR SHEET 1
+      // ==========================================
+      const borderThin = {
+        top: { style: 'thin', color: { rgb: 'CBD5E1' } },
+        bottom: { style: 'thin', color: { rgb: 'CBD5E1' } },
+        left: { style: 'thin', color: { rgb: 'CBD5E1' } },
+        right: { style: 'thin', color: { rgb: 'CBD5E1' } },
+      };
+
+      const borderHeader = {
+        top: { style: 'medium', color: { rgb: '003366' } },
+        bottom: { style: 'medium', color: { rgb: '003366' } },
+        left: { style: 'thin', color: { rgb: '1E3A8A' } },
+        right: { style: 'thin', color: { rgb: '1E3A8A' } },
+      };
+
+      const borderTotal = {
+        top: { style: 'medium', color: { rgb: '003366' } },
+        bottom: { style: 'double', color: { rgb: '003366' } },
+        left: { style: 'thin', color: { rgb: 'CBD5E1' } },
+        right: { style: 'thin', color: { rgb: 'CBD5E1' } },
+      };
+
+      const setCellStyle = (ws: any, r: number, c: number, style: any) => {
+        const ref = XLSX.utils.encode_cell({ r, c });
+        if (!ws[ref]) {
+          ws[ref] = { t: 's', v: '' };
+        }
+        ws[ref].s = { ...(ws[ref].s || {}), ...style };
+      };
+
+      // 1. National header styling (Rows 0-2)
+      setCellStyle(wsSummary, 0, 0, {
+        font: { name: 'Times New Roman', sz: 11, bold: true, color: { rgb: '003366' } },
+        alignment: { horizontal: 'center', vertical: 'center' },
+      });
+      setCellStyle(wsSummary, 1, 0, {
+        font: { name: 'Times New Roman', sz: 11, bold: true, underline: true, color: { rgb: '003366' } },
+        alignment: { horizontal: 'center', vertical: 'center' },
+      });
+      setCellStyle(wsSummary, 2, 0, {
+        font: { name: 'Times New Roman', sz: 10, italic: true },
+        alignment: { horizontal: 'center', vertical: 'center' },
+      });
+
+      setCellStyle(wsSummary, 0, 4, {
+        font: { name: 'Times New Roman', sz: 11, bold: true },
+        alignment: { horizontal: 'center', vertical: 'center' },
+      });
+      setCellStyle(wsSummary, 1, 4, {
+        font: { name: 'Times New Roman', sz: 11, bold: true, underline: true },
+        alignment: { horizontal: 'center', vertical: 'center' },
+      });
+      setCellStyle(wsSummary, 2, 4, {
+        font: { name: 'Times New Roman', sz: 10, color: { rgb: '666666' } },
+        alignment: { horizontal: 'center', vertical: 'center' },
+      });
+
+      // 2. Main Title (Rows 4-7)
+      for (let c = 0; c <= 10; c++) {
+        setCellStyle(wsSummary, 4, c, {
+          font: { name: 'Times New Roman', sz: 15, bold: true, color: { rgb: '003366' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+          fill: { fgColor: { rgb: 'F0F7FF' } },
+        });
+        setCellStyle(wsSummary, 5, c, {
+          font: { name: 'Times New Roman', sz: 11, bold: true, italic: true, color: { rgb: '1E293B' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+        });
+        setCellStyle(wsSummary, 6, c, {
+          font: { name: 'Times New Roman', sz: 10, italic: true, color: { rgb: '475569' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+        });
+        setCellStyle(wsSummary, 7, c, {
+          font: { name: 'Times New Roman', sz: 10, italic: true, color: { rgb: '64748B' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+        });
+      }
+
+      // 3. Section I Title (Row 9)
+      for (let c = 0; c <= 10; c++) {
+        setCellStyle(wsSummary, 9, c, {
+          font: { name: 'Times New Roman', sz: 12, bold: true, color: { rgb: '003366' } },
+          fill: { fgColor: { rgb: 'E2E8F0' } },
+          alignment: { horizontal: 'left', vertical: 'center' },
+        });
+      }
+
+      // 4. Section I KPI Table Header (Row 10) - KẺ BẢNG VÀ CĂN CHỈNH
+      for (let c = 0; c <= 10; c++) {
+        setCellStyle(wsSummary, 10, c, {
+          font: { name: 'Times New Roman', sz: 11, bold: true, color: { rgb: 'FFFFFF' } },
+          fill: { fgColor: { rgb: '003366' } },
+          border: borderHeader,
+          alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+        });
+      }
+
+      // Table 1 Data Rows (Rows 11-15) - KẺ BẢNG TỪNG Ô
+      const kpiRowBg = ['F8FAFC', 'ECFDF5', 'FEF2F2', 'EFF6FF', 'FFFBEB'];
+      const kpiTextColors = ['0F172A', '065F46', '991B1B', '1E40AF', '92400E'];
+
+      for (let i = 0; i < 5; i++) {
+        const r = 11 + i;
+        const bg = kpiRowBg[i];
+        const textColor = kpiTextColors[i];
+
+        for (let c = 0; c <= 10; c++) {
+          let align: 'left' | 'center' | 'right' = 'center';
+          if (c >= 1 && c <= 3) align = 'left';
+          if (c >= 8 && c <= 10) align = 'left';
+
+          setCellStyle(wsSummary, r, c, {
+            font: { 
+              name: 'Times New Roman', 
+              sz: (c >= 4 && c <= 5) ? 12 : 11, 
+              bold: (c >= 1 && c <= 7), 
+              color: { rgb: textColor } 
+            },
+            fill: { fgColor: { rgb: bg } },
+            border: borderThin,
+            alignment: { horizontal: align, vertical: 'center', wrapText: true },
+          });
+        }
+      }
+
+      // 5. Section II Title (Row 17)
+      for (let c = 0; c <= 10; c++) {
+        setCellStyle(wsSummary, 17, c, {
+          font: { name: 'Times New Roman', sz: 12, bold: true, color: { rgb: '003366' } },
+          fill: { fgColor: { rgb: 'E2E8F0' } },
+          alignment: { horizontal: 'left', vertical: 'center' },
+        });
+      }
+
+      // 6. Section II Staff Table Header (Row 18) - KẺ BẢNG VÀ CĂN CHỈNH
+      for (let c = 0; c <= 10; c++) {
+        setCellStyle(wsSummary, 18, c, {
+          font: { name: 'Times New Roman', sz: 10.5, bold: true, color: { rgb: 'FFFFFF' } },
+          fill: { fgColor: { rgb: '003366' } },
+          border: borderHeader,
+          alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+        });
+      }
+
+      // 7. Section II Staff Data Rows (Row 19 to 19 + staffStats.length - 1)
+      for (let i = 0; i < staffStats.length; i++) {
+        const r = 19 + i;
+        const rowBg = i % 2 === 0 ? 'FFFFFF' : 'F8FAFC';
+
+        for (let c = 0; c <= 10; c++) {
+          let align: 'left' | 'center' | 'right' = 'center';
+          if (c === 1 || c === 2 || c === 3) align = 'left'; // Name, Position, Unit
+
+          let fontColor = '0F172A';
+          let isBold = (c === 1 || c === 4 || c === 8 || c === 9 || c === 10);
+          if (c === 5) { fontColor = '059669'; isBold = true; } // Completed: Green
+          if (c === 6) { fontColor = 'DC2626'; isBold = true; } // Delayed: Red
+          if (c === 7) { fontColor = '0284C7'; } // In progress: Blue
+
+          setCellStyle(wsSummary, r, c, {
+            font: { name: 'Times New Roman', sz: 10.5, bold: isBold, color: { rgb: fontColor } },
+            fill: { fgColor: { rgb: rowBg } },
+            border: borderThin,
+            alignment: { horizontal: align, vertical: 'center', wrapText: true },
+          });
+        }
+      }
+
+      // 8. Staff Table Total Row (Row totalRowIndex)
+      for (let c = 0; c <= 10; c++) {
+        let align: 'left' | 'center' | 'right' = 'center';
+        let fontColor = '0F172A';
+        if (c === 5) fontColor = '059669';
+        if (c === 6) fontColor = 'DC2626';
+        if (c === 7) fontColor = '0284C7';
+
+        setCellStyle(wsSummary, totalRowIndex, c, {
+          font: { name: 'Times New Roman', sz: 11, bold: true, color: { rgb: fontColor } },
+          fill: { fgColor: { rgb: 'E2E8F0' } },
+          border: borderTotal,
+          alignment: { horizontal: align, vertical: 'center' },
+        });
+      }
+
+      // 9. Signatures Styling
+      setCellStyle(wsSummary, signDateIndex, 7, {
+        font: { name: 'Times New Roman', sz: 11, italic: true },
+        alignment: { horizontal: 'center', vertical: 'center' },
+      });
+      [0, 4, 7].forEach((col) => {
+        setCellStyle(wsSummary, signTitleIndex, col, {
+          font: { name: 'Times New Roman', sz: 11, bold: true },
+          alignment: { horizontal: 'center', vertical: 'center' },
+        });
+        setCellStyle(wsSummary, signNoteIndex, col, {
+          font: { name: 'Times New Roman', sz: 10, italic: true, color: { rgb: '64748B' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+        });
+      });
+      setCellStyle(wsSummary, signNameIndex, 7, {
+        font: { name: 'Times New Roman', sz: 11, bold: true },
+        alignment: { horizontal: 'center', vertical: 'center' },
+      });
+
+      // ==========================================
+      // SHEET 2: DANH SÁCH CHI TIẾT TỪNG NHIỆM VỤ
+      // ==========================================
+      const wsDetailData: any[][] = [
+        ['ỦY BAN NHÂN DÂN PHƯỜNG HỐ NAI', '', '', '', '', '', 'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', '', '', '', '', '', '', ''],
+        ['TRUNG TÂM DỊCH VỤ TỔNG HỢP', '', '', '', '', '', 'Độc lập - Tự do - Hạnh phúc', '', '', '', '', '', '', ''],
+        [''],
+        ['DANH SÁCH CHI TIẾT CÁC NHIỆM VỤ THEO KỲ BÁO CÁO THỐNG KÊ TIẾN ĐỘ', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        [`Thời gian thống kê: ${timeRangeText} | Căn cứ: ${criterionText}`, '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        [`Tổng số: ${totalCount} nhiệm vụ | Đã hoàn thành: ${completedCount} (${completedRate}%) | Trễ hạn: ${delayedCount} (${delayedRate}%) | Đang thực hiện: ${inProgressCount} (${inProgressRate}%) | Tiến độ bình quân: ${avgProgress}%`, '', '', '', '', '', '', '', '', '', '', '', '', ''],
         [''],
         [
           'STT',
-          'Mã việc',
+          'Mã nhiệm vụ',
           'Tên nhiệm vụ',
-          'Phòng ban / Tổ',
-          'Cán bộ phụ trách',
-          'Phối hợp',
-          'Hạn hoàn thành',
+          'Phòng ban / Tổ chuyên môn',
+          'Cán bộ chủ trì',
+          'Cán bộ phối hợp',
           'Ngày bắt đầu',
+          'Hạn hoàn thành',
           'Tiến độ (%)',
-          'Trạng thái',
+          'Trạng thái thực hiện',
           'Đánh giá hạn',
-          'Nội dung chỉ đạo của Giám đốc',
+          'Nội dung chỉ đạo của Lãnh đạo',
           'Tình hình báo cáo tiến độ mới nhất',
-          'Khó khăn, vướng mắc'
+          'Khó khăn, vướng mắc & kiến nghị'
         ]
       ];
 
-      const taskRows = filteredTasks.map((t, idx) => {
+      filteredTasks.forEach((t, idx) => {
         const delayed = isTaskDelayed(t);
         const deadlineStatusText = t.status === 'completed'
           ? 'Đã hoàn thành'
           : delayed
             ? 'TRỄ HẠN'
-            : 'Đúng hạn';
+            : 'Đang thực hiện đúng hạn';
 
-        return [
+        wsDetailData.push([
           idx + 1,
           t.code,
           t.title,
           t.section,
           t.assignee,
           (t.coAssignees || []).join(', ') || '—',
-          formatDateDisplay(t.deadline),
           formatDateDisplay(t.startDate),
+          formatDateDisplay(t.deadline),
           `${t.progress}%`,
           getStatusLabel(t.status),
           deadlineStatusText,
-          t.requirement,
-          t.currentReport || 'Chưa cập nhật',
+          t.requirement || 'Thực hiện theo thông báo kết luận giao ban',
+          t.currentReport || 'Chưa cập nhật báo cáo',
           t.difficulties || 'Không'
-        ];
+        ]);
       });
 
-      const wsDetailData = [...detailHeader, ...taskRows];
+      // Bottom summary row for Sheet 2
+      wsDetailData.push([
+        'TỔNG CỘNG', '', '',
+        `${filteredTasks.length} nhiệm vụ`, '', '', '', '',
+        `${avgProgress}%`,
+        `Hoàn thành: ${completedCount}`,
+        `Trễ hạn: ${delayedCount}`,
+        `Đang thực hiện: ${inProgressCount}`,
+        `Tỷ lệ hoàn thành: ${completedRate}%`,
+        `Tỷ lệ trễ hạn: ${delayedRate}%`
+      ]);
+
       const wsDetail = XLSX.utils.aoa_to_sheet(wsDetailData);
 
-      wsDetail['!cols'] = [
-        { wch: 6 },
-        { wch: 10 },
-        { wch: 42 },
-        { wch: 30 },
-        { wch: 24 },
-        { wch: 20 },
-        { wch: 16 },
-        { wch: 14 },
-        { wch: 12 },
-        { wch: 18 },
-        { wch: 16 },
-        { wch: 45 },
-        { wch: 45 },
-        { wch: 30 },
+      const detailRowCount = filteredTasks.length;
+      const detailTotalRowIndex = 8 + detailRowCount;
+
+      const detailMerges: XLSX.Range[] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } },
+        { s: { r: 0, c: 6 }, e: { r: 0, c: 13 } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 5 } },
+        { s: { r: 1, c: 6 }, e: { r: 1, c: 13 } },
+        { s: { r: 3, c: 0 }, e: { r: 3, c: 13 } },
+        { s: { r: 4, c: 0 }, e: { r: 4, c: 13 } },
+        { s: { r: 5, c: 0 }, e: { r: 5, c: 13 } },
+
+        // Total row merges
+        { s: { r: detailTotalRowIndex, c: 0 }, e: { r: detailTotalRowIndex, c: 2 } },
+        { s: { r: detailTotalRowIndex, c: 3 }, e: { r: detailTotalRowIndex, c: 7 } },
       ];
 
+      wsDetail['!merges'] = detailMerges;
+
+      wsDetail['!cols'] = [
+        { wch: 6 },   // A: STT
+        { wch: 12 },  // B: Mã nhiệm vụ
+        { wch: 45 },  // C: Tên nhiệm vụ
+        { wch: 28 },  // D: Phòng ban / Tổ
+        { wch: 24 },  // E: Cán bộ chủ trì
+        { wch: 24 },  // F: Cán bộ phối hợp
+        { wch: 15 },  // G: Ngày bắt đầu
+        { wch: 16 },  // H: Hạn hoàn thành
+        { wch: 14 },  // I: Tiến độ (%)
+        { wch: 20 },  // J: Trạng thái thực hiện
+        { wch: 22 },  // K: Đánh giá hạn
+        { wch: 48 },  // L: Nội dung chỉ đạo của Lãnh đạo
+        { wch: 48 },  // M: Báo cáo tiến độ mới nhất
+        { wch: 34 },  // N: Khó khăn, vướng mắc & kiến nghị
+      ];
+
+      const detailRowHeights: { hpt: number }[] = [];
+      detailRowHeights[0] = { hpt: 22 };
+      detailRowHeights[1] = { hpt: 20 };
+      detailRowHeights[3] = { hpt: 28 }; // Main Title
+      detailRowHeights[4] = { hpt: 20 };
+      detailRowHeights[5] = { hpt: 20 };
+      detailRowHeights[7] = { hpt: 28 }; // Table Header
+      detailRowHeights[detailTotalRowIndex] = { hpt: 25 }; // Total row
+
+      wsDetail['!rows'] = detailRowHeights;
+
+      // ==========================================
+      // APPLY BORDERS & STYLING FOR SHEET 2
+      // ==========================================
+      // 1. Header & Title (Rows 0-5)
+      setCellStyle(wsDetail, 0, 0, {
+        font: { name: 'Times New Roman', sz: 11, bold: true, color: { rgb: '003366' } },
+        alignment: { horizontal: 'center', vertical: 'center' },
+      });
+      setCellStyle(wsDetail, 1, 0, {
+        font: { name: 'Times New Roman', sz: 11, bold: true, underline: true, color: { rgb: '003366' } },
+        alignment: { horizontal: 'center', vertical: 'center' },
+      });
+      setCellStyle(wsDetail, 0, 6, {
+        font: { name: 'Times New Roman', sz: 11, bold: true },
+        alignment: { horizontal: 'center', vertical: 'center' },
+      });
+      setCellStyle(wsDetail, 1, 6, {
+        font: { name: 'Times New Roman', sz: 11, bold: true, underline: true },
+        alignment: { horizontal: 'center', vertical: 'center' },
+      });
+
+      for (let c = 0; c <= 13; c++) {
+        setCellStyle(wsDetail, 3, c, {
+          font: { name: 'Times New Roman', sz: 14, bold: true, color: { rgb: '003366' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+          fill: { fgColor: { rgb: 'F0F7FF' } },
+        });
+        setCellStyle(wsDetail, 4, c, {
+          font: { name: 'Times New Roman', sz: 10.5, italic: true, color: { rgb: '475569' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+        });
+        setCellStyle(wsDetail, 5, c, {
+          font: { name: 'Times New Roman', sz: 10.5, bold: true, color: { rgb: '003366' } },
+          fill: { fgColor: { rgb: 'E0F2FE' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+          border: borderThin,
+        });
+      }
+
+      // 2. Sheet 2 Table Header (Row 7, 14 cols) - KẺ BẢNG VÀ CĂN CHỈNH
+      for (let c = 0; c <= 13; c++) {
+        setCellStyle(wsDetail, 7, c, {
+          font: { name: 'Times New Roman', sz: 10.5, bold: true, color: { rgb: 'FFFFFF' } },
+          fill: { fgColor: { rgb: '003366' } },
+          border: borderHeader,
+          alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+        });
+      }
+
+      // 3. Sheet 2 Data Rows (Row 8 to 8 + filteredTasks.length - 1) - KẺ BẢNG TỪNG Ô
+      for (let i = 0; i < filteredTasks.length; i++) {
+        const r = 8 + i;
+        const task = filteredTasks[i];
+        const isDelayed = isTaskDelayed(task);
+        const isCompleted = task.status === 'completed';
+        const rowBg = i % 2 === 0 ? 'FFFFFF' : 'F8FAFC';
+
+        for (let c = 0; c <= 13; c++) {
+          let align: 'left' | 'center' | 'right' = 'center';
+          // Columns with left alignment: Tên việc, Phòng ban, Cán bộ, Phối hợp, Chỉ đạo, Báo cáo, Khó khăn
+          if (c === 2 || c === 3 || c === 4 || c === 5 || c === 11 || c === 12 || c === 13) {
+            align = 'left';
+          }
+
+          let fontColor = '0F172A';
+          let isBold = (c === 1 || c === 2 || c === 4 || c === 7 || c === 8);
+          let cellBg = rowBg;
+
+          if (c === 8) { // Tiến độ
+            isBold = true;
+          }
+          if (c === 10) { // Đánh giá hạn
+            isBold = true;
+            if (isCompleted) {
+              fontColor = '059669';
+              cellBg = 'ECFDF5';
+            } else if (isDelayed) {
+              fontColor = 'DC2626';
+              cellBg = 'FEF2F2';
+            } else {
+              fontColor = '0284C7';
+            }
+          }
+
+          setCellStyle(wsDetail, r, c, {
+            font: { name: 'Times New Roman', sz: 10, bold: isBold, color: { rgb: fontColor } },
+            fill: { fgColor: { rgb: cellBg } },
+            border: borderThin,
+            alignment: { horizontal: align, vertical: 'center', wrapText: true },
+          });
+        }
+      }
+
+      // 4. Sheet 2 Total Row (Row detailTotalRowIndex) - KẺ BẢNG
+      for (let c = 0; c <= 13; c++) {
+        setCellStyle(wsDetail, detailTotalRowIndex, c, {
+          font: { name: 'Times New Roman', sz: 10.5, bold: true, color: { rgb: '003366' } },
+          fill: { fgColor: { rgb: 'E2E8F0' } },
+          border: borderTotal,
+          alignment: { horizontal: 'center', vertical: 'center' },
+        });
+      }
+
+      // Append Worksheets with official names
       XLSX.utils.book_append_sheet(wb, wsSummary, '1. Tổng Hợp & Viên Chức');
       XLSX.utils.book_append_sheet(wb, wsDetail, '2. Chi Tiết Nhiệm Vụ');
 
@@ -444,8 +966,8 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
       const fileName = `BaoCao_ThongKe_TienDo_HoNai_${fileDate}.xlsx`;
       XLSX.writeFile(wb, fileName);
 
-      setExportNotice(`Đã xuất báo cáo thành công file "${fileName}"!`);
-      setTimeout(() => setExportNotice(null), 4000);
+      setExportNotice(`Đã xuất báo cáo tiến độ thành công file "${fileName}" với định dạng kẻ bảng chuẩn đẹp!`);
+      setTimeout(() => setExportNotice(null), 4500);
     } catch (err) {
       console.error('Lỗi xuất file excel:', err);
       setExportNotice('Không thể xuất file Excel. Vui lòng thử lại!');
