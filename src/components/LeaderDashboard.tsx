@@ -37,11 +37,13 @@ import {
   getStatusLabel, 
   getPriorityLabel, 
   getSectionShortName, 
-  calculateSummary 
+  calculateSummary,
+  formatDateDisplay
 } from '../utils/helpers';
 import { STAFF_MEMBERS } from '../data/staffMembers';
 import { useAuth } from '../context/AuthContext';
 import { useDepartments } from '../context/DepartmentContext';
+import { CountUpNumber } from './CountUpNumber';
 
 interface LeaderDashboardProps {
   tasks: Task[];
@@ -272,7 +274,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                 </div>
                 <span className="text-[14px] font-semibold leading-snug">Tổng quan KPI</span>
                 <span className={`text-[12px] mt-1 ${activeLeaderMenu === 'overview' ? 'text-blue-100' : 'text-[#4B5563]'}`}>
-                  {tasks.length} việc giao ban
+                  <CountUpNumber value={tasks.length} suffix=" việc giao ban" />
                 </span>
               </button>
 
@@ -291,7 +293,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                   <span className={`text-[12px] font-mono px-1.5 py-0.2 rounded font-bold ${
                     activeLeaderMenu === 'bottlenecks' ? 'bg-white/20 text-white' : 'bg-red-50 text-[#D32F2F]'
                   }`}>
-                    {urgentTasks.length} việc
+                    <CountUpNumber value={urgentTasks.length} suffix=" việc" />
                   </span>
                 </div>
                 <span className="text-[14px] font-semibold leading-snug">Radar đôn đốc</span>
@@ -354,7 +356,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                   <span className={`text-[12px] font-mono px-1.5 py-0.2 rounded font-bold ${
                     activeLeaderMenu === 'master' ? 'bg-white/20 text-white' : 'bg-[#F4F6F9] text-[#4B5563]'
                   }`}>
-                    {filteredTasks.length}
+                    <CountUpNumber value={filteredTasks.length} />
                   </span>
                 </div>
                 <span className="text-[14px] font-semibold leading-snug">Bảng phân công</span>
@@ -470,7 +472,10 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                 <Building2 className="w-4 h-4 text-[#003366]" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-[26px] sm:text-[28px] font-bold text-[#003366] font-mono tabular-nums">{summary.total}</span>
+                <CountUpNumber 
+                  value={summary.total} 
+                  className="text-[26px] sm:text-[28px] font-bold text-[#003366] font-mono tabular-nums" 
+                />
                 <span className="text-[12px] text-[#4B5563] font-medium">100% việc</span>
               </div>
               <div className="mt-2 text-[12px] text-[#4B5563]">Phân bổ trên 5 tổ chuyên môn</div>
@@ -482,9 +487,12 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-[26px] sm:text-[28px] font-bold text-emerald-700 font-mono tabular-nums">{summary.completed}</span>
+                <CountUpNumber 
+                  value={summary.completed} 
+                  className="text-[26px] sm:text-[28px] font-bold text-emerald-700 font-mono tabular-nums" 
+                />
                 <span className="text-[12px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-[4px] border border-emerald-200">
-                  ({summary.total > 0 ? Math.round((summary.completed / summary.total) * 100) : 0}%)
+                  (<CountUpNumber value={summary.total > 0 ? Math.round((summary.completed / summary.total) * 100) : 0} suffix="%" />)
                 </span>
               </div>
               <div className="mt-2 text-[12px] text-[#4B5563]">Đã nghiệm thu / kết thúc hồ sơ</div>
@@ -496,9 +504,12 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                 <Clock className="w-4 h-4 text-[#1D4ED8]" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-[26px] sm:text-[28px] font-bold text-[#1D4ED8] font-mono tabular-nums">{summary.inProgress}</span>
+                <CountUpNumber 
+                  value={summary.inProgress} 
+                  className="text-[26px] sm:text-[28px] font-bold text-[#1D4ED8] font-mono tabular-nums" 
+                />
                 <span className="text-[12px] font-semibold text-blue-800 bg-blue-50 px-2 py-0.5 rounded-[4px] border border-blue-200">
-                  ({summary.total > 0 ? Math.round((summary.inProgress / summary.total) * 100) : 0}%)
+                  (<CountUpNumber value={summary.total > 0 ? Math.round((summary.inProgress / summary.total) * 100) : 0} suffix="%" />)
                 </span>
               </div>
               <div className="mt-2 text-[12px] text-[#4B5563]">Đang thực hiện theo tiến độ</div>
@@ -510,7 +521,10 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                 <AlertTriangle className="w-4 h-4 text-[#D32F2F]" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-[26px] sm:text-[28px] font-bold text-[#D32F2F] font-mono tabular-nums">{summary.delayed + summary.paused}</span>
+                <CountUpNumber 
+                  value={summary.delayed + summary.paused} 
+                  className="text-[26px] sm:text-[28px] font-bold text-[#D32F2F] font-mono tabular-nums" 
+                />
                 <span className="text-[12px] font-semibold text-[#D32F2F] bg-red-50 px-2 py-0.5 rounded-[4px] border border-red-200">cần chỉ đạo</span>
               </div>
               <div className="mt-2 text-[12px] text-[#4B5563]">Do thời tiết, vốn hoặc thủ tục</div>
@@ -522,7 +536,11 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                 <TrendingUp className="w-4 h-4 text-[#003366]" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-[26px] sm:text-[28px] font-bold text-[#111827] font-mono tabular-nums">{summary.avgProgress}%</span>
+                <CountUpNumber 
+                  value={summary.avgProgress} 
+                  suffix="%" 
+                  className="text-[26px] sm:text-[28px] font-bold text-[#111827] font-mono tabular-nums" 
+                />
                 <span className="text-[12px] text-[#4B5563] font-medium bg-[#F4F6F9] px-2 py-0.5 rounded-[4px] border border-[#E5E7EB]">toàn đơn vị</span>
               </div>
               <div className="mt-2 bg-[#F4F6F9] rounded-full h-2 overflow-hidden border border-[#E5E7EB]">
@@ -551,16 +569,24 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                 <div key={sec.name} className="p-3 bg-[#F4F6F9] rounded-[8px] border border-[#E5E7EB] text-[13px] space-y-2">
                   <div className="flex items-center justify-between font-bold text-[#111827]">
                     <span className="truncate pr-1 text-[13px]">{sec.shortName}</span>
-                    <span className="font-mono text-[#003366] font-bold">{sec.count} việc</span>
+                    <CountUpNumber 
+                      value={sec.count} 
+                      suffix=" việc" 
+                      className="font-mono text-[#003366] font-bold" 
+                    />
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
                       <div className="bg-[#003366] h-full rounded-full" style={{ width: `${sec.avgProg}%` }} />
                     </div>
-                    <span className="font-mono text-[12px] font-bold text-[#111827]">{sec.avgProg}%</span>
+                    <CountUpNumber 
+                      value={sec.avgProg} 
+                      suffix="%" 
+                      className="font-mono text-[12px] font-bold text-[#111827]" 
+                    />
                   </div>
                   <div className="flex items-center justify-between text-[12px] text-[#4B5563]">
-                    <span>Xong: <strong className="text-[#111827]">{sec.completed}</strong></span>
+                    <span>Xong: <strong className="text-[#111827]"><CountUpNumber value={sec.completed} /></strong></span>
                     {sec.hasDelay && <span className="text-[#D32F2F] font-semibold">Có vướng mắc</span>}
                   </div>
                 </div>
@@ -606,7 +632,11 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                       )}
                     </div>
                     <div className="mt-3 pt-2.5 border-t border-[#E5E7EB] flex items-center justify-between">
-                      <span className="text-[12px] text-[#4B5563] font-mono">Hạn: {t.deadline || 'Theo tiến độ'}</span>
+                      <div className="text-[12px] text-[#4B5563] font-mono">
+                        <span>Giao: {formatDateDisplay(t.assignedDate || t.startDate)}</span>
+                        <span className="mx-1">·</span>
+                        <span>Hạn: {t.deadline ? formatDateDisplay(t.deadline) : 'Theo tiến độ'}</span>
+                      </div>
                       <button
                         type="button"
                         onClick={() => onOpenDirectiveModal(t)}
@@ -728,7 +758,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                     <th className="py-3 px-3.5 w-16">Mã</th>
                     <th className="py-3 px-3.5 w-72">Tên Nhiệm Vụ</th>
                     <th className="py-3 px-3.5 w-40">Cán Bộ Phụ Trách</th>
-                    <th className="py-3 px-3.5 w-28">Hạn Định</th>
+                    <th className="py-3 px-3.5 min-w-[140px]">Ngày Giao & Hạn Định</th>
                     <th className="py-3 px-3.5 w-32">Tiến Độ %</th>
                     <th className="py-3 px-3.5 w-32">Trạng Thái</th>
                     <th className="py-3 px-3.5 min-w-56">Báo Cáo & Vướng Mắc</th>
@@ -799,7 +829,16 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                               <span className="text-[12px] text-amber-900 font-medium block">{task.leadershipDirector}</span>
                             )}
                           </td>
-                          <td className="py-3.5 px-3.5 align-top font-mono text-[#111827] text-[13px]">{task.deadline || 'Theo tiến độ'}</td>
+                          <td className="py-3.5 px-3.5 align-top text-[13px]">
+                            <div className="flex items-center gap-1.5 text-[12px] text-[#4B5563]" title="Ngày phân công nhiệm vụ">
+                              <Calendar className="w-3.5 h-3.5 text-[#003366] shrink-0" />
+                              <span>Giao: <strong className="font-mono text-[#111827]">{formatDateDisplay(task.assignedDate || task.startDate)}</strong></span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-[12px] mt-1 font-mono text-[#111827]" title="Thời hạn hoàn thành (Hạn định)">
+                              <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                              <span>Hạn: <strong className={task.deadline ? 'text-[#111827]' : 'text-[#4B5563]'}>{task.deadline ? formatDateDisplay(task.deadline) : 'Theo tiến độ'}</strong></span>
+                            </div>
+                          </td>
                           <td className="py-3.5 px-3.5 align-top">
                             <div className="flex items-center gap-1.5">
                               <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
@@ -875,7 +914,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
               </p>
             </div>
             <span className="px-3 py-1 bg-[#D32F2F] text-white font-mono font-bold text-[12px] rounded-[6px]">
-              {tasks.filter(t => (t.difficulties && t.difficulties.length > 0) || t.status === 'delayed' || t.status === 'paused').length} việc cần giải quyết
+              <CountUpNumber value={tasks.filter(t => (t.difficulties && t.difficulties.length > 0) || t.status === 'delayed' || t.status === 'paused').length} suffix=" việc cần giải quyết" />
             </span>
           </div>
 
@@ -890,7 +929,9 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                       <span className={`px-2.5 py-0.5 rounded-[4px] text-[12px] font-medium ${getStatusBadgeClasses(t.status)}`}>{getStatusLabel(t.status)}</span>
                     </div>
                     <h4 className="font-bold text-[#111827] text-[15px] leading-snug">{t.title}</h4>
-                    <div className="text-[12px] text-[#4B5563] mt-1">Phụ trách: <strong className="text-[#111827]">{t.assignee}</strong> · Hạn: <strong className="text-[#111827]">{t.deadline || 'Theo tiến độ'}</strong></div>
+                    <div className="text-[12px] text-[#4B5563] mt-1">
+                      Phụ trách: <strong className="text-[#111827]">{t.assignee}</strong> · Giao: <strong className="text-[#111827]">{formatDateDisplay(t.assignedDate || t.startDate)}</strong> · Hạn: <strong className="text-[#111827]">{t.deadline ? formatDateDisplay(t.deadline) : 'Theo tiến độ'}</strong>
+                    </div>
 
                     {t.difficulties && (
                       <div className="mt-2.5 bg-red-50 text-[#111827] p-3 rounded-[6px] border border-red-200 text-[13px]">
@@ -953,12 +994,12 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                     <h4 className="font-bold text-[#111827] text-[15px]">{sec.name}</h4>
                   </div>
                   <div className="flex items-center gap-3 text-[13px]">
-                    <span className="font-semibold text-[#111827]">Tổng: <strong>{sec.count} việc</strong></span>
-                    <span className="text-emerald-700 font-semibold">Xong: <strong>{sec.completed}</strong></span>
-                    <span className="text-blue-700 font-semibold">Đang làm: <strong>{sec.inProgress}</strong></span>
-                    {sec.delayed > 0 && <span className="text-[#D32F2F] font-bold">Vướng: <strong>{sec.delayed}</strong></span>}
+                    <span className="font-semibold text-[#111827]">Tổng: <strong><CountUpNumber value={sec.count} suffix=" việc" /></strong></span>
+                    <span className="text-emerald-700 font-semibold">Xong: <strong><CountUpNumber value={sec.completed} /></strong></span>
+                    <span className="text-blue-700 font-semibold">Đang làm: <strong><CountUpNumber value={sec.inProgress} /></strong></span>
+                    {sec.delayed > 0 && <span className="text-[#D32F2F] font-bold">Vướng: <strong><CountUpNumber value={sec.delayed} /></strong></span>}
                     <div className="flex items-center gap-1.5 bg-white px-2.5 py-0.5 rounded-[4px] border border-[#E5E7EB]">
-                      <span className="font-bold font-mono text-[#111827]">{sec.avgProg}%</span>
+                      <CountUpNumber value={sec.avgProg} suffix="%" className="font-bold font-mono text-[#111827]" />
                     </div>
                   </div>
                 </div>
@@ -1018,9 +1059,10 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                     <span className={`w-3 h-3 rounded-full ${column.color}`} />
                     <span className="font-bold text-[14px] text-[#111827]">{column.label}</span>
                   </div>
-                  <span className="font-mono text-[12px] font-bold bg-[#F4F6F9] text-[#111827] px-2 py-0.5 rounded-[4px] border border-[#E5E7EB]">
-                    {columnTasks.length}
-                  </span>
+                  <CountUpNumber 
+                    value={columnTasks.length} 
+                    className="font-mono text-[12px] font-bold bg-[#F4F6F9] text-[#111827] px-2 py-0.5 rounded-[4px] border border-[#E5E7EB]" 
+                  />
                 </div>
 
                 <div className="overflow-y-auto space-y-2.5 flex-1 pr-0.5">
@@ -1031,7 +1073,9 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                       <div key={t.id} className="bg-[#F4F6F9] rounded-[6px] p-3 border border-[#E5E7EB] text-[13px] space-y-2 hover:border-gray-300 transition-all">
                         <div className="flex items-center justify-between gap-1">
                           <span className="font-mono font-bold text-[#003366] bg-blue-50 px-2 py-0.5 rounded text-[12px] border border-blue-200">{t.code}</span>
-                          <span className="font-mono text-[12px] text-[#4B5563]">{t.deadline || 'Theo tiến độ'}</span>
+                          <span className="font-mono text-[11px] text-[#4B5563]" title={`Ngày phân công: ${formatDateDisplay(t.assignedDate || t.startDate)}`}>
+                            Hạn: {t.deadline ? formatDateDisplay(t.deadline) : 'Theo tiến độ'}
+                          </span>
                         </div>
                         <h4 onClick={() => onOpenTaskDetail(t)} className="font-semibold text-[#111827] text-[14px] leading-snug hover:text-[#003366] cursor-pointer">
                           {t.title}

@@ -51,6 +51,7 @@ export interface Task {
   currentReport: string;      // Tình hình thực hiện cập nhật nhất
   progress: number;           // 0 - 100
   status: TaskStatus;
+  assignedDate?: string;      // Ngày phân công nhiệm vụ (YYYY-MM-DD hoặc DD/MM/YYYY)
   deadline?: string;          // Hạn định (e.g. 10/10/2026, 30/11/2026)
   startDate?: string;
   budgetInfo?: string;        // Thông tin kinh phí/dự toán nếu có

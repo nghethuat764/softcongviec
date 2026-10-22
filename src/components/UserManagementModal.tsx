@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useDepartments } from '../context/DepartmentContext';
 import { UserAccount, UserRole } from '../types/database';
+import { CountUpNumber } from './CountUpNumber';
 import {
   Users,
   UserPlus,
@@ -312,15 +313,21 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
             <div className="flex items-center gap-3 flex-wrap text-[13px]">
               <div className="flex items-center gap-1.5 px-3 py-1 rounded-[6px] bg-[#F4F6F9] border border-[#E5E7EB]">
                 <span className="text-[#4B5563]">Tổng cán bộ:</span>
-                <strong className="text-[#003366] font-mono text-[15px] font-bold">{users.length}</strong>
+                <strong className="text-[#003366] font-mono text-[15px] font-bold">
+                  <CountUpNumber value={users.length} />
+                </strong>
               </div>
               <div className="flex items-center gap-1.5 px-3 py-1 rounded-[6px] bg-red-50 border border-red-200">
                 <span className="text-[#D32F2F] font-medium">Ban Giám Đốc:</span>
-                <strong className="text-[#D32F2F] font-mono text-[15px] font-bold">{leaderCount}</strong>
+                <strong className="text-[#D32F2F] font-mono text-[15px] font-bold">
+                  <CountUpNumber value={leaderCount} />
+                </strong>
               </div>
               <div className="flex items-center gap-1.5 px-3 py-1 rounded-[6px] bg-blue-50 border border-blue-200">
                 <span className="text-[#003366] font-medium">Viên chức:</span>
-                <strong className="text-[#003366] font-mono text-[15px] font-bold">{staffCount}</strong>
+                <strong className="text-[#003366] font-mono text-[15px] font-bold">
+                  <CountUpNumber value={staffCount} />
+                </strong>
               </div>
             </div>
 

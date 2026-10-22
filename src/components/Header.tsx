@@ -16,6 +16,7 @@ import { StaffMember } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { LogoTTDVTH } from './LogoTTDVTH';
+import { CountUpNumber } from './CountUpNumber';
 
 interface HeaderProps {
   currentRole: 'leader' | 'staff';
@@ -133,7 +134,7 @@ export const Header: React.FC<HeaderProps> = ({
                   HỆ THỐNG PHÂN CÔNG NHIỆM VỤ & VÀ BÁO CÁO TIẾN ĐỘ
                 </h1>
                 <span className="bg-white/15 text-white text-[12px] px-2 py-0.5 rounded-[4px] font-mono font-bold border border-white/20">
-                  {taskCount} việc
+                  <CountUpNumber value={taskCount} suffix=" việc" />
                 </span>
               </div>
               <p className="text-[12px] sm:text-[13px] text-blue-100 dark:text-sky-200 mt-0.5 leading-snug">

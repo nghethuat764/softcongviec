@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useDepartments } from '../context/DepartmentContext';
 import { Department } from '../types/database';
+import { CountUpNumber } from './CountUpNumber';
 import {
   Building2,
   Plus,
@@ -345,7 +346,7 @@ export const DepartmentManagementModal: React.FC<DepartmentManagementModalProps>
                   Tổng số phòng ban / tổ
                 </div>
                 <div className="text-[26px] font-bold text-[#003366] leading-none mt-1 font-mono">
-                  {departments.length}
+                  <CountUpNumber value={departments.length} />
                 </div>
               </div>
               <div className="w-10 h-10 rounded-[6px] bg-blue-100 text-[#003366] flex items-center justify-center">
@@ -360,7 +361,7 @@ export const DepartmentManagementModal: React.FC<DepartmentManagementModalProps>
                   Tổng số cán bộ / viên chức
                 </div>
                 <div className="text-[26px] font-bold text-emerald-700 leading-none mt-1 font-mono">
-                  {totalStaffCount}
+                  <CountUpNumber value={totalStaffCount} />
                 </div>
               </div>
               <div className="w-10 h-10 rounded-[6px] bg-emerald-100 text-emerald-800 flex items-center justify-center">

@@ -28,9 +28,10 @@ import {
   Upload,
   X
 } from 'lucide-react';
-import { getStatusBadgeClasses, getStatusLabel, isTaskRelatedToStaff } from '../utils/helpers';
+import { getStatusBadgeClasses, getStatusLabel, isTaskRelatedToStaff, formatDateDisplay } from '../utils/helpers';
 import { STAFF_MEMBERS } from '../data/staffMembers';
 import { useAuth } from '../context/AuthContext';
+import { CountUpNumber } from './CountUpNumber';
 
 interface StaffReportingPortalProps {
   tasks: Task[];
@@ -344,19 +345,27 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mt-4 pt-4 border-t border-[#E5E7EB] text-[13px]">
           <div className="bg-[#F4F6F9] p-3.5 rounded-[8px] border border-[#E5E7EB]">
             <span className="text-[#4B5563] font-medium block text-[13px]">Nhiệm vụ được giao</span>
-            <strong className="text-[26px] text-[#003366] font-mono font-bold tabular-nums mt-0.5 block">{myTasks.length} việc</strong>
+            <strong className="text-[26px] text-[#003366] font-mono font-bold tabular-nums mt-0.5 block">
+              <CountUpNumber value={myTasks.length} suffix=" việc" />
+            </strong>
           </div>
           <div className="bg-[#F4F6F9] p-3.5 rounded-[8px] border border-[#E5E7EB]">
             <span className="text-[#4B5563] font-medium block text-[13px]">Đã hoàn thành</span>
-            <strong className="text-[26px] text-emerald-700 font-mono font-bold tabular-nums mt-0.5 block">{completedCount} việc</strong>
+            <strong className="text-[26px] text-emerald-700 font-mono font-bold tabular-nums mt-0.5 block">
+              <CountUpNumber value={completedCount} suffix=" việc" />
+            </strong>
           </div>
           <div className="bg-[#F4F6F9] p-3.5 rounded-[8px] border border-[#E5E7EB]">
             <span className="text-[#4B5563] font-medium block text-[13px]">Đang triển khai</span>
-            <strong className="text-[26px] text-[#1D4ED8] font-mono font-bold tabular-nums mt-0.5 block">{inProgressCount} việc</strong>
+            <strong className="text-[26px] text-[#1D4ED8] font-mono font-bold tabular-nums mt-0.5 block">
+              <CountUpNumber value={inProgressCount} suffix=" việc" />
+            </strong>
           </div>
           <div className="bg-[#F4F6F9] p-3.5 rounded-[8px] border border-[#E5E7EB]">
             <span className="text-[#4B5563] font-medium block text-[13px]">Vướng mắc / Chậm</span>
-            <strong className="text-[26px] text-[#D32F2F] font-mono font-bold tabular-nums mt-0.5 block">{issueCount} việc</strong>
+            <strong className="text-[26px] text-[#D32F2F] font-mono font-bold tabular-nums mt-0.5 block">
+              <CountUpNumber value={issueCount} suffix=" việc" />
+            </strong>
           </div>
         </div>
       </div>
@@ -457,11 +466,13 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
               >
                 <div className="flex items-center justify-between w-full mb-1.5">
                   <ListOrdered className={`w-4 h-4 ${activeStaffMenu === 'my_tasks_matrix' ? 'text-white' : 'text-[#4B5563]'}`} />
-                  <span className={`text-[12px] font-mono px-1.5 py-0.5 rounded font-bold ${
-                    activeStaffMenu === 'my_tasks_matrix' ? 'bg-white/20 text-white' : 'bg-[#F4F6F9] text-[#4B5563]'
-                  }`}>
-                    {myTasks.length} việc
-                  </span>
+                  <CountUpNumber 
+                    value={myTasks.length} 
+                    suffix=" việc" 
+                    className={`text-[12px] font-mono px-1.5 py-0.5 rounded font-bold ${
+                      activeStaffMenu === 'my_tasks_matrix' ? 'bg-white/20 text-white' : 'bg-[#F4F6F9] text-[#4B5563]'
+                    }`}
+                  />
                 </div>
                 <div>
                   <span className="text-[14px] font-bold block leading-tight">Bảng Việc Của Tôi</span>
@@ -708,7 +719,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                     </div>
 
                     <div className="mt-2 flex items-center justify-between text-[12px] text-[#4B5563]">
-                      <span>Hạn: {t.deadline || 'Theo tiến độ'}</span>
+                      <span>Giao: {formatDateDisplay(t.assignedDate || t.startDate)} · Hạn: {t.deadline ? formatDateDisplay(t.deadline) : 'Theo tiến độ'}</span>
                       {hasDirective && (
                         <span className="text-[#003366] font-medium flex items-center gap-1">
                           <ShieldCheck className="w-3.5 h-3.5 text-[#003366]" />
@@ -730,12 +741,20 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
               {/* Form Title Banner */}
               <div className="bg-[#003366] text-white p-4 border-b border-[#002244] flex items-center justify-between">
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="bg-white/20 text-white font-mono text-[12px] px-2 py-0.5 rounded-[4px] font-bold border border-white/20">
                       {currentTask.code}
                     </span>
                     <span className="text-[12px] text-blue-100 font-medium">
                       {currentTask.category}
+                    </span>
+                    <span className="bg-white/15 text-blue-100 text-[11px] px-2 py-0.5 rounded border border-white/20 font-medium flex items-center gap-1">
+                      <Calendar className="w-3 h-3 text-blue-200" />
+                      Ngày phân công: <strong className="text-white font-mono">{formatDateDisplay(currentTask.assignedDate || currentTask.startDate)}</strong>
+                    </span>
+                    <span className="bg-white/15 text-blue-100 text-[11px] px-2 py-0.5 rounded border border-white/20 font-medium flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-amber-300" />
+                      Hạn hoàn thành: <strong className="text-white font-mono">{currentTask.deadline ? formatDateDisplay(currentTask.deadline) : 'Theo tiến độ'}</strong>
                     </span>
                   </div>
                   <h3 className="font-bold text-[16px] text-white mt-1.5 leading-snug">
@@ -1130,7 +1149,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                   <th className="p-3 min-w-[260px]">Chỉ Đạo Kết Luận Của Giám Đốc (28/9)</th>
                   <th className="p-3 w-28 text-center">Tiến Độ</th>
                   <th className="p-3 w-28">Trạng Thái</th>
-                  <th className="p-3 w-28">Thời Hạn</th>
+                  <th className="p-3 min-w-[130px]">Ngày Giao & Hạn Định</th>
                   <th className="p-3 w-32 text-center">Thao Tác</th>
                 </tr>
               </thead>
@@ -1189,10 +1208,14 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                           {getStatusLabel(t.status)}
                         </span>
                       </td>
-                      <td className="p-3 text-2xs text-slate-600">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3 text-slate-400" />
-                          <span>{t.deadline || 'Theo tiến độ'}</span>
+                      <td className="p-3 text-2xs text-slate-700">
+                        <div className="flex items-center gap-1 text-slate-500 mb-0.5" title="Ngày phân công nhiệm vụ">
+                          <Calendar className="w-3 h-3 text-[#003366] shrink-0" />
+                          <span>Giao: <strong className="font-mono text-slate-800">{formatDateDisplay(t.assignedDate || t.startDate)}</strong></span>
+                        </div>
+                        <div className="flex items-center gap-1" title="Thời hạn hoàn thành (Hạn định)">
+                          <Clock className="w-3 h-3 text-amber-600 shrink-0" />
+                          <span>Hạn: <strong className="font-mono text-slate-800">{t.deadline ? formatDateDisplay(t.deadline) : 'Theo tiến độ'}</strong></span>
                         </div>
                       </td>
                       <td className="p-3 text-center">

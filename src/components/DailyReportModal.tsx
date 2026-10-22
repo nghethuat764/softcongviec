@@ -22,6 +22,7 @@ import { Task, TaskStatus } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useDepartments } from '../context/DepartmentContext';
 import { isTaskRelatedToStaff, getStatusLabel, getStatusBadgeClasses, getSectionShortName } from '../utils/helpers';
+import { CountUpNumber } from './CountUpNumber';
 
 interface DailyReportModalProps {
   isOpen: boolean;
@@ -96,7 +97,7 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
     return toInputDateString(lastDay);
   });
 
-  const [dateFieldFilter, setDateFieldFilter] = useState<'deadline' | 'startDate' | 'updatedAt' | 'any'>('deadline');
+  const [dateFieldFilter, setDateFieldFilter] = useState<'assignedDate' | 'deadline' | 'startDate' | 'updatedAt' | 'any'>('assignedDate');
   const [selectedDepartment, setSelectedDepartment] = useState<string>('all');
   const [selectedStaffId, setSelectedStaffId] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'completed' | 'delayed' | 'in_progress'>('all');
@@ -160,18 +161,21 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
         toD.setHours(23, 59, 59, 999);
 
         let taskDate: Date | null = null;
-        if (dateFieldFilter === 'deadline') {
-          taskDate = parseComparableDate(task.deadline) || parseComparableDate(task.startDate) || parseComparableDate(task.updatedAt);
+        if (dateFieldFilter === 'assignedDate') {
+          taskDate = parseComparableDate(task.assignedDate) || parseComparableDate(task.startDate);
+        } else if (dateFieldFilter === 'deadline') {
+          taskDate = parseComparableDate(task.deadline) || parseComparableDate(task.assignedDate) || parseComparableDate(task.startDate) || parseComparableDate(task.updatedAt);
         } else if (dateFieldFilter === 'startDate') {
-          taskDate = parseComparableDate(task.startDate) || parseComparableDate(task.updatedAt);
+          taskDate = parseComparableDate(task.startDate) || parseComparableDate(task.assignedDate) || parseComparableDate(task.updatedAt);
         } else if (dateFieldFilter === 'updatedAt') {
           taskDate = parseComparableDate(task.updatedAt);
         } else {
           // any
+          const d0 = parseComparableDate(task.assignedDate);
           const d1 = parseComparableDate(task.deadline);
           const d2 = parseComparableDate(task.startDate);
           const d3 = parseComparableDate(task.updatedAt);
-          taskDate = d1 || d2 || d3;
+          taskDate = d0 || d1 || d2 || d3;
         }
 
         if (taskDate) {
@@ -297,13 +301,15 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
         ? 'Toàn bộ thời gian' 
         : `Từ ngày ${formatDateDisplay(fromDate)} đến ngày ${formatDateDisplay(toDate)}`;
 
-      const criterionText = dateFieldFilter === 'deadline'
-        ? 'Hạn hoàn thành (Deadline)'
-        : dateFieldFilter === 'startDate'
-          ? 'Ngày bắt đầu / Giao việc'
-          : dateFieldFilter === 'updatedAt'
-            ? 'Ngày cập nhật tiến độ'
-            : 'Mọi mốc thời gian';
+      const criterionText = dateFieldFilter === 'assignedDate'
+        ? 'Ngày phân công nhiệm vụ'
+        : dateFieldFilter === 'deadline'
+          ? 'Hạn hoàn thành (Deadline)'
+          : dateFieldFilter === 'startDate'
+            ? 'Ngày bắt đầu / Giao việc'
+            : dateFieldFilter === 'updatedAt'
+              ? 'Ngày cập nhật tiến độ'
+              : 'Mọi mốc thời gian';
 
       const departmentText = selectedDepartment === 'all' ? 'Tất cả các tổ chuyên môn' : selectedDepartment;
       const staffText = selectedStaffId === 'all' 
@@ -757,7 +763,7 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
           'Phòng ban / Tổ chuyên môn',
           'Cán bộ chủ trì',
           'Cán bộ phối hợp',
-          'Ngày bắt đầu',
+          'Ngày phân công',
           'Hạn hoàn thành',
           'Tiến độ (%)',
           'Trạng thái thực hiện',
@@ -783,7 +789,7 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
           t.section,
           t.assignee,
           (t.coAssignees || []).join(', ') || '—',
-          formatDateDisplay(t.startDate),
+          formatDateDisplay(t.assignedDate || t.startDate),
           formatDateDisplay(t.deadline),
           `${t.progress}%`,
           getStatusLabel(t.status),
@@ -834,7 +840,7 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
         { wch: 28 },  // D: Phòng ban / Tổ
         { wch: 24 },  // E: Cán bộ chủ trì
         { wch: 24 },  // F: Cán bộ phối hợp
-        { wch: 15 },  // G: Ngày bắt đầu
+        { wch: 16 },  // G: Ngày phân công
         { wch: 16 },  // H: Hạn hoàn thành
         { wch: 14 },  // I: Tiến độ (%)
         { wch: 20 },  // J: Trạng thái thực hiện
@@ -1158,6 +1164,7 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
                 className="bg-white border border-[#CBD5E1] rounded-[6px] px-2.5 py-1.5 text-[12px] font-medium text-[#334155] focus:outline-hidden cursor-pointer shadow-xs"
                 title="Chọn căn cứ mốc ngày để thống kê"
               >
+                <option value="assignedDate">Căn cứ: Ngày phân công nhiệm vụ</option>
                 <option value="deadline">Căn cứ: Hạn hoàn thành (Deadline)</option>
                 <option value="startDate">Căn cứ: Ngày bắt đầu / Giao việc</option>
                 <option value="updatedAt">Căn cứ: Ngày cập nhật báo cáo</option>
@@ -1249,9 +1256,10 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
                 Tổng số nhiệm vụ
               </span>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-[24px] font-black text-[#0F172A] font-mono tabular-nums">
-                  {totalCount}
-                </span>
+                <CountUpNumber 
+                  value={totalCount} 
+                  className="text-[24px] font-black text-[#0F172A] font-mono tabular-nums" 
+                />
                 <span className="text-[11px] text-[#64748B] font-medium">nhiệm vụ</span>
               </div>
             </div>
@@ -1263,13 +1271,14 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
                   Đã hoàn thành
                 </span>
                 <span className="text-[11px] font-extrabold bg-emerald-200/70 text-emerald-900 px-1.5 py-0.2 rounded font-mono">
-                  {completedRate}%
+                  <CountUpNumber value={completedRate} suffix="%" />
                 </span>
               </div>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-[24px] font-black text-emerald-700 font-mono tabular-nums">
-                  {completedCount}
-                </span>
+                <CountUpNumber 
+                  value={completedCount} 
+                  className="text-[24px] font-black text-emerald-700 font-mono tabular-nums" 
+                />
                 <span className="text-[11px] text-emerald-800 font-medium">việc đạt</span>
               </div>
             </div>
@@ -1281,13 +1290,14 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
                   Trễ hạn / Quá hạn
                 </span>
                 <span className="text-[11px] font-extrabold bg-rose-200/70 text-rose-900 px-1.5 py-0.2 rounded font-mono">
-                  {delayedRate}%
+                  <CountUpNumber value={delayedRate} suffix="%" />
                 </span>
               </div>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-[24px] font-black text-rose-700 font-mono tabular-nums">
-                  {delayedCount}
-                </span>
+                <CountUpNumber 
+                  value={delayedCount} 
+                  className="text-[24px] font-black text-rose-700 font-mono tabular-nums" 
+                />
                 <span className="text-[11px] text-rose-800 font-medium">cần đôn đốc</span>
               </div>
             </div>
@@ -1299,13 +1309,14 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
                   Đang thực hiện
                 </span>
                 <span className="text-[11px] font-extrabold bg-blue-200/70 text-blue-900 px-1.5 py-0.2 rounded font-mono">
-                  {inProgressRate}%
+                  <CountUpNumber value={inProgressRate} suffix="%" />
                 </span>
               </div>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-[24px] font-black text-blue-700 font-mono tabular-nums">
-                  {inProgressCount}
-                </span>
+                <CountUpNumber 
+                  value={inProgressCount} 
+                  className="text-[24px] font-black text-blue-700 font-mono tabular-nums" 
+                />
                 <span className="text-[11px] text-blue-800 font-medium">trong tiến độ</span>
               </div>
             </div>
@@ -1316,9 +1327,11 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
                 Tiến độ bình quân
               </span>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-[24px] font-black text-amber-700 font-mono tabular-nums">
-                  {avgProgress}%
-                </span>
+                <CountUpNumber 
+                  value={avgProgress} 
+                  suffix="%" 
+                  className="text-[24px] font-black text-amber-700 font-mono tabular-nums" 
+                />
                 <span className="text-[11px] text-amber-800 font-medium">hoàn thành kỳ</span>
               </div>
             </div>
@@ -1356,7 +1369,7 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
           </div>
 
           <div className="text-[12px] text-[#64748B] hidden sm:block">
-            Đang lọc: <strong className="text-[#0F172A]">{filteredTasks.length}</strong> / {tasks.length} nhiệm vụ
+            Đang lọc: <strong className="text-[#0F172A]"><CountUpNumber value={filteredTasks.length} /></strong> / <CountUpNumber value={tasks.length} suffix=" nhiệm vụ" />
           </div>
         </div>
 
@@ -1529,7 +1542,8 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
                           <th className="py-2.5 px-3 min-w-[240px]">Nhiệm vụ & Yêu cầu chỉ đạo</th>
                           <th className="py-2.5 px-3 min-w-[160px]">Cán bộ phụ trách</th>
                           <th className="py-2.5 px-3 min-w-[150px]">Phòng ban / Tổ</th>
-                          <th className="py-2.5 px-3 text-center min-w-[110px]">Hạn hoàn thành</th>
+                          <th className="py-2.5 px-3 text-center min-w-[120px]">Ngày phân công</th>
+                          <th className="py-2.5 px-3 text-center min-w-[120px]">Hạn hoàn thành</th>
                           <th className="py-2.5 px-3 min-w-[110px]">Tiến độ (%)</th>
                           <th className="py-2.5 px-3 min-w-[130px]">Trạng thái</th>
                           <th className="py-2.5 px-3 min-w-[200px]">Báo cáo tiến độ mới nhất</th>
@@ -1569,6 +1583,11 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
                                 <span className="inline-block bg-gray-100 text-[#334155] px-2 py-0.5 rounded text-[11px] font-medium">
                                   {getSectionShortName(task.section)}
                                 </span>
+                              </td>
+                              <td className="py-3 px-3 text-center whitespace-nowrap">
+                                <div className="font-mono text-[12px] font-semibold text-[#003366]">
+                                  {formatDateDisplay(task.assignedDate || task.startDate)}
+                                </div>
                               </td>
                               <td className="py-3 px-3 text-center whitespace-nowrap">
                                 <div className="font-mono text-[12px] font-semibold text-[#1E293B]">

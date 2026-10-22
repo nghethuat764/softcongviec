@@ -27,6 +27,13 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   const [assignee, setAssignee] = useState('');
   const [coAssigneesText, setCoAssigneesText] = useState('');
   const [requirement, setRequirement] = useState('');
+  const [assignedDate, setAssignedDate] = useState<string>(() => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  });
   const [deadline, setDeadline] = useState('');
   const [budgetInfo, setBudgetInfo] = useState('');
   const [priority, setPriority] = useState<PriorityLevel>('normal');
@@ -40,6 +47,13 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   // Sync default assignee whenever section, users, or modal opens
   useEffect(() => {
     if (isOpen) {
+      if (!assignedDate) {
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        setAssignedDate(`${y}-${m}-${day}`);
+      }
       if (departmentUsers.length > 0) {
         const isCurrentInDept = departmentUsers.some((u) => u.id === selectedUserId);
         if (!isCurrentInDept) {
@@ -126,6 +140,8 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
         : `Nhiệm vụ phát sinh do ${currentUser?.fullName || 'viên chức'} đề xuất.`,
       progress: initialProgress,
       status: initialProgress === 100 ? 'completed' : 'in_progress',
+      assignedDate: assignedDate || undefined,
+      startDate: assignedDate || undefined,
       deadline: deadline || undefined,
       budgetInfo: budgetInfo.trim() || undefined,
       priority,
@@ -396,17 +412,34 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Thời hạn hoàn thành:
+              <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5 text-blue-700" />
+                Ngày phân công: <span className="text-red-500">*</span>
+              </label>
+              <input
+                required
+                type="date"
+                value={assignedDate}
+                onChange={(e) => setAssignedDate(e.target.value)}
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer bg-white font-medium"
+              />
+              <span className="text-[11px] text-slate-500 mt-0.5 block">Ngày giao nhiệm vụ</span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5 text-amber-600" />
+                Hạn hoàn thành:
               </label>
               <input
                 type="date"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer bg-white font-medium"
               />
+              <span className="text-[11px] text-slate-500 mt-0.5 block">Hạn định công việc</span>
             </div>
 
             <div>
@@ -416,12 +449,13 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as PriorityLevel)}
-                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer bg-white"
               >
                 <option value="normal">Bình thường</option>
                 <option value="high">Ưu tiên cao</option>
                 <option value="urgent">Hỏa tốc / Khẩn cấp</option>
               </select>
+              <span className="text-[11px] text-slate-500 mt-0.5 block">Độ cấp thiết</span>
             </div>
 
             <div>
@@ -433,8 +467,9 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
                 value={budgetInfo}
                 onChange={(e) => setBudgetInfo(e.target.value)}
                 placeholder="VD: 50 triệu đồng"
-                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
+              <span className="text-[11px] text-slate-500 mt-0.5 block">Kinh phí (nếu có)</span>
             </div>
           </div>
 

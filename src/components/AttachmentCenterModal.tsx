@@ -19,6 +19,7 @@ import {
   FolderOpen
 } from 'lucide-react';
 import { downloadAttachmentFile } from '../utils/documentDownload';
+import { CountUpNumber } from './CountUpNumber';
 
 interface AttachmentCenterModalProps {
   isOpen: boolean;
@@ -136,7 +137,7 @@ export const AttachmentCenterModal: React.FC<AttachmentCenterModalProps> = ({
                   UBND PHƯỜNG HỐ NAI · TTDVTH
                 </span>
                 <span className="text-3xs bg-white/15 text-white px-2 py-0.5 rounded font-mono">
-                  {allAttachments.length} tệp đính kèm
+                  <CountUpNumber value={allAttachments.length} suffix=" tệp đính kèm" />
                 </span>
               </div>
               <h2 className="text-base sm:text-lg font-bold text-white">
@@ -192,7 +193,7 @@ export const AttachmentCenterModal: React.FC<AttachmentCenterModalProps> = ({
 
             {/* Quick summary badge */}
             <div className="shrink-0 text-xs text-slate-500 font-medium">
-              Hiển thị <strong className="text-slate-900">{filteredList.length}</strong> / {allAttachments.length} tài liệu
+              Hiển thị <strong className="text-slate-900"><CountUpNumber value={filteredList.length} /></strong> / <CountUpNumber value={allAttachments.length} suffix=" tài liệu" />
             </div>
           </div>
 

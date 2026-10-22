@@ -40,6 +40,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
   const [assignee, setAssignee] = useState('');
   const [coAssigneesText, setCoAssigneesText] = useState('');
   const [requirement, setRequirement] = useState('');
+  const [assignedDate, setAssignedDate] = useState('');
   const [deadline, setDeadline] = useState('');
   const [budgetInfo, setBudgetInfo] = useState('');
   const [priority, setPriority] = useState<PriorityLevel>('normal');
@@ -66,6 +67,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
       setSelectedUserId(matched?.id || '');
       setCoAssigneesText(task.coAssignees ? task.coAssignees.join(', ') : '');
       setRequirement(task.requirement || '');
+      setAssignedDate(task.assignedDate || task.startDate || '');
       setDeadline(task.deadline || '');
       setBudgetInfo(task.budgetInfo || '');
       setPriority(task.priority || 'normal');
@@ -110,6 +112,8 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
       coAssignees,
       coAssigneeIds,
       requirement: requirement.trim(),
+      assignedDate: assignedDate.trim() || undefined,
+      startDate: assignedDate.trim() || task.startDate,
       deadline: deadline || undefined,
       budgetInfo: budgetInfo.trim() || undefined,
       priority,
@@ -427,11 +431,25 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
             </div>
           </div>
 
-          {/* Deadline & Budget */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Assigned Date, Deadline & Budget */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                <Calendar className="w-3.5 h-3.5 text-blue-700" />
+                Ngày phân công:
+              </label>
+              <input
+                type="text"
+                value={assignedDate}
+                onChange={(e) => setAssignedDate(e.target.value)}
+                placeholder="VD: 2026-09-28 hoặc 28/09/2026"
+                className="w-full p-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5 text-amber-600" />
                 Thời hạn hoàn thành (Deadline):
               </label>
               <input
@@ -452,7 +470,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
                 type="text"
                 value={budgetInfo}
                 onChange={(e) => setBudgetInfo(e.target.value)}
-                placeholder="VD: 15.000.000 VNĐ, Chờ HĐND phê duyệt..."
+                placeholder="VD: 15.000.000 VNĐ..."
                 className="w-full p-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none"
               />
             </div>

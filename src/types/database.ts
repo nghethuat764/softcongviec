@@ -52,6 +52,7 @@ export interface DbTask {
   status: TaskStatus;
   progress: number;               // 0 - 100
   priority: PriorityLevel;
+  assignedDate?: string;          // YYYY-MM-DD (Ngày phân công nhiệm vụ)
   deadline?: string;              // YYYY-MM-DD
   startDate?: string;
   budgetInfo?: string;

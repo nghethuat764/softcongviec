@@ -22,7 +22,7 @@ import {
   Upload,
   PlusCircle
 } from 'lucide-react';
-import { getStatusBadgeClasses, getStatusLabel, getPriorityLabel } from '../utils/helpers';
+import { getStatusBadgeClasses, getStatusLabel, getPriorityLabel, formatDateDisplay } from '../utils/helpers';
 import { DocumentViewerModal } from './DocumentViewerModal';
 import { downloadAttachmentFile } from '../utils/documentDownload';
 
@@ -92,7 +92,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         <div className="p-6 overflow-y-auto space-y-5 text-xs sm:text-sm">
           
           {/* Status & KPI Row */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3.5 rounded-lg border border-slate-200">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 bg-slate-50 p-3.5 rounded-lg border border-slate-200">
             <div>
               <span className="text-slate-500 block text-xs">Trạng thái</span>
               <span className={`inline-block mt-1 px-2.5 py-0.5 rounded text-xs font-medium ${getStatusBadgeClasses(task.status)}`}>
@@ -118,10 +118,22 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
             </div>
 
             <div>
-              <span className="text-slate-500 block text-xs">Hạn hoàn thành</span>
-              <div className="flex items-center gap-1.5 mt-1 font-medium text-slate-800">
-                <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                <span>{task.deadline || 'Theo tiến độ'}</span>
+              <span className="text-slate-500 block text-xs flex items-center gap-1">
+                <Calendar className="w-3 h-3 text-[#003366]" />
+                Ngày phân công
+              </span>
+              <div className="mt-1 font-mono font-bold text-slate-800 text-xs">
+                {formatDateDisplay(task.assignedDate || task.startDate)}
+              </div>
+            </div>
+
+            <div>
+              <span className="text-slate-500 block text-xs flex items-center gap-1">
+                <Clock className="w-3 h-3 text-amber-600" />
+                Hạn hoàn thành
+              </span>
+              <div className="flex items-center gap-1.5 mt-1 font-mono font-medium text-slate-800 text-xs">
+                <span>{task.deadline ? formatDateDisplay(task.deadline) : 'Theo tiến độ'}</span>
               </div>
             </div>
 
