@@ -69,29 +69,10 @@ export async function initializeDatabase(): Promise<Task[]> {
   const tasksRef = collection(db, TASKS_COLLECTION);
   const usersRef = collection(db, USERS_COLLECTION);
   try {
-    const isCleared = localStorage.getItem('sample_data_cleared') === 'true';
     const snapshot = await getDocs(tasksRef);
 
-    if (isCleared) {
-      if (snapshot.empty) {
-        return [];
-      }
-      const tasks: Task[] = [];
-      snapshot.forEach((docSnap) => {
-        tasks.push(docSnap.data() as Task);
-      });
-      return tasks;
-    }
-
     if (snapshot.empty) {
-      // Check if users collection already exists (meaning database was already seeded before)
-      const userSnap = await getDocs(usersRef);
-      if (!userSnap.empty) {
-        // Users already exist, so empty tasks collection is intentional (sample data was deleted)
-        return [];
-      }
-
-      console.log('Database is empty. Seeding initial tasks from 28/9/2026 notice...');
+      console.log('Seeding initial tasks from 28/9/2026 notice...');
       // Seed initial tasks
       for (const t of INITIAL_TASKS) {
         await setDoc(doc(db, TASKS_COLLECTION, t.id), t);

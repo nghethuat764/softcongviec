@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Task, StaffMember, Directive } from './types';
 import { getStoredTasks, saveTasks, resetToInitialTasks, clearStoredTasks } from './utils/storage';
 import { STAFF_MEMBERS } from './data/staffMembers';
+import { INITIAL_TASKS } from './data/initialTasks';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { LeaderDashboard } from './components/LeaderDashboard';
@@ -85,6 +86,8 @@ function AppContent() {
       .then((initial) => {
         if (initial && initial.length > 0) {
           setTasks(initial);
+        } else {
+          setTasks(INITIAL_TASKS);
         }
         unsubscribe = subscribeToTasks(
           (liveTasks) => {

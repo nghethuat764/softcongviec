@@ -226,9 +226,13 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
             <ChevronRight className="w-3.5 h-3.5 text-gray-400 shrink-0" />
             <span className="font-bold text-[#003366]">
               {activeLeaderMenu === 'overview' && '1.1 Tổng Quan KPI & Tiến Độ'}
-              {activeLeaderMenu === 'bottlenecks' && `1.2 Radar Đôn Đốc (${urgentTasks.length} Vướng Mắc)`}
+              {activeLeaderMenu === 'bottlenecks' && (
+                <span>1.2 Radar Đôn Đốc (<CountUpNumber value={urgentTasks.length} /> Vướng Mắc)</span>
+              )}
               {activeLeaderMenu === 'sections' && '1.3 Giám Sát 5 Tổ Chuyên Môn'}
-              {activeLeaderMenu === 'master' && `2.1 Bảng Phân Công (${tasks.length} Nhiệm Vụ)`}
+              {activeLeaderMenu === 'master' && (
+                <span>2.1 Bảng Phân Công (<CountUpNumber value={tasks.length} /> Nhiệm Vụ)</span>
+              )}
               {activeLeaderMenu === 'kanban' && '2.2 Bảng Kanban Trực Quan'}
               {activeLeaderMenu === 'timeline' && '2.3 Lộ Trình & Dòng Thời Gian'}
             </span>
@@ -449,7 +453,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                 className="px-3.5 py-2 rounded-[8px] bg-white hover:bg-[#F4F6F9] text-[#111827] border border-[#E5E7EB] font-medium text-[13px] flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <Paperclip className="w-4 h-4 text-[#4B5563]" />
-                <span>File đính kèm ({tasks.reduce((sum, t) => sum + (t.relatedDocs ? t.relatedDocs.length : 0), 0)})</span>
+                <span>File đính kèm (<CountUpNumber value={tasks.reduce((sum, t) => sum + (t.relatedDocs ? t.relatedDocs.length : 0), 0)} />)</span>
               </button>
             )}
           </div>
@@ -602,7 +606,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                   <ShieldAlert className="w-5 h-5 text-[#D32F2F] shrink-0" />
                   <div>
                     <h3 className="font-bold text-[#111827] text-[15px]">
-                      Nhiệm Vụ Cần Ban Giám Đốc Chỉ Đạo Đôn Đốc Ngay ({urgentTasks.length} việc)
+                      Nhiệm Vụ Cần Ban Giám Đốc Chỉ Đạo Đôn Đốc Ngay (<CountUpNumber value={urgentTasks.length} /> việc)
                     </h3>
                     <p className="text-[12px] text-[#4B5563]">Các việc bị ảnh hưởng do mưa lũ, thủ tục cấp vốn hoặc gần đến hạn chót</p>
                   </div>

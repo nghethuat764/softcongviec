@@ -25,14 +25,14 @@ export interface CountUpNumberProps {
 
 /**
  * Hàm làm mịn chuyển động (Easing function: easeOutCubic)
- * Mang lại chuyển động mượt mà, giảm tốc dần tự nhiên về cuối.
+ * Tăng tốc ban đầu và giảm tốc mượt mà tự nhiên khi về đích.
  */
 function easeOutCubic(t: number): number {
   return 1 - Math.pow(1 - t, 3);
 }
 
 /**
- * Định dạng số với phân cách hàng nghìn và thập phân chuẩn
+ * Định dạng số với phân cách hàng nghìn và thập phân chuẩn Việt Nam
  */
 function formatValue(
   val: number,
@@ -59,7 +59,8 @@ function formatValue(
 /**
  * Component CountUpNumber:
  * Hiển thị số liệu thống kê với hiệu ứng đếm số tăng dần mượt mà từ 0 đến giá trị thực.
- * Tôn trọng prefers-reduced-motion, chỉ đếm khi dữ liệu đã sẵn sàng, tránh re-render liên tục.
+ * Tự động chạy lại khi tải lại trang hoặc khi giá trị thực tế thay đổi.
+ * Tối ưu hiệu năng, chống giật rung giao diện với font tabular-nums.
  */
 export const CountUpNumber: React.FC<CountUpNumberProps> = ({
   value,
@@ -73,72 +74,53 @@ export const CountUpNumber: React.FC<CountUpNumberProps> = ({
   isLoading = false,
   formatter,
 }) => {
-  // Kiểm tra prefers-reduced-motion
-  const prefersReducedMotion = useRef<boolean>(false);
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      prefersReducedMotion.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    }
-  }, []);
-
-  // Giá trị số đích thực tế
   const targetNumber = typeof value === 'number' && !isNaN(value) ? value : null;
-
-  // State hiển thị số hiện tại
   const [displayNumber, setDisplayNumber] = useState<number>(0);
-  const startNumberRef = useRef<number>(0);
   const startTimeRef = useRef<number | null>(null);
   const animFrameRef = useRef<number | null>(null);
-  const hasAnimatedRef = useRef<boolean>(false);
   const prevTargetRef = useRef<number | null>(null);
+  const isFirstMountRef = useRef<boolean>(true);
 
   useEffect(() => {
-    // Nếu đang loading hoặc chưa có dữ liệu hợp lệ, không chạy animation
+    // Nếu đang loading hoặc chưa có dữ liệu hợp lệ, tạm hoãn animation
     if (isLoading || targetNumber === null) {
       return;
     }
 
-    // Nếu người dùng bật giảm chuyển động, nhảy ngay đến giá trị đích
-    if (prefersReducedMotion.current) {
-      setDisplayNumber(targetNumber);
-      prevTargetRef.current = targetNumber;
+    // Nếu không phải lần mount đầu và giá trị không đổi, không chạy lại
+    if (!isFirstMountRef.current && prevTargetRef.current === targetNumber) {
       return;
     }
 
-    // Nếu giá trị không đổi sau lần đếm đầu tiên, giữ nguyên không reset
-    if (hasAnimatedRef.current && prevTargetRef.current === targetNumber) {
-      return;
-    }
-
-    // Xác định điểm bắt đầu đếm:
-    // Lần đầu tải trang -> đếm từ 0
-    // Nếu giá trị cập nhật sau đó -> đếm từ giá trị hiện tại lên/xuống giá trị mới
-    const fromVal = hasAnimatedRef.current ? (prevTargetRef.current ?? 0) : 0;
-    const toVal = targetNumber;
-    startNumberRef.current = fromVal;
-    prevTargetRef.current = toVal;
+    // Lần đầu tải trang -> luôn bắt đầu đếm sinh động từ 0 đến số thực tế
+    // Khi giá trị cập nhật sau đó -> đếm từ số cũ sang số mới
+    const startVal = isFirstMountRef.current ? 0 : (prevTargetRef.current ?? 0);
+    const endVal = targetNumber;
+    prevTargetRef.current = targetNumber;
+    isFirstMountRef.current = false;
     startTimeRef.current = null;
 
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current);
     }
 
+    const animDuration = Math.max(duration, 300);
+
     const step = (timestamp: number) => {
       if (!startTimeRef.current) {
         startTimeRef.current = timestamp;
       }
       const elapsed = timestamp - startTimeRef.current;
-      const progress = Math.min(elapsed / Math.max(duration, 100), 1);
+      const progress = Math.min(elapsed / animDuration, 1);
       const easedProgress = easeOutCubic(progress);
 
-      const currentVal = fromVal + (toVal - fromVal) * easedProgress;
+      const currentVal = startVal + (endVal - startVal) * easedProgress;
       setDisplayNumber(currentVal);
 
       if (progress < 1) {
         animFrameRef.current = requestAnimationFrame(step);
       } else {
-        setDisplayNumber(toVal);
-        hasAnimatedRef.current = true;
+        setDisplayNumber(endVal);
       }
     };
 
@@ -165,7 +147,7 @@ export const CountUpNumber: React.FC<CountUpNumberProps> = ({
     : formatValue(displayNumber, decimals, thousandSeparator, decimalSeparator);
 
   return (
-    <span className={className}>
+    <span className={`inline-block tabular-nums ${className}`}>
       {prefix}
       {formattedStr}
       {suffix}

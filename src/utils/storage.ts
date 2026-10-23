@@ -7,23 +7,18 @@ export function getStoredTasks(): Task[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      if (localStorage.getItem('sample_data_cleared') === 'true') {
-        return [];
-      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_TASKS));
       return INITIAL_TASKS;
     }
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) {
-      if (parsed.length === 0 && localStorage.getItem('sample_data_cleared') !== 'true') {
-        return INITIAL_TASKS;
-      }
+    if (Array.isArray(parsed) && parsed.length > 0) {
       return parsed;
     }
-    return [];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_TASKS));
+    return INITIAL_TASKS;
   } catch (error) {
     console.error('Error reading tasks from localStorage:', error);
-    return [];
+    return INITIAL_TASKS;
   }
 }
 

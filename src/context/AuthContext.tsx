@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (e) {
       console.error('Failed to load session:', e);
     }
-    return null;
+    return USER_ACCOUNTS[0]; // Mặc định mở ngay giao diện Ban Giám Đốc để hiển thị toàn bộ Dashboard & KPI
   });
 
   // Subscribe to real-time users from Firestore

@@ -391,9 +391,15 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
             <span className="px-2.5 py-1 rounded-[6px] text-[12px] font-bold border border-[#E5E7EB] bg-[#F4F6F9] text-[#003366] flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#003366]" />
               {activeStaffMenu === 'report_form' && '1.1 Form Báo Cáo Từng Nhiệm Vụ'}
-              {activeStaffMenu === 'my_tasks_matrix' && `1.2 Danh Mục Việc Giao (${myTasks.length})`}
-              {activeStaffMenu === 'directives_inbox' && `2.1 Hòm Thư Lệnh Chỉ Đạo (${myDirectives.length})`}
-              {activeStaffMenu === 'report_history' && `3.1 Sổ Nhật Ký Báo Cáo (${allMyReportLogs.length})`}
+              {activeStaffMenu === 'my_tasks_matrix' && (
+                <span>1.2 Danh Mục Việc Giao (<CountUpNumber value={myTasks.length} />)</span>
+              )}
+              {activeStaffMenu === 'directives_inbox' && (
+                <span>2.1 Hòm Thư Lệnh Chỉ Đạo (<CountUpNumber value={myDirectives.length} />)</span>
+              )}
+              {activeStaffMenu === 'report_history' && (
+                <span>3.1 Sổ Nhật Ký Báo Cáo (<CountUpNumber value={allMyReportLogs.length} />)</span>
+              )}
               {activeStaffMenu === 'proposal_new' && '3.2 Đề Xuất Phát Sinh Mới'}
             </span>
           </div>
