@@ -203,29 +203,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                 )}
                 <span>{isSubmitting ? 'ĐANG XÁC THỰC...' : 'ĐĂNG NHẬP HỆ THỐNG'}</span>
               </button>
-
-              {/* Truy Cập Nhanh Trực Tiếp Vào Dashboard */}
-              <div className="pt-3 border-t border-[#E5E7EB] dark:border-slate-700/60 text-center">
-                <span className="text-[11px] font-semibold text-[#6B7280] dark:text-slate-400 block mb-2">
-                  Hoặc chọn đăng nhập nhanh để kiểm tra Dashboard:
-                </span>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => login('phong.giamdoc', '123456')}
-                    className="px-2 py-1.5 rounded-[6px] bg-red-50 hover:bg-red-100 text-[#D32F2F] text-[12px] font-bold border border-red-200 transition-colors cursor-pointer"
-                  >
-                    Ban Giám Đốc
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => login('cuong.dvci', '123456')}
-                    className="px-2 py-1.5 rounded-[6px] bg-blue-50 hover:bg-blue-100 text-[#003366] text-[12px] font-bold border border-blue-200 transition-colors cursor-pointer"
-                  >
-                    Viên Chức
-                  </button>
-                </div>
-              </div>
             </form>
           </div>
         </div>
