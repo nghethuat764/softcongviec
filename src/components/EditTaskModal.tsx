@@ -510,15 +510,15 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-semibold cursor-pointer"
+              className="px-3.5 py-1.5 rounded-[6px] border border-slate-300 hover:border-slate-400 text-slate-700 hover:bg-slate-100 text-xs font-semibold transition-all duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] shadow-2xs hover:shadow-xs cursor-pointer"
             >
               Hủy bỏ
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
+              className="group px-4.5 py-1.5 rounded-[6px] bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs hover:shadow-md hover:shadow-amber-600/25 transition-all duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] cursor-pointer"
             >
-              <Save className="w-4 h-4" />
+              <Save className="w-3.5 h-3.5 group-hover:scale-110 transition-transform duration-200" />
               <span>Lưu Cập Nhật Vào Database</span>
             </button>
           </div>

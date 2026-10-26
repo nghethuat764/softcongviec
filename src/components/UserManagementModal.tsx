@@ -22,7 +22,9 @@ import {
   Eye,
   EyeOff,
   Database,
-  ArrowRight
+  ArrowRight,
+  AlertTriangle,
+  Loader2
 } from 'lucide-react';
 
 interface UserManagementModalProps {
@@ -56,6 +58,8 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<UserAccount | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Form State
   const [formFullName, setFormFullName] = useState('');
@@ -198,37 +202,43 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
     }
   };
 
-  const handleDeleteUser = async (user: UserAccount) => {
+  const handlePromptDelete = (user: UserAccount) => {
+    setErrorMessage(null);
     if (!isLeader) {
-      alert('Quyền hạn bị từ chối: Chỉ có Ban Giám Đốc mới có quyền xoá tài khoản.');
+      setErrorMessage('Quyền hạn bị từ chối: Chỉ có Ban Giám Đốc mới có quyền xoá tài khoản.');
       return;
     }
 
     if (users.length <= 1) {
-      alert('Không thể xoá tài khoản cuối cùng của hệ thống!');
+      setErrorMessage('Không thể xoá tài khoản cuối cùng của hệ thống!');
       return;
     }
 
     if (user.role === 'LEADER' && users.filter((u) => u.role === 'LEADER').length <= 1) {
-      alert('Hệ thống phải có ít nhất 01 tài khoản Lãnh đạo (Ban Giám đốc). Không thể xoá tài khoản này.');
+      setErrorMessage('Hệ thống phải có ít nhất 01 tài khoản Lãnh đạo (Ban Giám đốc). Không thể xoá tài khoản này.');
       return;
     }
 
-    const confirmDelete = window.confirm(
-      `Xác nhận xoá tài khoản cán bộ: "${user.fullName}" (${user.username}) khỏi cơ sở dữ liệu hệ thống?`
-    );
-    if (!confirmDelete) return;
+    setUserToDelete(user);
+  };
 
+  const handleConfirmDelete = async () => {
+    if (!userToDelete) return;
+    setIsDeleting(true);
+    setErrorMessage(null);
     try {
-      await deleteUser(user.id);
-      showToast(`Đã xoá tài khoản cán bộ: ${user.fullName} khỏi CSDL!`);
-      if (editingUserId === user.id) {
+      await deleteUser(userToDelete.id);
+      showToast(`Đã xoá tài khoản cán bộ: "${userToDelete.fullName}" khỏi hệ thống!`);
+      if (editingUserId === userToDelete.id) {
         setIsEditing(false);
         setEditingUserId(null);
       }
+      setUserToDelete(null);
     } catch (err: any) {
-      console.error(err);
-      alert('Không thể xoá tài khoản. Vui lòng kiểm tra kết nối mạng.');
+      console.error('Delete user error:', err);
+      setErrorMessage('Không thể xoá tài khoản. Vui lòng kiểm tra lại kết nối mạng.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -732,8 +742,8 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
                               <button
                                 type="button"
-                                onClick={() => handleDeleteUser(u)}
-                                className="p-1 text-gray-400 hover:text-[#D32F2F] hover:bg-red-50 rounded-[6px] transition-colors cursor-pointer"
+                                onClick={() => handlePromptDelete(u)}
+                                className="p-1.5 text-gray-400 hover:text-[#D32F2F] hover:bg-red-50 rounded-[6px] transition-colors cursor-pointer"
                                 title="Xoá tài khoản khỏi hệ thống"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -767,6 +777,113 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
         </div>
 
       </div>
+
+      {/* =========================================================================
+          MODAL CẢNH BÁO XÁC NHẬN TRƯỚC KHI XOÁ NGƯỜI DÙNG (CONFIRMATION MODAL)
+         ========================================================================= */}
+      {userToDelete && (
+        <div 
+          className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150"
+          onClick={() => {
+            if (!isDeleting) setUserToDelete(null);
+          }}
+        >
+          <div 
+            className="bg-white rounded-[12px] shadow-2xl max-w-md w-full border border-red-200 p-5 space-y-4 animate-in zoom-in-95 duration-150 font-sans"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top Icon & Title */}
+            <div className="flex items-start gap-3.5">
+              <div className="w-11 h-11 rounded-full bg-red-100 text-[#D32F2F] flex items-center justify-center shrink-0 shadow-xs border border-red-200">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-[17px] font-bold text-[#111827] leading-tight">
+                  Xác Nhận Xóa Người Dùng
+                </h4>
+                <p className="text-[12px] text-[#4B5563] mt-0.5 leading-relaxed">
+                  Đồng chí có chắc chắn muốn xóa tài khoản này khỏi cơ sở dữ liệu hệ thống?
+                </p>
+              </div>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => setUserToDelete(null)}
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Thông tin tài khoản sắp xóa */}
+            <div className="bg-[#F4F6F9] border border-[#E5E7EB] rounded-[8px] p-3 flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-[6px] font-bold text-[14px] flex items-center justify-center shrink-0 shadow-xs ${userToDelete.avatarBg}`}>
+                {userToDelete.fullName.split(' ').slice(-1)[0][0] || 'CB'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="font-bold text-[#111827] text-[14px] truncate">{userToDelete.fullName}</span>
+                  <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded uppercase ${
+                    userToDelete.role === 'LEADER'
+                      ? 'bg-red-50 text-[#D32F2F] border border-red-200'
+                      : 'bg-blue-50 text-[#003366] border border-blue-200'
+                  }`}>
+                    {userToDelete.role === 'LEADER' ? 'Lãnh đạo' : 'Viên chức'}
+                  </span>
+                </div>
+                <div className="text-[12px] text-[#4B5563] font-mono mt-0.5 truncate">
+                  Tài khoản: <strong className="text-[#003366]">@{userToDelete.username}</strong>
+                </div>
+                <div className="text-[11px] text-[#6B7280] truncate mt-0.5">
+                  {userToDelete.position} · {userToDelete.unit}
+                </div>
+              </div>
+            </div>
+
+            {/* Cảnh báo an toàn dữ liệu */}
+            <div className="bg-red-50 text-[#991B1B] text-[12px] p-3 rounded-[6px] border border-red-200 space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-[#D32F2F]">
+                <ShieldAlert className="w-4 h-4 shrink-0" />
+                <span>Cảnh báo an toàn dữ liệu:</span>
+              </div>
+              <p className="leading-relaxed pl-5 text-[12px]">
+                Tài khoản này sẽ bị xóa khỏi hệ thống và không thể sử dụng để đăng nhập. Các nhiệm vụ, tiến độ và văn bản đã giao trước đây vẫn được bảo toàn nguyên vẹn.
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="pt-2 flex items-center justify-end gap-2.5">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => setUserToDelete(null)}
+                className="px-4 py-2 border border-[#E5E7EB] hover:bg-gray-100 text-[#4B5563] text-[13px] font-semibold rounded-[8px] cursor-pointer transition-colors"
+              >
+                Hủy Bỏ
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 bg-[#D32F2F] hover:bg-[#B71C1C] text-white text-[13px] font-bold rounded-[8px] flex items-center gap-2 cursor-pointer shadow-xs transition-colors disabled:opacity-60"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-white" />
+                    <span>Đang xóa...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4 text-white" />
+                    <span>Xác Nhận Xóa</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

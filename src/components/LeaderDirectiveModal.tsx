@@ -199,15 +199,15 @@ export const LeaderDirectiveModal: React.FC<LeaderDirectiveModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-medium cursor-pointer"
+              className="px-3.5 py-1.5 rounded-[6px] border border-slate-300 hover:border-slate-400 text-slate-700 hover:bg-slate-100 text-xs font-medium transition-all duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] shadow-2xs hover:shadow-xs cursor-pointer"
             >
               Hủy bỏ
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-lg bg-red-700 hover:bg-red-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow transition-colors cursor-pointer"
+              className="group px-4 py-1.5 rounded-[6px] bg-gradient-to-r from-red-700 to-red-600 hover:from-red-800 hover:to-red-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs hover:shadow-md hover:shadow-red-700/25 transition-all duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] cursor-pointer"
             >
-              <Send className="w-3.5 h-3.5" />
+              <Send className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-200" />
               <span>Phát Lệnh Chỉ Đạo Đôn Đốc</span>
             </button>
           </div>

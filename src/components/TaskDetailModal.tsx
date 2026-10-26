@@ -463,10 +463,10 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 <button
                   type="button"
                   onClick={handleDelete}
-                  className="h-8 px-2.5 rounded-[6px] text-rose-600 hover:text-rose-700 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shadow-2xs"
+                  className="group relative h-8 px-2.5 rounded-[6px] text-rose-600 hover:text-rose-700 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-xs font-medium inline-flex items-center gap-1.5 transition-all duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] shadow-2xs hover:shadow-xs focus:outline-hidden focus-visible:ring-2 focus-visible:ring-rose-400/50 cursor-pointer whitespace-nowrap"
                   title="Xóa nhiệm vụ này khỏi hệ thống"
                 >
-                  <Trash2 className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                  <Trash2 className="w-3.5 h-3.5 text-rose-500 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-200 shrink-0" />
                   <span>Xóa</span>
                 </button>
                 {onOpenEditModal && (
@@ -476,10 +476,10 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                       onClose();
                       onOpenEditModal(task);
                     }}
-                    className="h-8 px-2.5 rounded-[6px] text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-300 text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shadow-2xs"
+                    className="group relative h-8 px-2.5 rounded-[6px] text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-300 hover:border-slate-400 text-xs font-medium inline-flex items-center gap-1.5 transition-all duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] shadow-2xs hover:shadow-xs focus:outline-hidden focus-visible:ring-2 focus-visible:ring-slate-400/50 cursor-pointer whitespace-nowrap"
                     title="Chỉnh sửa thông tin nhiệm vụ"
                   >
-                    <Edit3 className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                    <Edit3 className="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-700 group-hover:rotate-12 transition-transform duration-200 shrink-0" />
                     <span>Sửa</span>
                   </button>
                 )}
@@ -489,10 +489,10 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                     onClose();
                     onOpenDirectiveModal(task);
                   }}
-                  className="h-8 px-3 rounded-[6px] bg-red-700 hover:bg-red-800 text-white text-xs font-medium inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
+                  className="group relative h-8 px-3 rounded-[6px] bg-gradient-to-r from-red-700 to-red-600 hover:from-red-800 hover:to-red-700 text-white text-xs font-medium inline-flex items-center gap-1.5 shadow-xs hover:shadow-md hover:shadow-red-700/25 transition-all duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-1 cursor-pointer whitespace-nowrap"
                   title="Ban hành văn bản hoặc ý kiến chỉ đạo đôn đốc"
                 >
-                  <ShieldCheck className="w-3.5 h-3.5 text-red-100 shrink-0" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-red-100 group-hover:scale-110 transition-transform duration-200 shrink-0" />
                   <span>Chỉ đạo</span>
                 </button>
               </>
@@ -504,17 +504,17 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 onClose();
                 onOpenReportForm(task);
               }}
-              className="h-8 px-3.5 rounded-[6px] bg-[#003366] hover:bg-[#002244] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
+              className="group relative h-8 px-3.5 rounded-[6px] bg-gradient-to-r from-[#003366] to-[#004080] hover:from-[#00274f] hover:to-[#003366] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-xs hover:shadow-md hover:shadow-blue-900/25 transition-all duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-offset-1 cursor-pointer whitespace-nowrap"
               title="Cập nhật báo cáo tiến độ công việc mới nhất"
             >
-              <Send className="w-3.5 h-3.5 text-blue-200 shrink-0" />
+              <Send className="w-3.5 h-3.5 text-blue-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200 shrink-0" />
               <span>Báo cáo tiến độ</span>
             </button>
 
             <button
               type="button"
               onClick={onClose}
-              className="h-8 px-3 rounded-[6px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-600 hover:text-slate-800 text-xs font-medium transition-colors cursor-pointer whitespace-nowrap"
+              className="h-8 px-3 rounded-[6px] bg-white hover:bg-slate-100 border border-slate-300 hover:border-slate-400 text-slate-600 hover:text-slate-800 text-xs font-medium transition-all duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] shadow-2xs hover:shadow-xs focus:outline-hidden focus-visible:ring-2 focus-visible:ring-slate-400/50 cursor-pointer whitespace-nowrap"
             >
               Đóng
             </button>

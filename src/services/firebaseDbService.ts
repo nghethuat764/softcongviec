@@ -267,16 +267,23 @@ export async function saveUserToDb(user: UserAccount): Promise<void> {
 
 // Delete user account
 export async function deleteUserFromDb(userId: string): Promise<void> {
-  const docRef = doc(db, USERS_COLLECTION, userId);
   try {
+    const docRef = doc(db, USERS_COLLECTION, userId);
     await deleteDoc(docRef);
+    if (userId.startsWith('usr-')) {
+      const strippedId = userId.replace('usr-', '');
+      try {
+        await deleteDoc(doc(db, USERS_COLLECTION, strippedId));
+      } catch (e) {
+        // ignore
+      }
+    }
     console.log(`User ${userId} deleted from Firestore successfully.`);
   } catch (error) {
     try {
       handleFirestoreError(error, OperationType.DELETE, `${USERS_COLLECTION}/${userId}`);
     } catch (e) {
       console.warn('Firestore user delete warning:', e);
-      throw e;
     }
   }
 }

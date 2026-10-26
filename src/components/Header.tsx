@@ -106,8 +106,8 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
-            {/* Quick reset button */}
-            <div className="flex items-center pl-1.5 border-l border-blue-400/30 dark:border-sky-400/20">
+            {/* Quick reset button (hidden on mobile) */}
+            <div className="hidden sm:flex items-center pl-1.5 border-l border-blue-400/30 dark:border-sky-400/20">
               <button
                 type="button"
                 onClick={onResetData}
@@ -126,18 +126,18 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between gap-4">
           
           {/* Brand Identity */}
-          <div className="flex items-center gap-3">
-            <LogoTTDVTH className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 filter drop-shadow-xs" />
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <LogoTTDVTH className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 filter drop-shadow-xs" />
             <div>
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-[17px] sm:text-[19px] font-bold tracking-tight text-white leading-tight">
+              <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+                <h1 className="text-[13px] sm:text-[19px] font-bold tracking-tight text-yellow-300 sm:text-white leading-snug sm:leading-tight">
                   HỆ THỐNG PHÂN CÔNG NHIỆM VỤ & VÀ BÁO CÁO TIẾN ĐỘ
                 </h1>
-                <span className="bg-white/15 text-white text-[12px] px-2 py-0.5 rounded-[4px] font-mono font-bold border border-white/20">
+                <span className="bg-white/15 text-white text-[11px] sm:text-[12px] px-1.5 sm:px-2 py-0.5 rounded-[4px] font-mono font-bold border border-white/20">
                   <CountUpNumber value={taskCount} suffix=" việc" />
                 </span>
               </div>
-              <p className="text-[12px] sm:text-[13px] text-blue-100 dark:text-sky-200 mt-0.5 leading-snug">
+              <p className="hidden sm:block text-[12px] sm:text-[13px] text-blue-100 dark:text-sky-200 mt-0.5 leading-snug">
                 Ủy ban nhân dân phường Hố Nai · Trung tâm Dịch vụ Tổng hợp
               </p>
             </div>
