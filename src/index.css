@@ -235,3 +235,73 @@
   }
 }
 
+/* ==========================================================================
+   ENTERPRISE TOAST NOTIFICATION SYSTEM (Scoped .app-toast-*)
+   ========================================================================== */
+
+@keyframes app-toast-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+  }
+  70% {
+    transform: translateX(-4px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes app-toast-fade-out {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(30px) scale(0.92);
+  }
+}
+
+@keyframes app-toast-shrink {
+  0% {
+    width: 100%;
+  }
+  100% {
+    width: 0%;
+  }
+}
+
+.app-toast-item {
+  animation: app-toast-slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.app-toast-item.app-toast-exit {
+  animation: app-toast-fade-out 0.22s ease-in forwards;
+}
+
+.app-toast-progress-bar {
+  animation-name: app-toast-shrink;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  transform-origin: left center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-toast-item {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .app-toast-item.app-toast-exit {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+  .app-toast-progress-bar {
+    animation: none !important;
+    width: 0 !important;
+  }
+}
+

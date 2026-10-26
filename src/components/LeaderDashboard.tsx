@@ -660,9 +660,9 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                       <button
                         type="button"
                         onClick={() => onOpenDirectiveModal(t)}
-                        className="px-2.5 py-1.5 bg-[#003366] hover:bg-[#002244] text-white rounded-[6px] text-[11px] sm:text-[12px] font-semibold flex items-center gap-1 cursor-pointer shrink-0"
+                        className="h-7.5 px-2.5 bg-[#003366] hover:bg-[#002244] active:scale-[0.97] text-white rounded-[6px] text-[12px] font-medium inline-flex items-center gap-1.5 cursor-pointer shrink-0 whitespace-nowrap transition-all shadow-2xs"
                       >
-                        <Send className="w-3 h-3 text-blue-200" />
+                        <Send className="w-3.5 h-3.5 text-blue-200 shrink-0" />
                         <span>Chỉ đạo</span>
                       </button>
                     </div>
@@ -965,7 +965,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                     <th className="py-3 px-3.5 w-32">Tiến Độ %</th>
                     <th className="py-3 px-3.5 w-32">Trạng Thái</th>
                     <th className="py-3 px-3.5 min-w-56">Báo Cáo & Vướng Mắc</th>
-                    <th className="py-3 px-3.5 w-36 text-right">Thao Tác</th>
+                    <th className="py-3 px-3.5 w-32 min-w-[125px] text-right whitespace-nowrap">Thao Tác</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#E5E7EB]">
@@ -1074,24 +1074,24 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                               </div>
                             )}
                           </td>
-                          <td className="py-3.5 px-3.5 align-top text-right">
-                            <div className="flex items-center justify-end gap-1.5">
+                          <td className="py-3.5 px-3.5 align-top text-right whitespace-nowrap">
+                            <div className="inline-flex items-center justify-end gap-1.5 whitespace-nowrap">
                               <button
                                 type="button"
                                 onClick={() => onOpenDirectiveModal(task)}
                                 title="Phát lệnh chỉ đạo / đôn đốc"
-                                className="px-2 py-1.5 rounded-[6px] bg-[#003366] hover:bg-[#002244] text-white transition-colors cursor-pointer flex items-center gap-1 text-[12px] font-medium"
+                                className="h-8 px-2.5 rounded-[6px] bg-[#003366] hover:bg-[#002244] active:scale-[0.97] text-white text-[12px] font-medium inline-flex items-center gap-1.5 shadow-2xs hover:shadow-xs transition-all cursor-pointer whitespace-nowrap"
                               >
-                                <Send className="w-3.5 h-3.5 text-blue-200" />
+                                <Send className="w-3.5 h-3.5 text-blue-200 shrink-0" />
                                 <span>Chỉ đạo</span>
                               </button>
                               <button
                                 type="button"
                                 onClick={() => onOpenTaskDetail(task)}
                                 title="Xem toàn bộ hồ sơ nhiệm vụ"
-                                className="p-1.5 rounded-[6px] bg-[#F4F6F9] hover:bg-gray-200 text-[#111827] border border-[#E5E7EB] transition-colors cursor-pointer"
+                                className="h-8 w-8 rounded-[6px] bg-[#F4F6F9] hover:bg-[#E5E7EB] active:scale-[0.97] text-[#4B5563] hover:text-[#111827] border border-[#E5E7EB] inline-flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-2xs"
                               >
-                                <Eye className="w-4 h-4 text-[#4B5563]" />
+                                <Eye className="w-4 h-4" />
                               </button>
                             </div>
                           </td>
@@ -1230,9 +1230,10 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                         <button
                           type="button"
                           onClick={() => onOpenDirectiveModal(t)}
-                          className="px-2.5 sm:px-3 py-1 bg-[#003366] hover:bg-[#002244] text-white rounded-[6px] text-[11px] sm:text-[12px] font-semibold cursor-pointer transition-colors"
+                          className="h-7 px-2.5 bg-[#003366] hover:bg-[#002244] active:scale-[0.97] text-white rounded-[6px] text-[11px] sm:text-[12px] font-medium cursor-pointer transition-all whitespace-nowrap shadow-2xs inline-flex items-center gap-1 shrink-0"
                         >
-                          Chỉ đạo
+                          <Send className="w-3 h-3 text-blue-200 shrink-0" />
+                          <span>Chỉ đạo</span>
                         </button>
                       </div>
                     </div>

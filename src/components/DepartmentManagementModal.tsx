@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useDepartments } from '../context/DepartmentContext';
+import { toast } from '../context/ToastContext';
 import { Department } from '../types/database';
 import { CountUpNumber } from './CountUpNumber';
 import {
@@ -59,7 +60,6 @@ export const DepartmentManagementModal: React.FC<DepartmentManagementModalProps>
   const [selectedDeptForStaff, setSelectedDeptForStaff] = useState<Department | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Form Fields
@@ -100,11 +100,6 @@ export const DepartmentManagementModal: React.FC<DepartmentManagementModalProps>
       </div>
     );
   }
-
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3500);
-  };
 
   const handleOpenAddForm = () => {
     setEditingDeptId(null);
@@ -216,16 +211,17 @@ export const DepartmentManagementModal: React.FC<DepartmentManagementModalProps>
             onRenameDepartment(oldDept.name, cleanName);
           }
         }
-        showToast(`Đã cập nhật phòng ban "${cleanName}" và đồng bộ tự động sang các hồ sơ cán bộ, form nhiệm vụ.`);
+        toast.success('Cập nhật thành công', `Đã cập nhật phòng ban "${cleanName}".`);
       } else {
         await addDepartment(deptData);
-        showToast(`Đã thêm mới phòng ban "${cleanName}" vào Cơ sở dữ liệu.`);
+        toast.success('Thêm mới thành công', `Đã thêm mới phòng ban "${cleanName}" vào CSDL.`);
       }
 
       setIsFormOpen(false);
       setEditingDeptId(null);
     } catch (err: any) {
       setErrorMessage(err.message || 'Lỗi khi lưu phòng ban vào cơ sở dữ liệu.');
+      toast.error('Thao tác thất bại', err.message || 'Lỗi khi lưu phòng ban vào cơ sở dữ liệu.');
     } finally {
       setIsSaving(false);
     }
@@ -235,13 +231,14 @@ export const DepartmentManagementModal: React.FC<DepartmentManagementModalProps>
     setIsSaving(true);
     try {
       await deleteDepartment(dept.id);
-      showToast(`Đã xóa phòng ban "${dept.name}" khỏi Cơ sở dữ liệu.`);
+      toast.success('Xóa thành công', `Đã xóa phòng ban "${dept.name}" khỏi CSDL.`);
       setDeleteConfirmId(null);
       if (selectedDeptForStaff?.id === dept.id) {
         setSelectedDeptForStaff(null);
       }
     } catch (err: any) {
       setErrorMessage(err.message || 'Lỗi khi xóa phòng ban.');
+      toast.error('Thao tác thất bại', err.message || 'Lỗi khi xóa phòng ban.');
     } finally {
       setIsSaving(false);
     }
@@ -319,22 +316,6 @@ export const DepartmentManagementModal: React.FC<DepartmentManagementModalProps>
           </button>
         </div>
 
-        {/* Toast Notification */}
-        {toastMessage && (
-          <div className="bg-emerald-600 text-white text-[13px] font-medium px-4 py-2 flex items-center justify-between shrink-0 transition-all">
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4" />
-              <span>{toastMessage}</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setToastMessage(null)}
-              className="text-white/80 hover:text-white cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
 
         {/* 2. Overview Stats Bar (Widget số liệu chuẩn 24px - 28px) */}
         <div className="bg-white border-b border-[#E5E7EB] px-4 sm:px-6 py-3 shrink-0">

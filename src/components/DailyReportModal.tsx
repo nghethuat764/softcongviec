@@ -23,6 +23,7 @@ import {
 import { Task, TaskStatus } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useDepartments } from '../context/DepartmentContext';
+import { toast } from '../context/ToastContext';
 import { isTaskRelatedToStaff, getStatusLabel, getStatusBadgeClasses, getSectionShortName } from '../utils/helpers';
 import { CountUpNumber } from './CountUpNumber';
 
@@ -985,10 +986,12 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
       const fileName = `BaoCao_ThongKe_TienDo_HoNai_${fileDate}.xlsx`;
       XLSX.writeFile(wb, fileName);
 
-      setExportNotice(`Đã xuất báo cáo tiến độ thành công file "${fileName}" với định dạng kẻ bảng chuẩn đẹp!`);
-      setTimeout(() => setExportNotice(null), 4500);
+      toast.success('Xuất báo cáo thành công', `Tệp Excel "${fileName}" đã được tải xuống thành công.`);
+      setExportNotice(`Đã xuất báo cáo tiến độ thành công file "${fileName}"!`);
+      setTimeout(() => setExportNotice(null), 4000);
     } catch (err) {
       console.error('Lỗi xuất file excel:', err);
+      toast.error('Xuất báo cáo thất bại', 'Có lỗi xảy ra khi tạo tệp Excel. Vui lòng thử lại!');
       setExportNotice('Không thể xuất file Excel. Vui lòng thử lại!');
       setTimeout(() => setExportNotice(null), 4000);
     }

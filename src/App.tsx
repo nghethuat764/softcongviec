@@ -24,6 +24,7 @@ import { DailyReportModal } from './components/DailyReportModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DepartmentProvider } from './context/DepartmentContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { ToastProvider, toast } from './context/ToastContext';
 import { isTaskRelatedToStaff } from './utils/helpers';
 import { 
   initializeDatabase, 
@@ -153,7 +154,6 @@ function AppContent() {
   const [isBgSettingsOpen, setIsBgSettingsOpen] = useState(false);
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
-  const [toastNotification, setToastNotification] = useState<string | null>(null);
 
   // Background Management Page Settings
   const [bgImage, setBgImage] = useState<string>(() => {
@@ -201,6 +201,7 @@ function AppContent() {
       setDetailTask(updatedTask);
     }
     saveTaskToDb(updatedTask);
+    toast.success('Cập nhật thành công', `Tiến độ nhiệm vụ "${updatedTask.code}" đã được cập nhật.`);
   };
 
   // Delete a task (Leader only)
@@ -210,6 +211,7 @@ function AppContent() {
       setDetailTask(null);
     }
     deleteTaskFromDb(taskId);
+    toast.success('Xóa thành công', 'Nhiệm vụ đã được xóa khỏi danh sách.');
   };
 
   // Cascade department rename to existing tasks
@@ -263,6 +265,7 @@ function AppContent() {
 
     if (updatedTargetTask) {
       saveTaskToDb(updatedTargetTask);
+      toast.success('Ban hành chỉ đạo thành công', 'Ý kiến chỉ đạo đã được gửi đến các đơn vị phụ trách.');
     }
   };
 
@@ -270,13 +273,13 @@ function AppContent() {
   const handleAddTask = (newTask: Task) => {
     setTasks((prev) => [newTask, ...prev]);
     saveTaskToDb(newTask);
+    toast.success('Thêm mới thành công', `Nhiệm vụ "${newTask.code}: ${newTask.title}" đã được lưu vào hệ thống.`);
   };
 
   // Open confirm modal to clear all sample data
   const handleRequestReset = () => {
     if (!isLeader) {
-      setToastNotification('Chỉ có Ban Giám Đốc mới có quyền xóa dữ liệu mẫu và khôi phục CSDL.');
-      setTimeout(() => setToastNotification(null), 4000);
+      toast.warning('Quyền hạn bị từ chối', 'Chỉ có Ban Giám Đốc mới có quyền xóa dữ liệu mẫu và khôi phục CSDL.');
       return;
     }
     setIsResetConfirmOpen(true);
@@ -290,13 +293,11 @@ function AppContent() {
       clearStoredTasks();
       setTasks([]);
       setIsResetConfirmOpen(false);
-      setToastNotification('Đã xóa toàn bộ dữ liệu mẫu thành công. Cơ sở dữ liệu đã sạch và sẵn sàng để phân công nhiệm vụ mới!');
-      setTimeout(() => setToastNotification(null), 5000);
+      toast.success('Khôi phục CSDL thành công', 'Cơ sở dữ liệu đã sạch và sẵn sàng để phân công nhiệm vụ mới!');
     } catch (error) {
       console.error('Error clearing sample data:', error);
       setIsResetConfirmOpen(false);
-      setToastNotification('Có lỗi xảy ra khi xóa dữ liệu. Vui lòng thử lại.');
-      setTimeout(() => setToastNotification(null), 5000);
+      toast.error('Thao tác thất bại', 'Có lỗi xảy ra khi xóa dữ liệu. Vui lòng kiểm tra lại.');
     } finally {
       setIsResetting(false);
     }
@@ -547,21 +548,6 @@ function AppContent() {
         onUpdateBgBlur={handleUpdateBgBlur}
       />
 
-      {/* Toast Notification Alert */}
-      {toastNotification && (
-        <div className="fixed top-5 right-5 z-50 bg-[#003366] text-white px-4 py-3 rounded-[8px] shadow-lg border border-white/20 flex items-center gap-3 animate-in fade-in slide-in-from-top-3 max-w-md">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-          <span className="text-[13px] leading-snug flex-1 font-medium">{toastNotification}</span>
-          <button
-            type="button"
-            onClick={() => setToastNotification(null)}
-            className="text-white/70 hover:text-white p-1 cursor-pointer transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
-
       {/* Modal: Xác Nhận Khôi Phục & Xóa Toàn Bộ Dữ Liệu Mẫu */}
       {isResetConfirmOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
@@ -677,7 +663,9 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <DepartmentProvider>
-          <AppContent />
+          <ToastProvider>
+            <AppContent />
+          </ToastProvider>
         </DepartmentProvider>
       </AuthProvider>
     </ThemeProvider>

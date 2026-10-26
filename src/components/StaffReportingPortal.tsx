@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Task, StaffMember, TaskStatus, ProgressReportLog, Directive } from '../types';
+import { toast } from '../context/ToastContext';
 import { 
   CheckCircle2, 
   Clock, 
@@ -89,7 +90,6 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
     myTasks.length > 0 ? myTasks[0].id : ''
   );
   const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Menu Phân Cấp Dành Riêng Cho Viên Chức (Nhân Viên)
   type StaffMenuKey = 
@@ -229,9 +229,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
     setNewDocument('');
     setAttachedDocs(updatedDocs);
 
-    // Show toast
-    setToastMessage(`Đã gửi báo cáo tiến độ thành công cho nhiệm vụ: ${currentTask.code}!`);
-    setTimeout(() => setToastMessage(null), 4000);
+    toast.success('Gửi báo cáo thành công', `Báo cáo tiến độ cho nhiệm vụ "${currentTask.code}" đã được ghi nhận.`);
   };
 
   // Filtered task list
@@ -249,23 +247,6 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      
-      {/* Toast Alert */}
-      {toastMessage && (
-        <div className="bg-emerald-700 text-white px-4 py-3 rounded-[8px] shadow-md flex items-center justify-between text-[14px] animate-in fade-in slide-in-from-top-2">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 shrink-0" />
-            <span className="font-semibold">{toastMessage}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setToastMessage(null)}
-            className="text-white hover:text-emerald-100 font-bold ml-4 cursor-pointer"
-          >
-            ✕
-          </button>
-        </div>
-      )}
 
       {/* Staff Identity & Overview Banner */}
       <div className="bg-white rounded-[8px] shadow-xs border border-[#E5E7EB] border-t-4 border-t-[#003366] p-5">
@@ -1327,8 +1308,7 @@ export const StaffReportingPortal: React.FC<StaffReportingPortalProps> = ({
                       <button
                         type="button"
                         onClick={() => {
-                          setToastMessage(`Đã ghi nhận tiếp thu chỉ đạo của Giám đốc cho nhiệm vụ ${task.code}!`);
-                          setTimeout(() => setToastMessage(null), 3500);
+                          toast.success('Đã tiếp thu chỉ đạo', `Đã ghi nhận tiếp thu chỉ đạo của Giám đốc cho nhiệm vụ ${task.code}!`);
                         }}
                         className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-2xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
                       >

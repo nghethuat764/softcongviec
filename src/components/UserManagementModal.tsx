@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useDepartments } from '../context/DepartmentContext';
+import { toast } from '../context/ToastContext';
 import { UserAccount, UserRole } from '../types/database';
 import { CountUpNumber } from './CountUpNumber';
 import {
@@ -55,7 +56,6 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [showPasswordMap, setShowPasswordMap] = useState<Record<string, boolean>>({});
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [userToDelete, setUserToDelete] = useState<UserAccount | null>(null);
@@ -98,11 +98,6 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
       </div>
     );
   }
-
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3500);
-  };
 
   const handleOpenAddForm = () => {
     setEditingUserId(null);
@@ -186,10 +181,10 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
       if (editingUserId) {
         await updateUser(userPayload);
-        showToast(`Đã cập nhật thông tin tài khoản: ${userPayload.fullName} thành công!`);
+        toast.success('Cập nhật thành công', `Đã cập nhật thông tin cán bộ: ${userPayload.fullName}.`);
       } else {
         await addUser(userPayload);
-        showToast(`Đã thêm mới tài khoản cán bộ: ${userPayload.fullName} vào CSDL!`);
+        toast.success('Thêm mới thành công', `Đã thêm mới tài khoản cán bộ: ${userPayload.fullName} vào CSDL.`);
       }
 
       setIsEditing(false);
@@ -197,6 +192,7 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
     } catch (err: any) {
       console.error(err);
       setErrorMessage('Lỗi khi lưu dữ liệu vào Firestore. Vui lòng thử lại.');
+      toast.error('Thao tác thất bại', 'Lỗi khi lưu dữ liệu vào Firestore. Vui lòng thử lại.');
     } finally {
       setIsSaving(false);
     }
@@ -206,16 +202,19 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
     setErrorMessage(null);
     if (!isLeader) {
       setErrorMessage('Quyền hạn bị từ chối: Chỉ có Ban Giám Đốc mới có quyền xoá tài khoản.');
+      toast.warning('Quyền hạn bị từ chối', 'Chỉ có Ban Giám Đốc mới có quyền xoá tài khoản.');
       return;
     }
 
     if (users.length <= 1) {
       setErrorMessage('Không thể xoá tài khoản cuối cùng của hệ thống!');
+      toast.warning('Cảnh báo hệ thống', 'Không thể xoá tài khoản cuối cùng của hệ thống!');
       return;
     }
 
     if (user.role === 'LEADER' && users.filter((u) => u.role === 'LEADER').length <= 1) {
       setErrorMessage('Hệ thống phải có ít nhất 01 tài khoản Lãnh đạo (Ban Giám đốc). Không thể xoá tài khoản này.');
+      toast.warning('Cảnh báo hệ thống', 'Hệ thống phải có ít nhất 01 tài khoản Lãnh đạo.');
       return;
     }
 
@@ -228,7 +227,7 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
     setErrorMessage(null);
     try {
       await deleteUser(userToDelete.id);
-      showToast(`Đã xoá tài khoản cán bộ: "${userToDelete.fullName}" khỏi hệ thống!`);
+      toast.success('Xóa thành công', `Đã xóa tài khoản cán bộ: "${userToDelete.fullName}" khỏi hệ thống.`);
       if (editingUserId === userToDelete.id) {
         setIsEditing(false);
         setEditingUserId(null);
@@ -237,6 +236,7 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
     } catch (err: any) {
       console.error('Delete user error:', err);
       setErrorMessage('Không thể xoá tài khoản. Vui lòng kiểm tra lại kết nối mạng.');
+      toast.error('Thao tác thất bại', 'Không thể xoá tài khoản cán bộ. Vui lòng thử lại.');
     } finally {
       setIsDeleting(false);
     }
@@ -298,22 +298,6 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
           </button>
         </div>
 
-        {/* Toast alert */}
-        {toastMessage && (
-          <div className="bg-emerald-700 text-white px-4 py-2.5 text-[13px] font-semibold flex items-center justify-between shrink-0 shadow-xs">
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-emerald-200" />
-              <span>{toastMessage}</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setToastMessage(null)}
-              className="text-white hover:text-emerald-200 cursor-pointer font-bold"
-            >
-              ✕
-            </button>
-          </div>
-        )}
 
         {/* Modal Content Body */}
         <div className="p-4 sm:p-5 overflow-y-auto flex-1 space-y-4 bg-[#F4F6F9]">
@@ -731,7 +715,7 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
                                 type="button"
                                 onClick={() => {
                                   switchUser(u.id);
-                                  showToast(`Đã chuyển đổi sang tài khoản: ${u.fullName}`);
+                                  toast.success('Chuyển đổi tài khoản', `Đã chuyển đổi sang tài khoản: ${u.fullName}`);
                                 }}
                                 className="px-2.5 py-1 bg-blue-50 hover:bg-[#003366] hover:text-white text-[#003366] border border-blue-200 rounded-[6px] text-[12px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
                                 title="Đăng nhập thử tài khoản này"

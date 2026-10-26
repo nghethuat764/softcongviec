@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { toast } from '../context/ToastContext';
 import { 
   Building2, 
   Lock, 
@@ -35,16 +36,20 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     }
     const success = login(username, password);
     if (success) {
+      toast.success('Đăng nhập thành công', `Chào mừng đã chuyển đổi sang tài khoản: "${username}".`);
       setUsername('');
       setPassword('');
       onClose();
     } else {
-      setError('Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.');
+      const errorMsg = 'Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.';
+      setError(errorMsg);
+      toast.error('Đăng nhập thất bại', errorMsg);
     }
   };
 
   const handleLogout = () => {
     logout();
+    toast.info('Đã đăng xuất', 'Phiên làm việc đã kết thúc an toàn.');
     onClose();
   };
 

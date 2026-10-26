@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { toast } from '../context/ToastContext';
 import { LogoTTDVTH } from './LogoTTDVTH';
 import { DynamicGovCanvas } from './DynamicGovCanvas';
 import { CountUpNumber } from './CountUpNumber';
@@ -54,9 +55,11 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       setIsSubmitting(false);
 
       if (!success) {
-        setError(
-          'Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.'
-        );
+        const errorMsg = 'Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.';
+        setError(errorMsg);
+        toast.error('Đăng nhập thất bại', errorMsg);
+      } else {
+        toast.success('Đăng nhập thành công', 'Chào mừng đồng chí đã đăng nhập vào hệ thống.');
       }
     }, 200);
   };
