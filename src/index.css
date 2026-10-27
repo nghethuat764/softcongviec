@@ -34,6 +34,33 @@
 @layer base {
   :root {
     --font-sans: 'Be Vietnam Pro', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --primary-color: #003366;
+    --primary-hover: #002244;
+    --primary-light: #e6f0fa;
+  }
+
+  /* Dynamic Primary Theme Color Overrides */
+  .bg-\[\#003366\],
+  header.bg-\[\#003366\],
+  div.bg-\[\#003366\],
+  button.bg-\[\#003366\],
+  .gov-btn-primary {
+    background-color: var(--primary-color) !important;
+  }
+
+  .text-\[\#003366\],
+  .text-gov-800 {
+    color: var(--primary-color) !important;
+  }
+
+  .border-\[\#003366\],
+  .border-gov-800 {
+    border-color: var(--primary-color) !important;
+  }
+
+  .hover\:bg-\[\#002244\]:hover,
+  .hover\:bg-\[\#003366\]:hover {
+    background-color: var(--primary-hover) !important;
   }
 
   html {

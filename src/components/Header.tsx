@@ -8,13 +8,10 @@ import {
   Paperclip,
   CheckCircle2,
   Users,
-  Image as ImageIcon,
-  Sun,
-  Moon
+  Image as ImageIcon
 } from 'lucide-react';
 import { StaffMember } from '../types';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
 import { LogoTTDVTH } from './LogoTTDVTH';
 import { CountUpNumber } from './CountUpNumber';
 
@@ -51,7 +48,6 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleMobileMenu,
 }) => {
   const { currentUser, isLeader, logout } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
 
   return (
     <header className="bg-[#003366] dark:bg-[#071324] text-white border-b border-[#002244] dark:border-[#1e293b] sticky top-0 z-40 shadow-xs font-sans transition-colors duration-200">
@@ -143,33 +139,8 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Phía Phải Header: Chế độ Sáng/Tối, Chỉ báo phân hệ hiện tại & Nút mở menu trên Mobile */}
+          {/* Phía Phải Header: Chỉ báo phân hệ hiện tại & Nút mở menu trên Mobile */}
           <div className="flex items-center gap-2">
-            
-            {/* Dedicated Theme Toggle Button (Light / Dark) */}
-            <button
-              type="button"
-              onClick={toggleTheme}
-              title={isDark ? "Đang bật Chế độ Tối. Nhấp để chuyển sang Chế độ Sáng" : "Đang bật Chế độ Sáng. Nhấp để chuyển sang Chế độ Tối"}
-              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-[6px] border text-[12px] font-bold transition-all cursor-pointer shadow-2xs ${
-                isDark 
-                  ? 'bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 border-amber-300/40' 
-                  : 'bg-white/15 hover:bg-white/25 text-white border-white/25'
-              }`}
-            >
-              {isDark ? (
-                <>
-                  <Sun className="w-4 h-4 text-amber-300" />
-                  <span className="hidden sm:inline">Chế độ Sáng</span>
-                </>
-              ) : (
-                <>
-                  <Moon className="w-4 h-4 text-sky-200" />
-                  <span className="hidden sm:inline">Chế độ Tối</span>
-                </>
-              )}
-            </button>
-
             <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-[6px] border text-[13px] ${
               currentRole === 'leader'
                 ? 'bg-amber-400/15 border-amber-300/30 text-amber-200'

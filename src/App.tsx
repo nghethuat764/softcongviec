@@ -21,6 +21,7 @@ import { UserManagementModal } from './components/UserManagementModal';
 import { DepartmentManagementModal } from './components/DepartmentManagementModal';
 import { BackgroundSettingsModal } from './components/BackgroundSettingsModal';
 import { DailyReportModal } from './components/DailyReportModal';
+import { FloatingThemeControls } from './components/FloatingThemeControls';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DepartmentProvider } from './context/DepartmentContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
@@ -625,6 +626,9 @@ function AppContent() {
           </div>
         </div>
       )}
+
+      {/* Floating Icon-Only Theme Controls (Light/Dark + Color Customizer) */}
+      <FloatingThemeControls />
 
       {/* Quiet Professional Governmental Footer */}
       <footer className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 py-2 px-4 sm:px-6 z-30 shadow-xs">
