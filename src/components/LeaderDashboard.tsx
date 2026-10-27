@@ -43,10 +43,11 @@ import {
   calculateSummary,
   formatDateDisplay
 } from '../utils/helpers';
-import { STAFF_MEMBERS } from '../data/staffMembers';
 import { useAuth } from '../context/AuthContext';
 import { useDepartments } from '../context/DepartmentContext';
+import { Department } from '../types/database';
 import { CountUpNumber } from './CountUpNumber';
+import { TaskAnalyticsDashboard } from './TaskAnalyticsDashboard';
 
 interface LeaderDashboardProps {
   tasks: Task[];
@@ -571,6 +572,21 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
             </div>
           </div>
 
+          {/* PHÂN TÍCH TIẾN ĐỘ NHIỆM VỤ - INTERACTIVE DASHBOARD CHARTS SUITE */}
+          <TaskAnalyticsDashboard 
+            tasks={tasks}
+            departments={departments}
+            users={users}
+            onSelectDepartment={(deptName) => {
+              setSelectedSection(deptName);
+              setActiveLeaderMenu('master');
+            }}
+            onSelectStatus={(status) => {
+              setSelectedStatus(status);
+              setActiveLeaderMenu('master');
+            }}
+          />
+
           {/* Tiến độ 5 khối tóm tắt */}
           <div className="bg-white rounded-[8px] border border-[#E5E7EB] p-3.5 sm:p-4 shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-3">
@@ -730,12 +746,12 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
                   className="w-full py-2 px-3 bg-[#F4F6F9] border border-[#E5E7EB] rounded-[8px] text-[12px] sm:text-[13px] text-[#111827] focus:outline-none focus:ring-1 focus:ring-[#003366] cursor-pointer"
                 >
                   <option value="all">Tất cả Khối / Tổ công tác ({departments.length})</option>
-                  {departments.map((d) => (
+                  {departments.map((d: Department) => (
                     <option key={d.id} value={d.name}>
                       {d.code ? `[${d.code}] ` : ''}{d.shortName || d.name}
                     </option>
                   ))}
-                  {sections.filter(s => !departments.some(d => d.name === s || s.includes(d.name))).map((s) => (
+                  {sections.filter(s => !departments.some((d: Department) => d.name === s || s.includes(d.name))).map((s) => (
                     <option key={s} value={s}>{getSectionShortName(s)}</option>
                   ))}
                 </select>
