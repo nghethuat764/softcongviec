@@ -72,24 +72,24 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
       {/* 1. Header Cơ Quan Nhà Nước */}
       <header className="relative z-10 bg-[#003366] backdrop-blur-md text-white border-b border-white/10 shadow-sm transition-colors duration-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <LogoTTDVTH className="w-10 h-10 shrink-0" />
-            <div>
-              <div className="text-[12px] uppercase font-semibold text-blue-100 tracking-wider">
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <LogoTTDVTH className="w-7 h-7 sm:w-10 sm:h-10 shrink-0" />
+            <div className="min-w-0">
+              <div className="text-[9px] sm:text-[12px] uppercase font-semibold text-blue-100 tracking-wider truncate">
                 UBND PHƯỜNG HỐ NAI · TRUNG TÂM DỊCH VỤ TỔNG HỢP
               </div>
-              <h1 className="text-[16px] sm:text-[18px] font-bold text-white tracking-wide uppercase">
+              <h1 className="text-[11px] sm:text-[18px] font-bold text-white tracking-wide uppercase leading-tight sm:leading-normal truncate sm:whitespace-normal">
                 HỆ THỐNG PHÂN CÔNG NHIỆM VỤ & BÁO CÁO TIẾN ĐỘ
               </h1>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-[12px] text-blue-100">
-            <span className="bg-white/15 px-2.5 py-1 rounded-[4px] border border-white/20 font-medium">
-              <CountUpNumber value={tasksCount} suffix=" nhiệm vụ giao ban" />
+          <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[12px] text-blue-100 shrink-0">
+            <span className="bg-white/15 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-[4px] border border-white/20 font-medium whitespace-nowrap">
+              <CountUpNumber value={tasksCount} suffix=" nhiệm vụ" />
             </span>
-            <span className="bg-white/15 px-2.5 py-1 rounded-[4px] border border-white/20 font-medium">
+            <span className="hidden sm:inline bg-white/15 px-2.5 py-1 rounded-[4px] border border-white/20 font-medium whitespace-nowrap">
               {dbConnected ? 'Dữ liệu trực tuyến' : 'Ngoại tuyến'}
             </span>
           </div>
@@ -206,6 +206,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                 )}
                 <span>{isSubmitting ? 'ĐANG XÁC THỰC...' : 'ĐĂNG NHẬP HỆ THỐNG'}</span>
               </button>
+
+              {/* Bản quyền */}
+              <div className="pt-3 text-center border-t border-[#E5E7EB] dark:border-slate-700/60 mt-2">
+                <p className="text-[12px] font-semibold text-[#111827] dark:text-slate-200">
+                  ©TTDVTH- Hoàng Văn Thiện - Sđt:0948820369
+                </p>
+              </div>
             </form>
           </div>
         </div>

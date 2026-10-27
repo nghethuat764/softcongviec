@@ -160,6 +160,13 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
               <KeyRound className="w-4 h-4 text-white" />
               <span>XÁC NHẬN ĐĂNG NHẬP</span>
             </button>
+
+            {/* Bản quyền */}
+            <div className="pt-2.5 text-center border-t border-[#E5E7EB] dark:border-slate-700/60 mt-2">
+              <p className="text-[12px] font-semibold text-[#111827] dark:text-slate-200">
+                ©TTDVTH- Hoàng Văn Thiện - Sđt:0948820369
+              </p>
+            </div>
           </form>
 
           {/* Quick Logout Button */}
