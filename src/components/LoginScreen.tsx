@@ -71,12 +71,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       <DynamicGovCanvas />
 
       {/* 1. Header Cơ Quan Nhà Nước */}
-      <header className="relative z-10 bg-[#003366]/95 dark:bg-[#061122]/95 backdrop-blur-md text-white border-b border-white/10 dark:border-white/5 shadow-sm transition-colors duration-200">
+      <header className="relative z-10 bg-[#003366] backdrop-blur-md text-white border-b border-white/10 shadow-sm transition-colors duration-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <LogoTTDVTH className="w-10 h-10 shrink-0" />
             <div>
-              <div className="text-[12px] uppercase font-semibold text-blue-200 dark:text-sky-300 tracking-wider">
+              <div className="text-[12px] uppercase font-semibold text-blue-100 tracking-wider">
                 UBND PHƯỜNG HỐ NAI · TRUNG TÂM DỊCH VỤ TỔNG HỢP
               </div>
               <h1 className="text-[16px] sm:text-[18px] font-bold text-white tracking-wide uppercase">
@@ -85,7 +85,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-[12px] text-blue-100 dark:text-sky-200">
+          <div className="flex items-center gap-2 text-[12px] text-blue-100">
             <span className="bg-white/15 px-2.5 py-1 rounded-[4px] border border-white/20 font-medium">
               <CountUpNumber value={tasksCount} suffix=" nhiệm vụ giao ban" />
             </span>
@@ -104,7 +104,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           {/* Card Title Header */}
           <div className="bg-[#F4F6F9] dark:bg-[#0d1527] border-b border-[#E5E7EB] dark:border-[#1e293b] px-6 py-4 flex items-center justify-between transition-colors">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-[6px] bg-[#003366] dark:bg-sky-600 text-white flex items-center justify-center font-bold text-[14px] shrink-0">
+              <div className="w-9 h-9 rounded-[6px] bg-[#003366] text-white flex items-center justify-center font-bold text-[14px] shrink-0">
                 <KeyRound className="w-4 h-4 text-white" />
               </div>
               <div>
@@ -114,7 +114,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                 <span className="text-[12px] text-[#4B5563] dark:text-slate-400 block">Xác thực danh tính thực thi công vụ</span>
               </div>
             </div>
-            <span className="text-[12px] font-semibold px-2.5 py-1 rounded-[4px] bg-[#003366]/10 dark:bg-sky-400/10 text-[#003366] dark:text-sky-300 border border-[#003366]/20 dark:border-sky-400/20">
+            <span className="text-[12px] font-semibold px-2.5 py-1 rounded-[4px] bg-[#003366]/10 text-[#003366] border border-[#003366]/20">
               Cổng Nội Bộ
             </span>
           </div>

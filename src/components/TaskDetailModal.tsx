@@ -69,7 +69,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
       <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] flex flex-col">
         
         {/* Header */}
-        <div className="bg-[#153e6b] px-6 py-4 text-white flex items-center justify-between border-b border-[#0f2f52] shrink-0">
+        <div className="bg-[#003366] px-6 py-4 text-white flex items-center justify-between border-b border-[#002244] shrink-0">
           <div className="flex items-center gap-3">
             <span className="font-mono text-xs font-bold bg-white/15 px-2.5 py-1 rounded text-white">
               {task.code}

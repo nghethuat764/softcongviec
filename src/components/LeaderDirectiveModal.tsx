@@ -67,7 +67,7 @@ export const LeaderDirectiveModal: React.FC<LeaderDirectiveModalProps> = ({
       <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         
         {/* Modal Header */}
-        <div className="bg-[#153e6b] px-6 py-4 text-white flex items-center justify-between border-b border-[#0f2f52]">
+        <div className="bg-[#003366] px-6 py-4 text-white flex items-center justify-between border-b border-[#002244]">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
               <ShieldCheck className="w-5 h-5 text-white" />

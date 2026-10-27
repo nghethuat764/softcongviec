@@ -126,7 +126,7 @@ export const AttachmentCenterModal: React.FC<AttachmentCenterModalProps> = ({
       <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150">
         
         {/* Header */}
-        <div className="bg-[#153e6b] px-6 py-4 text-white flex items-center justify-between border-b border-[#0f2f52] shrink-0">
+        <div className="bg-[#003366] px-6 py-4 text-white flex items-center justify-between border-b border-[#002244] shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-white shrink-0">
               <FolderOpen className="w-5 h-5 text-white" />

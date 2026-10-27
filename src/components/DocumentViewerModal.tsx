@@ -105,7 +105,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
         }`}
       >
         {/* Top Control Bar - Official Government Styled */}
-        <div className="bg-[#153e6b] px-4 sm:px-6 py-3 border-b border-[#0f2f52] text-white flex items-center justify-between shrink-0 print:hidden gap-3">
+        <div className="bg-[#003366] px-4 sm:px-6 py-3 border-b border-[#002244] text-white flex items-center justify-between shrink-0 print:hidden gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-white shrink-0">
               <FileText className="w-5 h-5 text-white" />

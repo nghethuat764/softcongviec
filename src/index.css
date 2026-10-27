@@ -41,25 +41,32 @@
 
   /* Dynamic Primary Theme Color Overrides */
   .bg-\[\#003366\],
+  .bg-\[\#153e6b\],
   header.bg-\[\#003366\],
   div.bg-\[\#003366\],
+  div.bg-\[\#153e6b\],
   button.bg-\[\#003366\],
   .gov-btn-primary {
     background-color: var(--primary-color) !important;
   }
 
   .text-\[\#003366\],
+  .text-\[\#153e6b\],
   .text-gov-800 {
     color: var(--primary-color) !important;
   }
 
   .border-\[\#003366\],
+  .border-\[\#153e6b\],
+  .border-\[\#002244\],
+  .border-\[\#0f2f52\],
   .border-gov-800 {
-    border-color: var(--primary-color) !important;
+    border-color: var(--primary-hover) !important;
   }
 
   .hover\:bg-\[\#002244\]:hover,
-  .hover\:bg-\[\#003366\]:hover {
+  .hover\:bg-\[\#003366\]:hover,
+  .hover\:bg-\[\#153e6b\]:hover {
     background-color: var(--primary-hover) !important;
   }
 
@@ -227,8 +234,9 @@
   html.dark .text-gray-500 {
     color: #94a3b8;
   }
-  html.dark .text-\[\#003366\] {
-    color: #38bdf8;
+  html.dark .text-\[\#003366\],
+  html.dark .text-\[\#153e6b\] {
+    color: var(--primary-light) !important;
   }
   html.dark .border-\[\#E5E7EB\],
   html.dark .border-slate-200,

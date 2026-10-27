@@ -285,9 +285,9 @@ export const DepartmentManagementModal: React.FC<DepartmentManagementModalProps>
         
         {/* 1. Modal Header with Management Background - Government Standard #003366 */}
         <div 
-          className="bg-[#003366] text-white px-4 sm:px-6 py-3.5 flex items-center justify-between border-b border-[#E5E7EB]/20 shrink-0 bg-cover bg-center relative"
+          className="bg-[#003366] text-white px-4 sm:px-6 py-3.5 flex items-center justify-between border-b border-white/20 shrink-0 relative"
           style={{
-            backgroundImage: 'linear-gradient(to right, rgba(0, 51, 102, 0.96), rgba(0, 51, 102, 0.82)), url(/management_bg.jpg)',
+            background: 'linear-gradient(to right, var(--primary-color), var(--primary-hover))',
           }}
         >
           <div className="flex items-center gap-3 relative z-10">

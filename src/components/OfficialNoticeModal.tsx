@@ -32,7 +32,7 @@ export const OfficialNoticeModal: React.FC<OfficialNoticeModalProps> = ({
       <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[94vh] print:max-h-none print:shadow-none print:border-none print:rounded-none">
         
         {/* Controls Bar (Hidden during print) */}
-        <div className="bg-[#153e6b] px-6 py-3.5 text-white flex items-center justify-between border-b border-[#0f2f52] shrink-0 print:hidden">
+        <div className="bg-[#003366] px-6 py-3.5 text-white flex items-center justify-between border-b border-[#002244] shrink-0 print:hidden">
           <div className="flex items-center gap-2">
             <span className="font-bold text-sm text-white">Văn Bản Kết Luận Giao Ban Tuần (Số: /TB-TTDVTH)</span>
           </div>

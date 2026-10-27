@@ -1,4 +1,6 @@
 import React, { useEffect, useRef } from 'react';
+import { useTheme } from '../context/ThemeContext';
+import { getDarkerHex } from '../utils/colorUtils';
 
 interface Particle {
   x: number;
@@ -13,8 +15,29 @@ interface Particle {
   isAccent?: boolean;
 }
 
+function hexToRgbComponents(hex: string): { r: number; g: number; b: number } {
+  if (!hex || !hex.startsWith('#')) return { r: 0, g: 51, b: 102 };
+  let cleanHex = hex.replace('#', '');
+  if (cleanHex.length === 3) {
+    cleanHex = cleanHex.split('').map((c) => c + c).join('');
+  }
+  const num = parseInt(cleanHex, 16);
+  if (isNaN(num)) return { r: 0, g: 51, b: 102 };
+  return {
+    r: (num >> 16) & 255,
+    g: (num >> 8) & 255,
+    b: num & 255,
+  };
+}
+
 export const DynamicGovCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { primaryColor } = useTheme();
+  const primaryColorRef = useRef(primaryColor);
+
+  useEffect(() => {
+    primaryColorRef.current = primaryColor;
+  }, [primaryColor]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -97,18 +120,23 @@ export const DynamicGovCanvas: React.FC = () => {
     const render = () => {
       waveOffset += 0.008;
 
-      // 1. Clear with gradient background
+      const currentColor = primaryColorRef.current || '#003366';
+      const rgb = hexToRgbComponents(currentColor);
+      const darkStop1 = getDarkerHex(currentColor, 45);
+      const darkStop2 = getDarkerHex(currentColor, 15);
+      const darkStop3 = getDarkerHex(currentColor, 50);
+
+      // 1. Clear with dynamic gradient background based on selected primary color
       ctx.clearRect(0, 0, width, height);
 
-      // Deep, dignified administrative gradient
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-      bgGrad.addColorStop(0, '#04172e'); // Deep government navy
-      bgGrad.addColorStop(0.5, '#00264d'); // Primary admin blue
-      bgGrad.addColorStop(1, '#082344'); // Subdued dark slate
+      bgGrad.addColorStop(0, darkStop1);
+      bgGrad.addColorStop(0.5, darkStop2);
+      bgGrad.addColorStop(1, darkStop3);
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // 2. Subtle radial glow behind the center card area
+      // 2. Subtle radial glow behind the center card area using dynamic theme color
       const centerGlow = ctx.createRadialGradient(
         width / 2,
         height / 2,
@@ -117,13 +145,13 @@ export const DynamicGovCanvas: React.FC = () => {
         height / 2,
         Math.max(width, height) * 0.55
       );
-      centerGlow.addColorStop(0, 'rgba(0, 102, 204, 0.18)');
-      centerGlow.addColorStop(0.5, 'rgba(0, 51, 102, 0.08)');
+      centerGlow.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.28)`);
+      centerGlow.addColorStop(0.5, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.12)`);
       centerGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = centerGlow;
       ctx.fillRect(0, 0, width, height);
 
-      // 3. Subtle digital governance wave curves (dòng chuyển đổi số)
+      // 3. Subtle digital governance wave curves
       ctx.save();
       const waveCount = 3;
       for (let w = 0; w < waveCount; w++) {
@@ -147,12 +175,12 @@ export const DynamicGovCanvas: React.FC = () => {
         waveGrad.addColorStop(
           0,
           w === 0
-            ? 'rgba(0, 102, 204, 0.05)'
+            ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`
             : w === 1
-            ? 'rgba(0, 153, 255, 0.04)'
-            : 'rgba(255, 215, 0, 0.015)'
+            ? `rgba(${Math.min(255, rgb.r + 40)}, ${Math.min(255, rgb.g + 40)}, ${Math.min(255, rgb.b + 40)}, 0.10)`
+            : 'rgba(255, 215, 0, 0.02)'
         );
-        waveGrad.addColorStop(1, 'rgba(0, 20, 50, 0.12)');
+        waveGrad.addColorStop(1, `rgba(${Math.max(0, rgb.r - 40)}, ${Math.max(0, rgb.g - 40)}, ${Math.max(0, rgb.b - 40)}, 0.2)`);
         ctx.fillStyle = waveGrad;
         ctx.fill();
 
@@ -160,15 +188,15 @@ export const DynamicGovCanvas: React.FC = () => {
         ctx.lineWidth = 1;
         ctx.strokeStyle =
           w === 0
-            ? 'rgba(0, 160, 255, 0.12)'
-            : 'rgba(255, 255, 255, 0.06)';
+            ? `rgba(${Math.min(255, rgb.r + 80)}, ${Math.min(255, rgb.g + 80)}, ${Math.min(255, rgb.b + 80)}, 0.2)`
+            : 'rgba(255, 255, 255, 0.08)';
         ctx.stroke();
       }
       ctx.restore();
 
       // 4. Subtle administrative coordinate grid lines
       ctx.save();
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.025)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
       ctx.lineWidth = 1;
       const gridSize = 80;
       for (let x = 0; x < width; x += gridSize) {
@@ -185,7 +213,7 @@ export const DynamicGovCanvas: React.FC = () => {
       }
       ctx.restore();
 
-      // 5. Connect particles with lines (Mạng lưới kết nối công vụ)
+      // 5. Connect particles with lines
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const p1 = particles[i];
@@ -201,8 +229,8 @@ export const DynamicGovCanvas: React.FC = () => {
             ctx.lineTo(p2.x, p2.y);
             ctx.strokeStyle =
               p1.isAccent || p2.isAccent
-                ? `rgba(234, 179, 8, ${alpha * 0.9})` // Accent gold link
-                : `rgba(96, 165, 250, ${alpha})`; // Blue-300 link
+                ? `rgba(234, 179, 8, ${alpha * 0.9})`
+                : `rgba(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)}, ${alpha})`;
             ctx.lineWidth = 0.85;
             ctx.stroke();
           }
@@ -243,17 +271,17 @@ export const DynamicGovCanvas: React.FC = () => {
         ctx.arc(p.x, p.y, currentRadius, 0, Math.PI * 2);
 
         if (p.isAccent) {
-          ctx.fillStyle = `rgba(250, 204, 21, ${p.alpha + 0.25})`; // Yellow/Gold
+          ctx.fillStyle = `rgba(250, 204, 21, ${p.alpha + 0.25})`; // Yellow/Gold accent
           ctx.shadowColor = 'rgba(250, 204, 21, 0.4)';
           ctx.shadowBlur = 6;
         } else {
-          ctx.fillStyle = `rgba(147, 197, 253, ${p.alpha})`; // Light Blue
-          ctx.shadowColor = 'rgba(96, 165, 250, 0.3)';
+          ctx.fillStyle = `rgba(${Math.min(255, rgb.r + 120)}, ${Math.min(255, rgb.g + 120)}, ${Math.min(255, rgb.b + 120)}, ${p.alpha})`;
+          ctx.shadowColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)`;
           ctx.shadowBlur = 4;
         }
 
         ctx.fill();
-        ctx.shadowBlur = 0; // reset
+        ctx.shadowBlur = 0;
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -277,3 +305,4 @@ export const DynamicGovCanvas: React.FC = () => {
     />
   );
 };
+

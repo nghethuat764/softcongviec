@@ -264,9 +264,9 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
         
         {/* Modal Header with Management Background */}
         <div 
-          className="bg-[#003366] px-5 py-4 text-white flex items-center justify-between border-b border-[#002244] shrink-0 bg-cover bg-center relative"
+          className="bg-[#003366] px-5 py-4 text-white flex items-center justify-between border-b border-white/20 shrink-0 relative"
           style={{
-            backgroundImage: 'linear-gradient(to right, rgba(0, 51, 102, 0.96), rgba(0, 51, 102, 0.82)), url(/management_bg.jpg)',
+            background: 'linear-gradient(to right, var(--primary-color), var(--primary-hover))',
           }}
         >
           <div className="flex items-center gap-3 relative z-10">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Building2, 
   RotateCcw,
@@ -8,7 +8,8 @@ import {
   Paperclip,
   CheckCircle2,
   Users,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Clock
 } from 'lucide-react';
 import { StaffMember } from '../types';
 import { useAuth } from '../context/AuthContext';
@@ -48,6 +49,24 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleMobileMenu,
 }) => {
   const { currentUser, isLeader, logout } = useAuth();
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatDateTimeClock = (date: Date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  };
 
   return (
     <header className="bg-[#003366] dark:bg-[#071324] text-white border-b border-[#002244] dark:border-[#1e293b] sticky top-0 z-40 shadow-xs font-sans transition-colors duration-200">
@@ -69,6 +88,10 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
                 <span className="font-semibold text-white truncate max-w-[140px] sm:max-w-none">{currentUser.fullName}</span>
                 <span className="text-blue-200 dark:text-sky-200 hidden md:inline text-[11px]">({currentUser.position})</span>
+                <div className="hidden sm:flex items-center gap-1 text-amber-300 dark:text-amber-200 font-mono text-[11px] font-bold bg-black/30 px-2 py-0.5 rounded border border-amber-300/30 shrink-0 shadow-2xs">
+                  <Clock className="w-3 h-3 text-amber-300 shrink-0" />
+                  <span>{formatDateTimeClock(currentTime)}</span>
+                </div>
                 <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold uppercase tracking-wider ${
                   currentUser.role === 'LEADER' ? 'bg-red-500/30 text-red-200 border border-red-400/30' : 'bg-blue-400/25 text-blue-200 border border-blue-300/30'
                 }`}>
