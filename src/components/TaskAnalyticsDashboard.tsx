@@ -347,13 +347,13 @@ export const TaskAnalyticsDashboard: React.FC<TaskAnalyticsDashboardProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-xs space-y-5 transition-colors duration-200">
+    <div className="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 p-3 sm:p-4 shadow-xs space-y-3.5 transition-colors duration-200">
       
       {/* =========================================================================
           HEADER & UNIFIED FILTER BAR (SECTION IV)
          ========================================================================= */}
-      <div className="space-y-3">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div className="space-y-2.5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 border-b border-slate-100 dark:border-slate-800 pb-2.5">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-lg bg-[#003366] text-white flex items-center justify-center shrink-0 shadow-xs">
               <BarChart3 className="w-5 h-5" />
@@ -514,12 +514,12 @@ export const TaskAnalyticsDashboard: React.FC<TaskAnalyticsDashboardProps> = ({
         /* =========================================================================
             CHART GRID (2 x 2 LAYOUT DESKTOP, RESPONSIVE SINGLE COL MOBILE)
            ========================================================================= */
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-3.5">
 
           {/* -----------------------------------------------------------------------
               CHART 1: Biểu đồ xu hướng hoàn thành & phát sinh nhiệm vụ (Area Chart)
              ----------------------------------------------------------------------- */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-2xs space-y-3 flex flex-col justify-between">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-3 sm:p-3.5 shadow-2xs space-y-2.5 flex flex-col justify-between">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
               <div>
                 <h4 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-1.5">
@@ -618,7 +618,7 @@ export const TaskAnalyticsDashboard: React.FC<TaskAnalyticsDashboardProps> = ({
           {/* -----------------------------------------------------------------------
               CHART 2: Biểu đồ tiến độ theo tổ chuyên môn (Horizontal Bar Chart)
              ----------------------------------------------------------------------- */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-2xs space-y-3 flex flex-col justify-between">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-3 sm:p-3.5 shadow-2xs space-y-2.5 flex flex-col justify-between">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
               <div>
                 <h4 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-1.5">
@@ -720,7 +720,7 @@ export const TaskAnalyticsDashboard: React.FC<TaskAnalyticsDashboardProps> = ({
           {/* -----------------------------------------------------------------------
               CHART 3: Biểu đồ Donut trạng thái nhiệm vụ (Donut Chart)
              ----------------------------------------------------------------------- */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-2xs space-y-3 flex flex-col justify-between">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-3 sm:p-3.5 shadow-2xs space-y-2.5 flex flex-col justify-between">
             <div className="border-b border-slate-100 dark:border-slate-800 pb-2.5">
               <h4 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-1.5">
                 <PieIcon className="w-4 h-4 text-purple-600 dark:text-purple-400" />
@@ -818,7 +818,7 @@ export const TaskAnalyticsDashboard: React.FC<TaskAnalyticsDashboardProps> = ({
           {/* -----------------------------------------------------------------------
               CHART 4: Biểu đồ thanh chồng theo bộ phận (Stacked Bar Chart)
              ----------------------------------------------------------------------- */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-2xs space-y-3 flex flex-col justify-between">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-3 sm:p-3.5 shadow-2xs space-y-2.5 flex flex-col justify-between">
             <div className="border-b border-slate-100 dark:border-slate-800 pb-2.5">
               <h4 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-1.5">
                 <Layers className="w-4 h-4 text-amber-600 dark:text-amber-400" />

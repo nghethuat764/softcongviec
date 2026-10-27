@@ -179,7 +179,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3.5 sm:py-6 space-y-4 sm:space-y-6">
+    <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-6 py-2.5 sm:py-4 space-y-2.5 sm:space-y-3.5">
       
       {/* =========================================================================
           CẤP 1: BANNER ĐIỀU HÀNH & CHỈ ĐẠO CỦA BAN GIÁM ĐỐC
@@ -486,7 +486,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({
 
       {/* --- MENU 1: TỔNG QUAN KPI & BẢN ĐỒ TIẾN ĐỘ --- */}
       {activeLeaderMenu === 'overview' && (
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-2.5 sm:space-y-3.5">
           {/* Executive KPI Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-3.5">
             <div className="bg-white p-3 sm:p-4 rounded-[8px] border border-[#E5E7EB] shadow-xs">
