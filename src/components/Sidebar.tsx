@@ -15,7 +15,8 @@ import {
   Users,
   Building2,
   Image as ImageIcon,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Smartphone
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -31,6 +32,7 @@ interface SidebarProps {
   onOpenDailyReport?: () => void;
   onOpenDepartmentManagement?: () => void;
   onOpenBgSettings?: () => void;
+  onOpenMobileMockup?: () => void;
   onResetData: () => void;
   taskCount: number;
   isOpenMobile?: boolean;
@@ -49,6 +51,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenDailyReport,
   onOpenDepartmentManagement,
   onOpenBgSettings,
+  onOpenMobileMockup,
   onResetData,
   taskCount,
   isOpenMobile = false,
@@ -254,6 +257,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Database className="w-4 h-4 text-[#4B5563] shrink-0" />
               <span className="truncate">Cơ sở dữ liệu hệ thống</span>
             </button>
+
+            {onOpenMobileMockup && (
+              <button
+                type="button"
+                onClick={() => {
+                  onOpenMobileMockup();
+                  if (onCloseMobile) onCloseMobile();
+                }}
+                className="w-full px-3 py-2.5 rounded-[8px] text-left text-[13px] font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 flex items-center gap-2.5 transition-colors cursor-pointer"
+                title="Mở giao diện mô phỏng ứng dụng di động Native (iOS/Android)"
+              >
+                <Smartphone className="w-4 h-4 text-amber-700 shrink-0" />
+                <span className="truncate">Mô phỏng App Mobile</span>
+              </button>
+            )}
 
             <button
               type="button"

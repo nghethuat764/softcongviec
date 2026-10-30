@@ -21,6 +21,7 @@ import { UserManagementModal } from './components/UserManagementModal';
 import { DepartmentManagementModal } from './components/DepartmentManagementModal';
 import { BackgroundSettingsModal } from './components/BackgroundSettingsModal';
 import { DailyReportModal } from './components/DailyReportModal';
+import { MobileMockupSimulator } from './components/MobileMockupSimulator';
 import { FloatingThemeControls } from './components/FloatingThemeControls';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DepartmentProvider } from './context/DepartmentContext';
@@ -153,6 +154,7 @@ function AppContent() {
   const [isDailyReportOpen, setIsDailyReportOpen] = useState(false);
   const [isDepartmentManagementOpen, setIsDepartmentManagementOpen] = useState(false);
   const [isBgSettingsOpen, setIsBgSettingsOpen] = useState(false);
+  const [isMobileMockupOpen, setIsMobileMockupOpen] = useState(false);
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
 
@@ -373,6 +375,7 @@ function AppContent() {
           onOpenUserManagement={isLeader ? () => setIsUserManagementOpen(true) : undefined}
           onOpenDepartmentManagement={isLeader ? () => setIsDepartmentManagementOpen(true) : undefined}
           onOpenBgSettings={() => setIsBgSettingsOpen(true)}
+          onOpenMobileMockup={() => setIsMobileMockupOpen(true)}
           onResetData={handleRequestReset}
           taskCount={isLeader ? tasks.length : myAssignedTasks.length}
           onToggleMobileMenu={() => setIsMobileSidebarOpen((prev) => !prev)}
@@ -626,6 +629,15 @@ function AppContent() {
           </div>
         </div>
       )}
+
+      {/* Interactive Mobile Native App Simulator */}
+      <MobileMockupSimulator
+        isOpen={isMobileMockupOpen}
+        onClose={() => setIsMobileMockupOpen(false)}
+        tasks={tasks}
+        onUpdateTask={handleUpdateTask}
+        onAddTask={handleAddTask}
+      />
 
       {/* Floating Icon-Only Theme Controls (Light/Dark + Color Customizer) */}
       <FloatingThemeControls />

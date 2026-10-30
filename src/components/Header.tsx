@@ -9,7 +9,8 @@ import {
   CheckCircle2,
   Users,
   Image as ImageIcon,
-  Clock
+  Clock,
+  Smartphone
 } from 'lucide-react';
 import { StaffMember } from '../types';
 import { useAuth } from '../context/AuthContext';
@@ -29,6 +30,7 @@ interface HeaderProps {
   onOpenUserManagement?: () => void;
   onOpenDepartmentManagement?: () => void;
   onOpenBgSettings?: () => void;
+  onOpenMobileMockup?: () => void;
   onResetData: () => void;
   taskCount: number;
   onToggleMobileMenu?: () => void;
@@ -44,6 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenUserManagement,
   onOpenDepartmentManagement,
   onOpenBgSettings,
+  onOpenMobileMockup,
   onResetData,
   taskCount,
   onToggleMobileMenu,
@@ -162,8 +165,20 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Phía Phải Header: Chỉ báo phân hệ hiện tại & Nút mở menu trên Mobile */}
+          {/* Phía Phải Header: Nút Mô Phỏng App Mobile & Chỉ báo phân hệ */}
           <div className="flex items-center gap-2">
+            {onOpenMobileMockup && (
+              <button
+                type="button"
+                onClick={onOpenMobileMockup}
+                className="px-3 py-1.5 rounded-[6px] bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-[12px] sm:text-[13px] flex items-center gap-1.5 shadow-sm border border-amber-300/60 cursor-pointer active:scale-95 transition-all"
+                title="Mở giao diện mô phỏng ứng dụng di động Native (iOS/Android)"
+              >
+                <Smartphone className="w-4 h-4 text-slate-950" />
+                <span>MOCKUP APP MOBILE</span>
+              </button>
+            )}
+
             <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-[6px] border text-[13px] ${
               currentRole === 'leader'
                 ? 'bg-amber-400/15 border-amber-300/30 text-amber-200'
