@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Task, SectionType, PriorityLevel, TaskStatus } from '../types';
-import { X, PlusCircle, User, Calendar, DollarSign, FileText, ShieldCheck, Lock, Building2, Users } from 'lucide-react';
+import { X, PlusCircle, User, Calendar, DollarSign, FileText, ShieldCheck, Lock, Building2, Users, Sparkles, RefreshCw } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useDepartments } from '../context/DepartmentContext';
 import { getUsersForDepartment } from '../utils/helpers';
+import { fetchAiTaskDraft } from '../services/aiDirectiveService';
 
 interface NewTaskModalProps {
   isOpen: boolean;
@@ -38,6 +39,11 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   const [budgetInfo, setBudgetInfo] = useState('');
   const [priority, setPriority] = useState<PriorityLevel>('normal');
   const [initialProgress, setInitialProgress] = useState(0);
+
+  // AI Drafting state
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isDraftingAi, setIsDraftingAi] = useState(false);
+  const [showAiDraftBox, setShowAiDraftBox] = useState(false);
 
   // Only employees belonging to the selected department
   const departmentUsers = useMemo(() => {
@@ -77,6 +83,24 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
       }
     }
   }, [isOpen, section, departmentUsers, users, departments]);
+
+  const handleAiDraft = async () => {
+    if (!aiPrompt.trim()) return;
+    setIsDraftingAi(true);
+
+    const result = await fetchAiTaskDraft(aiPrompt, section, currentUser);
+
+    setIsDraftingAi(false);
+    if (result.success && result.draft) {
+      if (result.draft.code) setCode(result.draft.code);
+      if (result.draft.title) setTitle(result.draft.title);
+      if (result.draft.category) setCategory(result.draft.category);
+      if (result.draft.requirement) setRequirement(result.draft.requirement);
+      if (result.draft.priority) setPriority(result.draft.priority);
+      setShowAiDraftBox(false);
+      setAiPrompt('');
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -175,14 +199,60 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+
+          <div className="flex items-center gap-2">
+            {isLeader && (
+              <button
+                type="button"
+                onClick={() => setShowAiDraftBox(!showAiDraftBox)}
+                className="px-2.5 py-1 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs rounded-lg flex items-center gap-1 transition-all cursor-pointer shadow-xs"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>AI Soạn Nhanh</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
+
+        {/* AI Quick Drafting Prompt Box */}
+        {showAiDraftBox && (
+          <div className="bg-indigo-950 text-white p-4 border-b border-indigo-800 animate-in slide-in-from-top-2 duration-200">
+            <h4 className="text-xs font-bold text-amber-300 mb-1 flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              Gõ nội dung chỉ đạo thô - AI sẽ tự điền tiêu đề và yêu cầu hành chính:
+            </h4>
+            <div className="flex gap-2 mt-2">
+              <input
+                type="text"
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAiDraft();
+                  }
+                }}
+                placeholder="VD: Kiểm tra và sửa ống nước công viên Hố Nai gấp trong 2 ngày..."
+                className="flex-1 bg-slate-900 border border-indigo-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-400 placeholder:text-slate-400"
+              />
+              <button
+                type="button"
+                onClick={handleAiDraft}
+                disabled={isDraftingAi || !aiPrompt.trim()}
+                className="px-4 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs rounded-lg flex items-center gap-1 transition-all disabled:opacity-50 cursor-pointer"
+              >
+                {isDraftingAi ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : 'Tự động chuẩn hóa'}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs sm:text-sm">

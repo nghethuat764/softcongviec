@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import { Sun, Moon, Palette } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { ThemeColorPickerModal } from './ThemeColorPickerModal';
+import { FloatingAiChatWidget } from './FloatingAiChatWidget';
+import { Task } from '../types';
 
-export const FloatingThemeControls: React.FC = () => {
+interface FloatingThemeControlsProps {
+  tasks?: Task[];
+}
+
+export const FloatingThemeControls: React.FC<FloatingThemeControlsProps> = ({ tasks = [] }) => {
   const { isDark, toggleTheme, primaryColor, setPrimaryColor, resetPrimaryColor } = useTheme();
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
 
@@ -45,6 +51,9 @@ export const FloatingThemeControls: React.FC = () => {
             style={{ backgroundColor: primaryColor }}
           />
         </button>
+
+        {/* 3. Floating AI Chatbot Widget (Positioned directly below Color Customizer icon) */}
+        <FloatingAiChatWidget tasks={tasks} />
       </div>
 
       {/* Theme Color Customizer Modal */}
@@ -58,3 +67,4 @@ export const FloatingThemeControls: React.FC = () => {
     </>
   );
 };
+

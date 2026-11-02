@@ -639,8 +639,8 @@ function AppContent() {
         onAddTask={handleAddTask}
       />
 
-      {/* Floating Icon-Only Theme Controls (Light/Dark + Color Customizer) */}
-      <FloatingThemeControls />
+      {/* Floating Icon-Only Theme Controls (Light/Dark + Color Customizer + AI Chatbot) */}
+      <FloatingThemeControls tasks={tasks} />
 
       {/* Quiet Professional Governmental Footer */}
       <footer className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 py-2 px-4 sm:px-6 z-30 shadow-xs">

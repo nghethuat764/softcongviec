@@ -18,7 +18,8 @@ import {
   ShieldCheck,
   ChevronDown,
   SlidersHorizontal,
-  ChevronUp
+  ChevronUp,
+  Sparkles
 } from 'lucide-react';
 import { Task, TaskStatus } from '../types';
 import { useAuth } from '../context/AuthContext';
@@ -26,6 +27,7 @@ import { useDepartments } from '../context/DepartmentContext';
 import { toast } from '../context/ToastContext';
 import { isTaskRelatedToStaff, getStatusLabel, getStatusBadgeClasses, getSectionShortName } from '../utils/helpers';
 import { CountUpNumber } from './CountUpNumber';
+import { AiReportSummaryView } from './AiReportSummaryView';
 
 interface DailyReportModalProps {
   isOpen: boolean;
@@ -84,7 +86,7 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
   tasks,
   onSelectTask,
 }) => {
-  const { users } = useAuth();
+  const { users, currentUser } = useAuth();
   const { departments } = useDepartments();
 
   // Default date range: From beginning of current month to end of current month
@@ -105,7 +107,7 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
   const [selectedStaffId, setSelectedStaffId] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'completed' | 'delayed' | 'in_progress'>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'overview' | 'staff' | 'details'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'ai_summary' | 'details'>('overview');
   const [exportNotice, setExportNotice] = useState<string | null>(null);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
@@ -1372,6 +1374,20 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
                 <span className="sm:hidden">2. Việc ({filteredTasks.length})</span>
                 <span className="hidden sm:inline">2. Chi tiết danh sách nhiệm vụ ({filteredTasks.length})</span>
               </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('ai_summary')}
+                className={`py-2.5 sm:py-3 text-[12px] sm:text-[13px] font-bold border-b-2 flex items-center gap-1.5 sm:gap-2 cursor-pointer transition-colors whitespace-nowrap ${
+                  activeTab === 'ai_summary'
+                    ? 'border-[#003366] text-[#003366] bg-amber-50/50 px-2.5 rounded-t-lg'
+                    : 'border-transparent text-indigo-700 hover:text-[#0F172A]'
+                }`}
+              >
+                <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+                <span className="sm:hidden">🤖 AI Báo Cáo</span>
+                <span className="hidden sm:inline">3. 🤖 AI Phân Tích & Tổng Hợp Báo Cáo</span>
+              </button>
             </div>
 
             <div className="text-[11px] sm:text-[12px] text-[#64748B] shrink-0 pl-2">
@@ -1857,6 +1873,24 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({
                   )}
                 </div>
               </div>
+            )}
+
+            {/* TAB 3: AI TỔNG HỢP & PHÂN TÍCH BÁO CÁO */}
+            {activeTab === 'ai_summary' && (
+              <AiReportSummaryView
+                filterOptions={{
+                  datePreset,
+                  fromDate,
+                  toDate,
+                  dateFieldFilter,
+                  selectedDepartment,
+                  selectedStaffId,
+                  statusFilter,
+                }}
+                tasks={filteredTasks}
+                currentUser={currentUser}
+                onExportExcel={handleExportExcel}
+              />
             )}
 
           </div>
