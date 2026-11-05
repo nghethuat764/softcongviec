@@ -268,6 +268,41 @@
   html.dark textarea::placeholder {
     color: #64748b;
   }
+
+  /* Ant Design Theme Integration */
+  .ant-btn-primary {
+    background-color: var(--primary-color) !important;
+  }
+  .ant-btn-primary:hover {
+    background-color: var(--primary-hover) !important;
+  }
+  .ant-tag-primary {
+    background-color: var(--primary-light) !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+  }
+  html.dark .ant-modal-content,
+  html.dark .ant-modal-header {
+    background-color: #131c31 !important;
+    color: #f8fafc !important;
+  }
+  html.dark .ant-modal-title {
+    color: #f8fafc !important;
+  }
+  html.dark .ant-table {
+    background-color: #131c31 !important;
+    color: #e2e8f0 !important;
+  }
+  html.dark .ant-table-thead > tr > th {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    border-bottom-color: #334155 !important;
+  }
+  html.dark .ant-card {
+    background-color: #131c31 !important;
+    border-color: #1e293b !important;
+    color: #f8fafc !important;
+  }
 }
 
 /* ==========================================================================

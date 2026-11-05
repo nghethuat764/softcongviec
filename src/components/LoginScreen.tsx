@@ -22,17 +22,72 @@ interface LoginScreenProps {
   dbConnected?: boolean;
 }
 
+const REMEMBER_CREDENTIALS_KEY = 'ttdvth_remember_credentials';
+
 export const LoginScreen: React.FC<LoginScreenProps> = ({
   tasksCount = 40,
   dbConnected = true,
 }) => {
   const { login } = useAuth();
   const { isDark } = useTheme();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+
+  const [rememberPassword, setRememberPassword] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem(REMEMBER_CREDENTIALS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return Boolean(parsed.remember);
+      }
+    } catch {
+      // ignore
+    }
+    return false;
+  });
+
+  const [username, setUsername] = useState<string>(() => {
+    try {
+      const saved = localStorage.getItem(REMEMBER_CREDENTIALS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.remember && parsed.username) {
+          return parsed.username;
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return '';
+  });
+
+  const [password, setPassword] = useState<string>(() => {
+    try {
+      const saved = localStorage.getItem(REMEMBER_CREDENTIALS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.remember && parsed.password) {
+          return parsed.password;
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return '';
+  });
+
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleRememberToggle = (checked: boolean) => {
+    setRememberPassword(checked);
+    if (!checked) {
+      try {
+        localStorage.removeItem(REMEMBER_CREDENTIALS_KEY);
+      } catch {
+        // ignore
+      }
+    }
+  };
 
   const handleLogin = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -59,6 +114,24 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         setError(errorMsg);
         toast.error('Đăng nhập thất bại', errorMsg);
       } else {
+        // Ghi nhớ mật khẩu vào localStorage nếu được chọn
+        try {
+          if (rememberPassword) {
+            localStorage.setItem(
+              REMEMBER_CREDENTIALS_KEY,
+              JSON.stringify({
+                remember: true,
+                username: username.trim(),
+                password: password,
+              })
+            );
+          } else {
+            localStorage.removeItem(REMEMBER_CREDENTIALS_KEY);
+          }
+        } catch (e) {
+          console.warn('Lỗi lưu thông tin ghi nhớ mật khẩu:', e);
+        }
+
         toast.success('Đăng nhập thành công', 'Chào mừng đồng chí đã đăng nhập vào hệ thống.');
       }
     }, 200);
@@ -179,6 +252,24 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
+              </div>
+
+              {/* Checkbox Ghi Nhớ Mật Khẩu */}
+              <div className="flex items-center justify-between pt-1 pb-0.5">
+                <label className="flex items-center gap-2 cursor-pointer select-none group">
+                  <input
+                    type="checkbox"
+                    checked={rememberPassword}
+                    onChange={(e) => handleRememberToggle(e.target.checked)}
+                    className="w-4 h-4 rounded border-[#CBD5E1] text-[#003366] focus:ring-[#003366] accent-[#003366] cursor-pointer"
+                  />
+                  <span className="text-[13px] font-medium text-[#111827] dark:text-slate-200 group-hover:text-[#003366] dark:group-hover:text-sky-300 transition-colors">
+                    Ghi nhớ mật khẩu
+                  </span>
+                </label>
+                <span className="text-[11px] text-[#64748B] dark:text-slate-400">
+                  Lưu trên thiết bị này
+                </span>
               </div>
 
               {/* Bảng Hướng Dẫn Phân Quyền */}

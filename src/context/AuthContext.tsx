@@ -33,20 +33,18 @@ const AUTH_STORAGE_KEY = 'ttdvth_auth_session_user';
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [users, setUsers] = useState<UserAccount[]>(USER_ACCOUNTS);
-  const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => {
+  // Do NOT auto-login on refresh (F5). User MUST authenticate with username and password.
+  const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
+
+  // Clear any legacy persistent session to strictly require manual login on every reload / F5
+  useEffect(() => {
     try {
-      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        const matched = USER_ACCOUNTS.find((u) => u.id === parsed.id);
-        if (matched) return matched;
-        return parsed as UserAccount;
-      }
-    } catch (e) {
-      console.error('Failed to load session:', e);
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+      sessionStorage.removeItem(AUTH_STORAGE_KEY);
+    } catch {
+      // Ignore
     }
-    return USER_ACCOUNTS[0]; // Mặc định mở ngay giao diện Ban Giám Đốc để hiển thị toàn bộ Dashboard & KPI
-  });
+  }, []);
 
   // Subscribe to real-time users from Firestore
   useEffect(() => {
@@ -82,32 +80,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   }, []);
 
-  useEffect(() => {
-    if (currentUser) {
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(currentUser));
-    } else {
-      localStorage.removeItem(AUTH_STORAGE_KEY);
-    }
-  }, [currentUser]);
-
   const login = (username: string, password?: string): boolean => {
-    if (!username.trim()) return false;
+    if (!username || !username.trim()) return false;
     
     const cleanUser = username.trim().toLowerCase();
-    const candidateList = users.length > 0 ? users : USER_ACCOUNTS;
+    // Prioritize latest real-time users from Firestore, then combine with USER_ACCOUNTS
+    const candidateMap = new Map<string, UserAccount>();
+    for (const u of USER_ACCOUNTS) {
+      candidateMap.set(u.id, u);
+    }
+    for (const u of users) {
+      candidateMap.set(u.id, u);
+    }
+    const candidateList = Array.from(candidateMap.values());
+
     const user = candidateList.find(
       (u) =>
         u.username.toLowerCase() === cleanUser ||
         u.id.toLowerCase() === cleanUser ||
         u.id.replace('usr-', '').toLowerCase() === cleanUser ||
         u.fullName.toLowerCase() === cleanUser ||
-        u.email.toLowerCase() === cleanUser
+        (u.shortName && u.shortName.toLowerCase() === cleanUser) ||
+        (u.email && u.email.toLowerCase() === cleanUser)
     );
     if (!user) return false;
 
-    // Validate password: must match account password or standard '123456'
+    // Validate password: must match account password in database or default '123456'
     const expectedPassword = user.password || '123456';
-    if (!password || password.trim() !== expectedPassword) {
+    const inputPassword = password ? password.trim() : '';
+    if (!inputPassword || (inputPassword !== expectedPassword && password !== expectedPassword)) {
       return false;
     }
 
@@ -116,7 +117,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const switchUser = (userId: string) => {
-    const candidateList = users.length > 0 ? users : USER_ACCOUNTS;
+    const candidateMap = new Map<string, UserAccount>();
+    for (const u of USER_ACCOUNTS) {
+      candidateMap.set(u.id, u);
+    }
+    for (const u of users) {
+      candidateMap.set(u.id, u);
+    }
+    const candidateList = Array.from(candidateMap.values());
     const user = candidateList.find((u) => u.id === userId);
     if (user) {
       setCurrentUser(user);
@@ -126,6 +134,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = () => {
     try {
       localStorage.removeItem(AUTH_STORAGE_KEY);
+      sessionStorage.removeItem(AUTH_STORAGE_KEY);
     } catch (e) {
       console.error('Failed to remove auth key:', e);
     }

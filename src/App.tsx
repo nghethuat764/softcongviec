@@ -23,6 +23,7 @@ import { BackgroundSettingsModal } from './components/BackgroundSettingsModal';
 import { DailyReportModal } from './components/DailyReportModal';
 import { MobileMockupSimulator } from './components/MobileMockupSimulator';
 import { FloatingThemeControls } from './components/FloatingThemeControls';
+import { AntdConfigWrapper } from './components/AntdConfigWrapper';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DepartmentProvider } from './context/DepartmentContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
@@ -677,13 +678,15 @@ function AppContent() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <DepartmentProvider>
-          <ToastProvider>
-            <AppContent />
-          </ToastProvider>
-        </DepartmentProvider>
-      </AuthProvider>
+      <AntdConfigWrapper>
+        <AuthProvider>
+          <DepartmentProvider>
+            <ToastProvider>
+              <AppContent />
+            </ToastProvider>
+          </DepartmentProvider>
+        </AuthProvider>
+      </AntdConfigWrapper>
     </ThemeProvider>
   );
 }
